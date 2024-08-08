@@ -1158,6 +1158,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);
 			ImGui::End();
 
+			if (input->PushKey(DIK_A)) {
+				cameraTransform.translate.x -= 0.1f;
+			}
+			else if (input->PushKey(DIK_D)) {
+				cameraTransform.translate.x += 0.1f;
+			}
+			if (input->PushKey(DIK_W)) {
+				cameraTransform.translate.y += 0.1f;
+			}
+			else if (input->PushKey(DIK_S)) {
+				cameraTransform.translate.y -= 0.1f;
+			}
+
 			//3D
 			//transform.rotate.y += 0.03f;
 			Matrix4x4 worldMatrix = Matrix4x4::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
