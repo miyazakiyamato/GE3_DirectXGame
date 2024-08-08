@@ -1,12 +1,14 @@
 ﻿#include "Input.h"
 #include <cassert>
 
-void Input::Initialize(HINSTANCE hInstance, HWND hwnd){
+void Input::Initialize(WinApp* winApp){
+	//借りてきたWinAppのインスタンスを記録
+	winApp_ = winApp;
 
 	HRESULT result;
 	//DirectInputの初期化
 	directInput = nullptr;
-	result = DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
+	result = DirectInput8Create(winApp_->GetHInstance(), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
 	assert(SUCCEEDED(result));
 	//キーボードデバイスの生成
 	keyboard = nullptr;
@@ -16,7 +18,7 @@ void Input::Initialize(HINSTANCE hInstance, HWND hwnd){
 	result = keyboard->SetDataFormat(&c_dfDIKeyboard);//標準形式
 	assert(SUCCEEDED(result));
 	//排他制御レベルのセット
-	result = keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+	result = keyboard->SetCooperativeLevel(winApp_->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 	assert(SUCCEEDED(result));
 }
 

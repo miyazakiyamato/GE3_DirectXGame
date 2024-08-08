@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include <dinput.h>
 #include <wrl.h>
-
+#include "WinApp.h"
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
@@ -14,7 +14,7 @@ public:
 
 public:
 	//初期化
-	void Initialize(HINSTANCE hInstance,HWND hwnd);
+	void Initialize(WinApp* winApp);
 	//更新
 	void Update();
 
@@ -31,6 +31,9 @@ public:
 	/// <returns>トリガーか</returns>
 	bool TriggerKey(BYTE keyNumber);
 private:
+	//WindowsAPI
+	WinApp* winApp_ = nullptr;
+
 	//DirectInput
 	ComPtr<IDirectInput8> directInput;
 	//キーボードデバイス
