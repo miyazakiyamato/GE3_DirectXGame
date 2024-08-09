@@ -14,6 +14,9 @@ public://メンバ関数
 	void Update();
 	//終了
 	void Finalize();
+
+	//メッセージの処理
+	bool ProcessMessage();
 public://定数
 	//クライアント領域のサイズ
 	static const int32_t kClientWidth = 1280;
