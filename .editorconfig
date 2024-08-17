@@ -1,2 +1,2 @@
 [*.{cpp,h,hlsl,hlsli}]
-charet = utf-8
+charset = utf-8
