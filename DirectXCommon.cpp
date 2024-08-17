@@ -1,4 +1,4 @@
-﻿#include "DirectXCommon.h"
+#include "DirectXCommon.h"
 #include <cassert>
 #include <format>
 
@@ -23,6 +23,8 @@ void DirectXCommon::Initialize(WinApp* winApp){
 	//メンバ関数に記録
 	winApp_ = winApp;
 
+	//FPS固定初期化
+	InitializeFixFPS();
 	//デバイスの初期化
 	CreateDevice();
 	//コマンド関連の初期化
@@ -126,11 +128,18 @@ void DirectXCommon::PostDraw(){
 	//Fenceの値が指定したSignal値にたどり着いているかを確認する
 	//GetCompletedValueの初期値はFence作成時に渡した初期値
 	if (fence->GetCompletedValue() < fenceVal) {
+		//FenceのSignalを持つためのイベントを作成する
+		HANDLE fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+		assert(fenceEvent != nullptr);
 		//指定したSignalにたどり着いてないので、たどり着くまで待つようにイベントを設定する
 		fence->SetEventOnCompletion(fenceVal, fenceEvent);
 		//イベント待つ
 		WaitForSingleObject(fenceEvent, INFINITE);
+		CloseHandle(fenceEvent);
 	}
+
+	//FPS固定
+	UpdateFixFPS();
 
 	//次のフレーム用のコマンドリストを準備
 	hr = commandAllocator->Reset();
@@ -388,10 +397,6 @@ void DirectXCommon::CreateFence(){
 	uint64_t fenceValue = 0;
 	hr = device->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 	assert(SUCCEEDED(hr));
-
-	//FenceのSignalを持つためのイベントを作成する
-	fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	assert(fenceEvent != nullptr);
 }
 
 void DirectXCommon::CreateViewportRect(){
@@ -581,6 +586,33 @@ DirectX::ScratchImage DirectXCommon::LoadTexture(const std::string& filePath) {
 
 	//ミップマップ付きのデータを返す
 	return mipImages;
+}
+
+void DirectXCommon::InitializeFixFPS(){
+	//現在の時間を記録する
+	reference_ = std::chrono::steady_clock::now();
+}
+
+void DirectXCommon::UpdateFixFPS(){
+	//1/60秒ぴったりの時間
+	const std::chrono::microseconds kMinTime(uint64_t(1000000.0f / 60.0f));
+	//1/60秒よりわずかに短い時間
+	const std::chrono::microseconds kMinCheckTime(uint64_t(1000000.0 / 65.0f));
+
+	//現在時間を取得する
+	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+	//前回記録からの経過時間を取得する
+	std::chrono::microseconds elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
+	//1/60秒(よりわずかに短い時間)経っていない場合
+	if (elapsed < kMinCheckTime) {
+		//1/60秒経過するまで微小なスリーブを繰り返す
+		while (std::chrono::steady_clock::now() - reference_ < kMinTime){
+			//1マイクロ秒スリーブ
+			std::this_thread::sleep_for(std::chrono::microseconds(1));
+		}
+	}
+	//現在の時間を記録する
+	reference_ = std::chrono::steady_clock::now();
 }
 
 

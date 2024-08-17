@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <Windows.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -6,8 +6,11 @@
 #include <array>
 #include <dxcapi.h>
 #include <string>
+#include <thread>
+#include <chrono>
 #include "WinApp.h"
 #include "externals/DirectXTex/DirectXTex.h"
+
 
 namespace {
 	//RTVのかず
@@ -69,7 +72,14 @@ public://メンバ関数
 	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 	//テクスチャファイルの読み込み
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
-private:
+private://メンバ関数
+	//FPS固定初期化
+	void InitializeFixFPS();
+	//FPS固定更新
+	void UpdateFixFPS();
+	//記録時間(FPS固定用)
+	std::chrono::steady_clock::time_point reference_;
+private://メンバ変数
 	//WindowsAPI
 	WinApp* winApp_ = nullptr;
 
@@ -107,7 +117,6 @@ private:
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 	//フェンス
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence = nullptr;
-	HANDLE fenceEvent;
 	//ビューポート
 	D3D12_VIEWPORT viewport{};
 	//シザー矩形
