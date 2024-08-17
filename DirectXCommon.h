@@ -4,8 +4,10 @@
 #include <dxgi1_6.h>
 #include <wrl.h>
 #include <array>
-#include "WinApp.h"
 #include <dxcapi.h>
+#include <string>
+#include "WinApp.h"
+#include "externals/DirectXTex/DirectXTex.h"
 
 namespace {
 	//RTVのかず
@@ -52,6 +54,21 @@ public://メンバ関数
 	void CreateDXCCompiler();
 	//IMGuiの初期化
 	void CreateImGui();
+	//シェーダーのコンパイル
+	Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(
+		//CompilerするShaderファイルへのパス
+		const std::wstring& filePath,
+		//Compilerに使用するProfile
+		const wchar_t* profile);
+	//バッファリソースの生成
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(const size_t& sizeInbytes);
+	//テクスチャリソースの生成
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
+	//テクスチャデータの転送
+	[[nodiscard]]
+	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+	//テクスチャファイルの読み込み
+	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 private:
 	//WindowsAPI
 	WinApp* winApp_ = nullptr;
@@ -102,5 +119,8 @@ private:
 	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler = nullptr;
 	//フェンス値
 	UINT16 fenceVal = 0;
+public:
+	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() { return device; }
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetCommandList() { return commandList; }
 };
 
