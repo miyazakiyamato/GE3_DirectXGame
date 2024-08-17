@@ -7,12 +7,19 @@
 #include "WinApp.h"
 #include <dxcapi.h>
 
+namespace {
+	//RTVのかず
+	const uint32_t kRTVHandleNum = 2;
+}
+
 class DirectXCommon{
 public://メンバ関数
 	//初期化
 	void Initialize(WinApp* winApp);
-	//更新
-	void Update();
+	//描画前処理
+	void PreDraw();
+	//描画後処理
+	void PostDraw();
 	//デバイスの初期化
 	void CreateDevice();
 	//コマンド関連の初期化
@@ -75,12 +82,15 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap = nullptr;
 	//RTVの設定
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+	//RTV
+	std::array<D3D12_CPU_DESCRIPTOR_HANDLE,kRTVHandleNum> rtvHandles;
 	//スワップチェインリソース
 	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2> swapChainResources;
 	//スワップチェーン
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 	//フェンス
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence = nullptr;
+	HANDLE fenceEvent;
 	//ビューポート
 	D3D12_VIEWPORT viewport{};
 	//シザー矩形
@@ -90,5 +100,7 @@ private:
 	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler = nullptr;
 	//インクルードハンドラ
 	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler = nullptr;
+	//フェンス値
+	UINT16 fenceVal = 0;
 };
 
