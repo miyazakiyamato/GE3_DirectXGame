@@ -25,6 +25,8 @@
 #include "WinApp.h"
 #include "Input.h"
 #include "DirectXCommon.h"
+#include "Sprite.h"
+#include "SpriteCommon.h"
 #include "Logger.h"
 #include "D3DResourceLeakChecker.h"
 #pragma comment(lib,"dxguid.lib")
@@ -154,6 +156,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	WinApp* winApp = nullptr;
 	Input* input = nullptr;
 	DirectXCommon* dxCommon = nullptr;
+	SpriteCommon* spriteCommon = nullptr;
+	Sprite* sprite = nullptr;
 
 	//WindowsAPIの初期化
 	winApp = new WinApp();
@@ -167,16 +171,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	dxCommon = new DirectXCommon();
 	dxCommon->Initialize(winApp);
 
+	//スプライト共通部の初期化
+	spriteCommon = new SpriteCommon;
+	spriteCommon->Initialize(dxCommon);
+
+	//スプライトの初期化
+	sprite = new Sprite;
+	sprite->Initialize();
+
 	HRESULT hr;
 
-	//DepthStencilStateの設定
-	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
-	//Depthの機能を有効化する
-	depthStencilDesc.DepthEnable = true;
-	//書き込みします
-	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-	//比較関数はLessEqual。つまり、近ければ描画される
-	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	
 
 	//RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
@@ -288,6 +293,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//どのように画面に色を打ち込むかの設定
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	//DepthStencilStateの設定
+	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
+	//Depthの機能を有効化する
+	depthStencilDesc.DepthEnable = true;
+	//書き込みします
+	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	//比較関数はLessEqual。つまり、近ければ描画される
+	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	//DepthStencilの設定
 	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -659,16 +672,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//描画前処理
 		dxCommon->PreDraw();
 
-		// コマンドリストの取得
-		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon->GetCommandList();
+		//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
+		spriteCommon->DrawCommonSetting();
 
-		//RootSignatureを設定。PSOに設定しているけど別途設定が必要
-		commandList->SetGraphicsRootSignature(rootSignature.Get());
-		commandList->SetPipelineState(graphicsPipelineState.Get());//PSOを設定
+		// コマンドリストの取得
+		ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon->GetCommandList();
+
 		commandList->IASetVertexBuffers(0, 1, &vertexBufferView); //VBVを設定
 		//commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
-		//形状を設定。PSOに設定している物とはまた別。同じものを設定すると考えておくとよい
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		//マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 		//wvp用のCBufferの場所を設定
@@ -714,6 +725,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	delete input;
 	delete winApp;
 	delete dxCommon;
+	delete sprite;
+	delete spriteCommon;
 
 	//CloseHandle(fenceEvent);
 
