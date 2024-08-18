@@ -27,7 +27,7 @@ public://メンバ関数
 	//初期化
 	void Initialize(SpriteCommon* spriteCommon);
 	//更新
-	void Update(const Transform& transform, const Transform& uvTransform);
+	void Update();
 	//描画
 	void Draw();
 private:
@@ -45,5 +45,18 @@ private:
 	//バッファリソースの使い道を補足するバッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView;
+
+	Vector2 position_ = { 0.0f,0.0f };
+	float rotation_ = 0.0f;
+	Vector2 size_ = { 640.0f,360.0f };
+public:
+	const Vector2& GetPosition() { return position_; }
+	void SetPosition(const Vector2& position) { position_ = position; }
+	float GetRotation() { return rotation_; }
+	void SetRotation(float rotation) { rotation_ = rotation; }
+	const Vector2& GetSize() { return size_; }
+	void SetSize(const Vector2& size) { size_ = size; }
+	const Vector4& GetColor() { return materialData->color; }
+	void SetColor(const Vector4& color) { materialData->color = color; }
 };
 

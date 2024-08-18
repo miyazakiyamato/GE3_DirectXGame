@@ -15,6 +15,7 @@
 #include <format>
 #include <cmath>
 #include <wrl.h>
+#include <vector>
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
@@ -159,7 +160,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Input* input = nullptr;
 	DirectXCommon* dxCommon = nullptr;
 	SpriteCommon* spriteCommon = nullptr;
-	Sprite* sprite = nullptr;
+	
 
 	//WindowsAPIの初期化
 	winApp = new WinApp();
@@ -178,8 +179,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	spriteCommon->Initialize(dxCommon);
 
 	//スプライトの初期化
-	sprite = new Sprite;
-	sprite->Initialize(spriteCommon);
+	std::vector<Sprite*> sprites;
+	for (uint32_t i = 0; i < 5; ++i) {
+		Sprite* sprite = new Sprite;
+		sprite->Initialize(spriteCommon);
+		sprite->SetPosition({200.0f * float(i), 0});
+		sprite->SetSize({ 100.0f,100.0f });
+		sprites.push_back(sprite);
+	}
+	
 
 	HRESULT hr;
 
@@ -460,11 +468,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	////Transform変数を作る。
 	//Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
-	//SpriteのTransform変数を作る。
-	Transform transformSprite{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	//SpriteのUVTransform変数を作る。
-	Transform uvTransformSprite{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-
 	//カメラのTransform変数を作る。
 	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
 
@@ -551,13 +554,35 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//開発用のUIの処理。実際に開発用のUIを出す場合はここをゲーム固有の処理に置き換える
 		ImGui::Begin("Settings");
 		//ImGui::ColorEdit4("Model.Color", &(*materialData).color.x);
-		//ImGui::ColorEdit4("Sprite.Color", &(*materialDataSprite).color.x);
+		
 		//ImGui::DragFloat3("Transform.Rotate", &transform.rotate.x, 0.01f, -2.0f * float(M_PI), 2.0f * float(M_PI));
-		ImGui::DragFloat2("TransformSprite.Scale", &transformSprite.scale.x, 0.01f, 0.0f, 2.0f);
-		ImGui::DragFloat("TransformSprite.Rotate", &transformSprite.rotate.z, 0.01f, 0.0f, 2.0f * float(M_PI));
-		ImGui::DragFloat3("TransformSprite.Translate", &transformSprite.translate.x, 1.0f, 0.0f, 640.0f);
-		if (transformSprite.translate.y > 360.0f) {
-			transformSprite.translate.y = 360.0f;
+		
+		size_t spriteCount = sprites.size() - 1;
+		for (Sprite* sprite : sprites) {
+			Vector2 position = sprite->GetPosition();
+			ImGui::DragFloat2("****Sprite.Translate" + (char)spriteCount, &position.x, 1.0f, 0.0f, 640.0f);
+			if (position.y > 360.0f) {
+				position.y = 360.0f;
+			}
+			sprite->SetPosition(position);
+
+			float rotation = sprite->GetRotation();
+			ImGui::SliderAngle("****Sprite.Rotate" + (char)spriteCount, &rotation);
+			sprite->SetRotation(rotation);
+
+			Vector2 size = sprite->GetSize();
+			ImGui::DragFloat2("****Sprite.Scale" + (char)spriteCount, &size.x, 1.0f, 0.0f, 640.0f);
+			if (size.y > 360.0f) {
+				size.y = 360.0f;
+			}
+			sprite->SetSize(size);
+
+			Vector4 color = sprite->GetColor();
+			ImGui::ColorEdit4("****Sprite.Color" + (char)spriteCount, &color.x);
+			sprite->SetColor(color);
+
+			ImGui::Text("\n");
+			spriteCount--;
 		}
 		ImGui::DragFloat3("Camera.Rotate", &cameraTransform.rotate.x, 0.001f);
 		ImGui::DragFloat3("Camera.Translate", &cameraTransform.translate.x, 0.01f);
@@ -566,9 +591,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//ImGui::DragFloat3("DirectionalLightData.Direction", &directionalLightData->direction.x, 0.01f, -1.0f, 1.0f);
 		//directionalLightData->direction = Vector3::Normalize(directionalLightData->direction);
 		//ImGui::DragFloat("DirectionalLightData.Intensity", &directionalLightData->intensity, 0.01f, 0.0f, 1.0f);
-		ImGui::DragFloat2("UVTranslate", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
+		/*ImGui::DragFloat2("UVTranslate", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
 		ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
-		ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);
+		ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);*/
 		ImGui::End();
 
 		if (input->PushKey(DIK_A)) {
@@ -593,9 +618,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//Matrix4x4 worldViewProjectionMatrix = worldMatrix * viewMatrix * projectionMatrix;
 		//wvpData->WVP = worldViewProjectionMatrix;
 		//wvpData->World = worldMatrix;
-
-		sprite->Update(transformSprite,uvTransformSprite);
-
+		for (Sprite* sprite : sprites) {
+			sprite->Update();
+		}
 		//ImGuiの内部コマンドを生成する
 		ImGui::Render();
 
@@ -621,9 +646,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		////描画！(DrawCall/ドローコール)3頂点で1つのインスタンス。インスタンスについては
 		//commandList->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 		////commandList->DrawIndexedInstanced(kIndexNum, 1, 0, 0, 0);
-
-		sprite->Draw();
-
+		for (Sprite* sprite : sprites) {
+			sprite->Draw();
+		}
 		//実際のcommandListのImGuiの描画コマンドを積む
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
 
@@ -642,7 +667,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	delete input;
 	delete winApp;
 	delete dxCommon;
-	delete sprite;
+	for (Sprite* sprite : sprites) {
+		delete sprite;
+	}
 	delete spriteCommon;
 
 	//CloseHandle(fenceEvent);

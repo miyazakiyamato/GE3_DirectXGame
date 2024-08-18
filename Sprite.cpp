@@ -47,20 +47,20 @@ void Sprite::Initialize(SpriteCommon* spriteCommon){
 	transformationMatrixData->World = Matrix4x4::MakeIdentity4x4();
 }
 
-void Sprite::Update(const Transform& transform,const Transform& uvTransform){
+void Sprite::Update(){
 	//頂点リソースにデータを書き込む
 	vertexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	//三角形の頂点
-	vertexData[0].position = { 0.0f,360.0f,0.0f,1.0f };//左下
+	vertexData[0].position = { 0.0f,1.0f,0.0f,1.0f };//左下
 	vertexData[0].texcoord = { 0.0f,1.0f };
 	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
 	vertexData[1].position = { 0.0f,0.0f,0.0f,1.0f };//左上
 	vertexData[1].texcoord = { 0.0f,0.0f };
 	vertexData[1].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[2].position = { 640.0f,360.0f,0.0f,1.0f };//右下
+	vertexData[2].position = { 1.0f,1.0f,0.0f,1.0f };//右下
 	vertexData[2].texcoord = { 1.0f,1.0f };
 	vertexData[2].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[3].position = { 640.0f,0.0f,0.0f,1.0f };//右上
+	vertexData[3].position = { 1.0f,0.0f,0.0f,1.0f };//右上
 	vertexData[3].texcoord = { 1.0f,0.0f };
 	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
 
@@ -68,6 +68,11 @@ void Sprite::Update(const Transform& transform,const Transform& uvTransform){
 	indexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
 	indexData[0] = 0; indexData[1] = 1; indexData[2] = 2;
 	indexData[3] = 1; indexData[4] = 3; indexData[5] = 2;
+
+	//SpriteのTransform変数を作る。
+	Transform transform{ {size_.x,size_.y,1.0f},{0.0f,0.0f,rotation_},{position_.x,position_.y,0.0f} };
+	//SpriteのUVTransform変数を作る。
+	Transform uvTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	//Sprite用のWorldViewProjectionMtrixを作る
 	Matrix4x4 worldMatrix = Matrix4x4::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
