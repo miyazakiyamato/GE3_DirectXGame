@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <vector>
 #include "Vector2.h"
 #include "Vector3.h"
@@ -13,11 +13,6 @@ public:
 	float z;
 	float w;
 	//演算子のオーバーロード
-};
-struct VertexData {
-	Vector4 position;
-	Vector2 texcoord;
-	Vector3 normal;
 };
 struct DirectionalLight {
 	Vector4 color;//!<ライトの色

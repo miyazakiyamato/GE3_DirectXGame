@@ -1,5 +1,8 @@
-﻿#pragma once
+#pragma once
 #include <string>
+#include <vector>
+#include "Vector2.h"
+#include "Vector3.h"
 #include "Vector4.h"
 
 struct Transform
@@ -40,21 +43,11 @@ public:
 	Matrix4x4 operator-(const Matrix4x4& m2);
 	Matrix4x4 operator*(const Matrix4x4& m2);
 };
-struct TransformationMatrix{
-	Matrix4x4 WVP;
-	Matrix4x4 World;
-};
-struct Material {
-	Vector4 color;
-	int enableLighting;
-	float padding[3];
-	Matrix4x4 uvTransform;
-};
 struct MaterialData {
 	std::string mtlFilePath;
 	std::string textureFilePath;
 };
-struct ModelData {
-	std::vector<VertexData> vertices;
-	MaterialData material;
-};
+//struct ModelData {
+//	std::vector<VertexData> vertices;
+//	MaterialData material;
+//};
