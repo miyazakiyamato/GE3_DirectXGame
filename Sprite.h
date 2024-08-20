@@ -25,7 +25,7 @@ private:
 	};
 public://メンバ関数
 	//初期化
-	void Initialize(SpriteCommon* spriteCommon);
+	void Initialize(SpriteCommon* spriteCommon,std::string textureFilePath);
 	//更新
 	void Update();
 	//描画
@@ -46,6 +46,9 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView;
 
+	//テクスチャ番号
+	uint32_t textureIndex = 0;
+
 	Vector2 position_ = { 0.0f,0.0f };
 	float rotation_ = 0.0f;
 	Vector2 size_ = { 640.0f,360.0f };
@@ -58,5 +61,6 @@ public:
 	void SetSize(const Vector2& size) { size_ = size; }
 	const Vector4& GetColor() { return materialData->color; }
 	void SetColor(const Vector4& color) { materialData->color = color; }
+	void SetTexture(std::string textureFilePath);
 };
 

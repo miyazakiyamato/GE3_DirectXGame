@@ -1,10 +1,13 @@
 #include "Sprite.h"
 #include "SpriteCommon.h"
+#include "TextureManager.h"
 
 using namespace Microsoft::WRL;
 
-void Sprite::Initialize(SpriteCommon* spriteCommon){
+void Sprite::Initialize(SpriteCommon* spriteCommon, std::string textureFilePath){
 	spriteCommon_ = spriteCommon;
+
+	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 
 	//Sprite用の頂点リソースを作る
 	vertexResource = spriteCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * 6);
@@ -99,8 +102,12 @@ void Sprite::Draw(){
 	//TransformationMatrixCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource.Get()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
-	commandList->SetGraphicsRootDescriptorTable(2, spriteCommon_->GetDxCommon()->GetSRVGPUDescriptorHandle(1));
+	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex));
 	//描画！(DrawColl/ドローコール)
 	//commandList->DrawInstanced(6, 1, 0, 0);
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+}
+
+void Sprite::SetTexture(std::string textureFilePath){
+	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 }
