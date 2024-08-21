@@ -182,20 +182,21 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//テクスチャマネージャの初期化
 	TextureManager::GetInstance()->Initialize(dxCommon);
 
-	TextureManager::GetInstance()->LoadTexture("Resources/uvChecker.png");
-	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall.png");
-
 	//スプライトの初期化
 	std::vector<Sprite*> sprites;
 	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* sprite = new Sprite;
 		sprite->Initialize(spriteCommon,"Resources/uvChecker.png");
-		sprite->SetPosition({200.0f * float(i), 0});
+		sprite->SetPosition({200.0f * float(i), 100});
 		sprite->SetSize({ 100.0f,100.0f });
 		sprites.push_back(sprite);
 	}
-
+	sprites[0]->SetTextureSize({64.0f,64.0f});
 	sprites[1]->SetTexture("Resources/monsterBall.png");
+	sprites[1]->SetIsFlipX(true);
+	sprites[2]->SetIsFlipY(true);
+	sprites[3]->SetIsFlipX(true);
+	sprites[3]->SetIsFlipY(true);
 
 	//HRESULT hr;
 

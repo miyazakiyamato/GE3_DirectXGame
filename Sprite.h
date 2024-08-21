@@ -31,6 +31,9 @@ public://メンバ関数
 	//描画
 	void Draw();
 private:
+	//テクスチャサイズをイメージに合わせる
+	void AdjustTextureSize();
+private:
 	SpriteCommon* spriteCommon_ = nullptr;
 	//バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
@@ -48,10 +51,19 @@ private:
 
 	//テクスチャ番号
 	uint32_t textureIndex = 0;
+	//アンカーポイント
+	Vector2 anchorPoint_ = { 0.0f,0.0f };
+	//左右フリップ
+	bool isFlipX_ = false;
+	//上下フリップ
+	bool isFlipY_ = false;
 
 	Vector2 position_ = { 0.0f,0.0f };
 	float rotation_ = 0.0f;
 	Vector2 size_ = { 640.0f,360.0f };
+
+	Vector2 textureLeftTop_ = { 0.0f,0.0f };
+	Vector2 textureSize_ = { 100.0f,100.0f };
 public:
 	const Vector2& GetPosition() { return position_; }
 	void SetPosition(const Vector2& position) { position_ = position; }
@@ -62,5 +74,15 @@ public:
 	const Vector4& GetColor() { return materialData->color; }
 	void SetColor(const Vector4& color) { materialData->color = color; }
 	void SetTexture(std::string textureFilePath);
+	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
+	void SetAnchorPoint(const Vector2& anchorPoint) { anchorPoint_ = anchorPoint; }
+	bool GetIsFlipX() { return isFlipX_; }
+	void SetIsFlipX(bool isFlipX) { isFlipX_ = isFlipX; }
+	bool GetIsFlipY() { return isFlipY_; }
+	void SetIsFlipY(bool isFlipY) { isFlipY_ = isFlipY; }
+	const Vector2& GetTextureLeftTop() { return textureLeftTop_; }
+	void SetTextureLeftTop(const Vector2& textureLeftTop) { textureLeftTop_ = textureLeftTop; }
+	const Vector2& GetTextureSize() { return textureSize_; }
+	void SetTextureSize(const Vector2& textureSize) { textureSize_ = textureSize; }
 };
 
