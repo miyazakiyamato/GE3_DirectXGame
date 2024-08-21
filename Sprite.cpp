@@ -7,6 +7,7 @@ using namespace Microsoft::WRL;
 void Sprite::Initialize(SpriteCommon* spriteCommon, std::string textureFilePath){
 	spriteCommon_ = spriteCommon;
 
+	TextureManager::GetInstance()->LoadTexture(textureFilePath);
 	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 
 	//Sprite用の頂点リソースを作る
@@ -48,23 +49,52 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, std::string textureFilePath)
 	//単位行列を書き込んどく
 	transformationMatrixData->WVP = Matrix4x4::MakeIdentity4x4();
 	transformationMatrixData->World = Matrix4x4::MakeIdentity4x4();
+
+	//画像サイズをテクスチャサイズに合わせる
+	AdjustTextureSize();
 }
 
 void Sprite::Update(){
 	//頂点リソースにデータを書き込む
 	vertexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	
 	//三角形の頂点
-	vertexData[0].position = { 0.0f,1.0f,0.0f,1.0f };//左下
-	vertexData[0].texcoord = { 0.0f,1.0f };
+	float left = 0.0f - anchorPoint_.x;
+	float right = 1.0f - anchorPoint_.x;
+	float top = 0.0f - anchorPoint_.y;
+	float bottom = 1.0f - anchorPoint_.y;
+	//左右反転
+	if (isFlipX_) {
+		left = -left;
+		right = -right;
+	}
+	//上下反転
+	if (isFlipY_) {
+		top = -top;
+		bottom = -bottom;
+	}
+	//頂点座標
+	vertexData[0].position = { left,bottom,0.0f,1.0f };//左下
+	vertexData[1].position = { left,top,0.0f,1.0f };//左上
+	vertexData[2].position = { right,bottom,0.0f,1.0f };//右下
+	vertexData[3].position = { right,top,0.0f,1.0f };//右上
+
+	//テクスチャの頂点
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureIndex);
+	float tex_left = textureLeftTop_.x / metadata.width;
+	float tex_right = (textureLeftTop_.x + textureSize_.x) / metadata.width;
+	float tex_top = textureLeftTop_.y / metadata.height;
+	float tex_bottom = (textureLeftTop_.y + textureSize_.y) / metadata.height;
+
+	//テクスチャ頂点座標
+	vertexData[0].texcoord = { tex_left,tex_bottom };//左下
+	vertexData[1].texcoord = { tex_left,tex_top };//左上
+	vertexData[2].texcoord = { tex_right,tex_bottom };//右下
+	vertexData[3].texcoord = { tex_right,tex_top };//右上
+
 	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[1].position = { 0.0f,0.0f,0.0f,1.0f };//左上
-	vertexData[1].texcoord = { 0.0f,0.0f };
 	vertexData[1].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[2].position = { 1.0f,1.0f,0.0f,1.0f };//右下
-	vertexData[2].texcoord = { 1.0f,1.0f };
 	vertexData[2].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[3].position = { 1.0f,0.0f,0.0f,1.0f };//右上
-	vertexData[3].texcoord = { 1.0f,0.0f };
 	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
 
 	//インデックスリソースにデータを書き込む
@@ -108,6 +138,17 @@ void Sprite::Draw(){
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 }
 
+void Sprite::AdjustTextureSize(){
+	//テクスチャデータを取得
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureIndex);
+	//画像サイズをテクスチャサイズに合わせる
+	textureSize_.x = static_cast<float>(metadata.width);
+	textureSize_.y = static_cast<float>(metadata.height);
+}
+
 void Sprite::SetTexture(std::string textureFilePath){
+	TextureManager::GetInstance()->LoadTexture(textureFilePath);
 	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
+	//画像サイズをテクスチャサイズに合わせる
+	AdjustTextureSize();
 }
