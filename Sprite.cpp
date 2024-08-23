@@ -42,13 +42,13 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, std::string textureFilePath)
 	materialData->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
 
 	//Sprite用のTransformationMatirx用のリソースを作る。Marix4x4 1つ分のサイズを用意する
-	transformationMatrixResource = spriteCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
+	wvpResource = spriteCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
 	
 	//書き込むためのアドレスを取得
-	transformationMatrixResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixData));
+	wvpResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	//単位行列を書き込んどく
-	transformationMatrixData->WVP = Matrix4x4::MakeIdentity4x4();
-	transformationMatrixData->World = Matrix4x4::MakeIdentity4x4();
+	wvpData->WVP = Matrix4x4::MakeIdentity4x4();
+	wvpData->World = Matrix4x4::MakeIdentity4x4();
 
 	//画像サイズをテクスチャサイズに合わせる
 	AdjustTextureSize();
@@ -112,8 +112,8 @@ void Sprite::Update(){
 	Matrix4x4 viewMatrix = Matrix4x4::MakeIdentity4x4();
 	Matrix4x4 projectionMatrix = Matrix4x4::MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f);
 	Matrix4x4 worldViewProjectionMatrix = worldMatrix * viewMatrix * projectionMatrix;
-	transformationMatrixData->WVP = worldViewProjectionMatrix;
-	transformationMatrixData->World = worldMatrix;
+	wvpData->WVP = worldViewProjectionMatrix;
+	wvpData->World = worldMatrix;
 
 	//SpriteのuvTransformを作る
 	Matrix4x4 uvTransformMatrix = Matrix4x4::MakeAffineMatrix(uvTransform.scale, { 0.0f,0.0f,uvTransform.rotate.z }, uvTransform.translate);
@@ -130,7 +130,7 @@ void Sprite::Draw(){
 	//マテリアルCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 	//TransformationMatrixCBufferの場所を設定
-	commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource.Get()->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
 	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex));
 	//描画！(DrawColl/ドローコール)

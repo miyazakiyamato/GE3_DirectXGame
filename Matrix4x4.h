@@ -43,11 +43,3 @@ public:
 	Matrix4x4 operator-(const Matrix4x4& m2);
 	Matrix4x4 operator*(const Matrix4x4& m2);
 };
-struct MaterialData {
-	std::string mtlFilePath;
-	std::string textureFilePath;
-};
-//struct ModelData {
-//	std::vector<VertexData> vertices;
-//	MaterialData material;
-//};
