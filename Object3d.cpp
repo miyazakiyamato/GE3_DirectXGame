@@ -1,4 +1,5 @@
 #include "Object3d.h"
+#include "ModelManager.h"
 
 using namespace Microsoft::WRL;
 
@@ -48,4 +49,9 @@ void Object3d::Draw(){
 		model_->Draw();
 	}
 
+}
+
+void Object3d::SetModel(const std::string& filePath){
+	//モデルを検索してセット
+	model_ = ModelManager::GetInstance()->FindModel(filePath);
 }

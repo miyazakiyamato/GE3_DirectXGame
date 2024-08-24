@@ -23,8 +23,7 @@
 #include "TextureManager.h"
 #include "SpriteCommon.h"
 #include "Sprite.h"
-#include "ModelCommon.h"
-#include "Model.h"
+#include "ModelManager.h"
 #include "Object3d.h"
 #include "Logger.h"
 #include "D3DResourceLeakChecker.h"
@@ -45,9 +44,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	WinApp* winApp = nullptr;
 	Input* input = nullptr;
 	DirectXCommon* dxCommon = nullptr;
-	ModelCommon* modelCommon = nullptr;
-	Model* model = nullptr;
-	Object3d* object3d = nullptr;
+	std::vector<Object3d*> object3ds;
 	SpriteCommon* spriteCommon = nullptr;
 	std::vector<Sprite*> sprites;
 	
@@ -67,17 +64,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//テクスチャマネージャの初期化
 	TextureManager::GetInstance()->Initialize(dxCommon);
 
-	//モデル共通部の初期化
-	modelCommon = new ModelCommon;
-	modelCommon->Initialize(dxCommon);
-
-	model = new Model;
-	model->Initialize(modelCommon, "Resources", "axis.obj");
-
-	object3d = new Object3d;
-	object3d->Initialize(dxCommon);
-	object3d->SetModel(model);
-
+	ModelManager::GetInstance()->Initialize(dxCommon);
+	ModelManager::GetInstance()->LoadModel("plane.obj");
+	ModelManager::GetInstance()->LoadModel("axis.obj");
+	for (uint32_t i = 0; i < 2; ++i) {
+		Object3d* object3d = new Object3d;
+		object3d->Initialize(dxCommon);
+		object3ds.push_back(object3d);
+	}
+	object3ds[0]->SetModel("plane.obj");
+	object3ds[0]->SetTranslate({-2,0,0});
+	object3ds[0]->SetRotate({0,3.14f,0});
+	object3ds[1]->SetModel("axis.obj");
+	object3ds[1]->SetTranslate({3,0,0});
 	//スプライト共通部の初期化
 	spriteCommon = new SpriteCommon;
 	spriteCommon->Initialize(dxCommon);
@@ -209,22 +208,26 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::Begin("Settings");
 		//ImGui::ColorEdit4("Model.Color", &(*materialData).color.x);
 
-		Vector3 translate = object3d->GetTranslate();
-		ImGui::DragFloat3("Transform.Translate", &translate.x, 0.1f);
-		object3d->SetTranslate(translate);
+		size_t object3dCount = object3ds.size() - 1;
+		for (Object3d* object3d : object3ds) {
+			Vector3 translate = object3d->GetTranslate();
+			ImGui::DragFloat3("**Transform.Translate" + (char)object3dCount, &translate.x, 0.1f);
+			object3d->SetTranslate(translate);
 
-		Vector3 rotate = object3d->GetRotate();
-		ImGui::SliderAngle("Transform.Rotate.x", &rotate.x);
-		ImGui::SliderAngle("Transform.Rotate.y", &rotate.y);
-		ImGui::SliderAngle("Transform.Rotate.z", &rotate.z);
-		object3d->SetRotate(rotate);
+			Vector3 rotate = object3d->GetRotate();
+			ImGui::SliderAngle("**Transform.Rotate.x" + (char)object3dCount, &rotate.x);
+			ImGui::SliderAngle("**Transform.Rotate.y" + (char)object3dCount, &rotate.y);
+			ImGui::SliderAngle("**Transform.Rotate.z" + (char)object3dCount, &rotate.z);
+			object3d->SetRotate(rotate);
 
-		Vector3 scale = object3d->GetScale();
-		ImGui::DragFloat3("Transform.Scale", &scale.x, 0.1f);
-		object3d->SetScale(scale);
+			Vector3 scale = object3d->GetScale();
+			ImGui::DragFloat3("**Transform.Scale" + (char)object3dCount, &scale.x, 0.1f);
+			object3d->SetScale(scale);
 
-		ImGui::Text("\n");
-		
+			ImGui::Text("\n");
+
+			object3dCount--;
+		}
 		size_t spriteCount = sprites.size() - 1;
 		for (Sprite* sprite : sprites) {
 			Vector2 position = sprite->GetPosition();
@@ -276,8 +279,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//else if (input->PushKey(DIK_S)) {
 		//	cameraTransform.translate.y -= 0.1f;
 		//}
-		object3d->Update();
-		
+		for (Object3d* object3d : object3ds) {
+			object3d->Update();
+		}
 		for (Sprite* sprite : sprites) {
 			sprite->Update();
 		}
@@ -290,10 +294,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon->GetCommandList();
 
 		//Modelの描画準備Modelの描画に共通グラフィックコマンドを積む
-		modelCommon->DrawCommonSetting();
+		ModelManager::GetInstance()->DrawCommonSetting();
+		for (Object3d* object3d : object3ds) {
+			object3d->Draw();
+		}
 
-		object3d->Draw();
-		
 		//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
 		spriteCommon->DrawCommonSetting();
 		for (Sprite* sprite : sprites) {
@@ -312,18 +317,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ImGui::DestroyContext();
 	
 	//終了
-	winApp->Finalize();
+	ModelManager::GetInstance()->Finalize();
 	TextureManager::GetInstance()->Finalize();
-
-	//解放
+	winApp->Finalize();
 	
+	//解放
 	for (Sprite* sprite : sprites) {
 		delete sprite;
 	}
 	delete spriteCommon;
-	delete object3d;
-	delete model;
-	delete modelCommon;
+	for (Object3d* object3d : object3ds) {
+		delete object3d;
+	}
 	delete input;
 	delete dxCommon;
 	delete winApp;
