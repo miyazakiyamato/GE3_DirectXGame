@@ -36,40 +36,10 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 	materialData->enableLighting = true;//Lightingを有効にする
 	materialData->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
 
-	//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-	wvpResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
-	//データを書き込む
-	//書き込むためのアドレスを取得
-	wvpResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	//単位行列を書き込んでおく
-	wvpData->WVP = Matrix4x4::MakeIdentity4x4();
-	wvpData->World = Matrix4x4::MakeIdentity4x4();
-
-
-	//DirectionalLightのリソースを作る。
-	directionalLightResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(DirectionalLight));
-	//デフォルト値を書き込んでおく
-	directionalLightResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
-	directionalLightData->color = { 1.0f,1.0f,1.0f,1.0f };
-	directionalLightData->direction = { 0.0f,-1.0f,0.0f };
-	directionalLightData->intensity = 1.0f;
-
 	//.objの参照しているテクスチャファイル読み込み
 	TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
 	//読み込んだテクスチャの番号を取得
 	modelData.material.textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData.material.textureFilePath);
-}
-
-void Model::Update(){
-	//3D
-	//transform.rotate.y += 0.03f;
-	Matrix4x4 worldMatrix = Matrix4x4::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-	Matrix4x4 cameraMatrix = Matrix4x4::MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
-	Matrix4x4 viewMatrix = Matrix4x4::Inverse(cameraMatrix);
-	Matrix4x4 projectionMatrix = Matrix4x4::MakePerspectiveFovMatrix(0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f);
-	Matrix4x4 worldViewProjectionMatrix = worldMatrix * viewMatrix * projectionMatrix;
-	wvpData->WVP = worldViewProjectionMatrix;
-	wvpData->World = worldMatrix;
 }
 
 void Model::Draw(){
@@ -80,12 +50,8 @@ void Model::Draw(){
 	//commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
 	//マテリアルCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
-	//wvp用のCBufferの場所を設定
-	commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
 	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData.material.textureIndex));
-	//Lighting
-	commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource.Get()->GetGPUVirtualAddress());
 	//描画！(DrawCall/ドローコール)3頂点で1つのインスタンス。インスタンスについては
 	commandList->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 	//commandList->DrawIndexedInstanced(kIndexNum, 1, 0, 0, 0);

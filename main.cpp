@@ -25,6 +25,7 @@
 #include "Sprite.h"
 #include "ModelCommon.h"
 #include "Model.h"
+#include "Object3d.h"
 #include "Logger.h"
 #include "D3DResourceLeakChecker.h"
 
@@ -46,6 +47,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	DirectXCommon* dxCommon = nullptr;
 	ModelCommon* modelCommon = nullptr;
 	Model* model = nullptr;
+	Object3d* object3d = nullptr;
 	SpriteCommon* spriteCommon = nullptr;
 	std::vector<Sprite*> sprites;
 	
@@ -71,6 +73,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	model = new Model;
 	model->Initialize(modelCommon, "Resources", "axis.obj");
+
+	object3d = new Object3d;
+	object3d->Initialize(dxCommon);
+	object3d->SetModel(model);
 
 	//スプライト共通部の初期化
 	spriteCommon = new SpriteCommon;
@@ -202,8 +208,22 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//開発用のUIの処理。実際に開発用のUIを出す場合はここをゲーム固有の処理に置き換える
 		ImGui::Begin("Settings");
 		//ImGui::ColorEdit4("Model.Color", &(*materialData).color.x);
-		
-		//ImGui::DragFloat3("Transform.Rotate", &transform.rotate.x, 0.01f, -2.0f * float(M_PI), 2.0f * float(M_PI));
+
+		Vector3 translate = object3d->GetTranslate();
+		ImGui::DragFloat3("Transform.Translate", &translate.x, 0.1f);
+		object3d->SetTranslate(translate);
+
+		Vector3 rotate = object3d->GetRotate();
+		ImGui::SliderAngle("Transform.Rotate.x", &rotate.x);
+		ImGui::SliderAngle("Transform.Rotate.y", &rotate.y);
+		ImGui::SliderAngle("Transform.Rotate.z", &rotate.z);
+		object3d->SetRotate(rotate);
+
+		Vector3 scale = object3d->GetScale();
+		ImGui::DragFloat3("Transform.Scale", &scale.x, 0.1f);
+		object3d->SetScale(scale);
+
+		ImGui::Text("\n");
 		
 		size_t spriteCount = sprites.size() - 1;
 		for (Sprite* sprite : sprites) {
@@ -256,7 +276,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//else if (input->PushKey(DIK_S)) {
 		//	cameraTransform.translate.y -= 0.1f;
 		//}
-		model->Update();
+		object3d->Update();
 		
 		for (Sprite* sprite : sprites) {
 			sprite->Update();
@@ -272,7 +292,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//Modelの描画準備Modelの描画に共通グラフィックコマンドを積む
 		modelCommon->DrawCommonSetting();
 
-		model->Draw();
+		object3d->Draw();
 		
 		//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
 		spriteCommon->DrawCommonSetting();
@@ -301,6 +321,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		delete sprite;
 	}
 	delete spriteCommon;
+	delete object3d;
 	delete model;
 	delete modelCommon;
 	delete input;
