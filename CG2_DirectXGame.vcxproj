@@ -43,6 +43,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\k023g\source\repos\GE3_DirectXGame\scene;C:\Users\k023g\source\repos\GE3_DirectXGame\math;C:\Users\k023g\source\repos\GE3_DirectXGame\manager;C:\Users\k023g\source\repos\GE3_DirectXGame\io;C:\Users\k023g\source\repos\GE3_DirectXGame\base;C:\Users\k023g\source\repos\GE3_DirectXGame\audio;C:\Users\k023g\source\repos\GE3_DirectXGame\3d;C:\Users\k023g\source\repos\GE3_DirectXGame\2d;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Users\k023g\source\repos\GE3_DirectXGame\scene;C:\Users\k023g\source\repos\GE3_DirectXGame\math;C:\Users\k023g\source\repos\GE3_DirectXGame\manager;C:\Users\k023g\source\repos\GE3_DirectXGame\io;C:\Users\k023g\source\repos\GE3_DirectXGame\base;C:\Users\k023g\source\repos\GE3_DirectXGame\audio;C:\Users\k023g\source\repos\GE3_DirectXGame\3d;C:\Users\k023g\source\repos\GE3_DirectXGame\2d;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -95,8 +101,16 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="D3DResourceLeakChecker.cpp" />
-    <ClCompile Include="DirectXCommon.cpp" />
+    <ClCompile Include="2d\Sprite.cpp" />
+    <ClCompile Include="2d\SpriteCommon.cpp" />
+    <ClCompile Include="3d\Model.cpp" />
+    <ClCompile Include="3d\ModelCommon.cpp" />
+    <ClCompile Include="3d\Object3d.cpp" />
+    <ClCompile Include="base\D3DResourceLeakChecker.cpp" />
+    <ClCompile Include="base\DirectXCommon.cpp" />
+    <ClCompile Include="base\Logger.cpp" />
+    <ClCompile Include="base\StringUtility.cpp" />
+    <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
     <ClCompile Include="externals\imgui\imgui_draw.cpp" />
@@ -104,26 +118,26 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="Input.cpp" />
-    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="io\Input.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Matrix4x4.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="ModelCommon.cpp" />
-    <ClCompile Include="ModelManager.cpp" />
-    <ClCompile Include="Object3d.cpp" />
-    <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="SpriteCommon.cpp" />
-    <ClCompile Include="StringUtility.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
-    <ClCompile Include="Vector2.cpp" />
-    <ClCompile Include="Vector3.cpp" />
-    <ClCompile Include="Vector4.cpp" />
-    <ClCompile Include="WinApp.cpp" />
+    <ClCompile Include="manager\ModelManager.cpp" />
+    <ClCompile Include="manager\TextureManager.cpp" />
+    <ClCompile Include="math\Matrix4x4.cpp" />
+    <ClCompile Include="math\Vector2.cpp" />
+    <ClCompile Include="math\Vector3.cpp" />
+    <ClCompile Include="math\Vector4.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D3DResourceLeakChecker.h" />
-    <ClInclude Include="DirectXCommon.h" />
+    <ClInclude Include="2d\Sprite.h" />
+    <ClInclude Include="2d\SpriteCommon.h" />
+    <ClInclude Include="3d\Model.h" />
+    <ClInclude Include="3d\ModelCommon.h" />
+    <ClInclude Include="3d\Object3d.h" />
+    <ClInclude Include="base\D3DResourceLeakChecker.h" />
+    <ClInclude Include="base\DirectXCommon.h" />
+    <ClInclude Include="base\Logger.h" />
+    <ClInclude Include="base\StringUtility.h" />
+    <ClInclude Include="base\WinApp.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
     <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
@@ -132,21 +146,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="Input.h" />
-    <ClInclude Include="Logger.h" />
-    <ClInclude Include="Matrix4x4.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="ModelCommon.h" />
-    <ClInclude Include="ModelManager.h" />
-    <ClInclude Include="Object3d.h" />
-    <ClInclude Include="Sprite.h" />
-    <ClInclude Include="SpriteCommon.h" />
-    <ClInclude Include="StringUtility.h" />
-    <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="Vector2.h" />
-    <ClInclude Include="Vector3.h" />
-    <ClInclude Include="Vector4.h" />
-    <ClInclude Include="WinApp.h" />
+    <ClInclude Include="io\Input.h" />
+    <ClInclude Include="manager\ModelManager.h" />
+    <ClInclude Include="manager\TextureManager.h" />
+    <ClInclude Include="math\Matrix4x4.h" />
+    <ClInclude Include="math\Vector2.h" />
+    <ClInclude Include="math\Vector3.h" />
+    <ClInclude Include="math\Vector4.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
