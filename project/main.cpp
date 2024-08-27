@@ -27,6 +27,8 @@
 #include "Object3d.h"
 #include "Logger.h"
 #include "D3DResourceLeakChecker.h"
+#include "Camera.h"
+#include "CameraManager.h"
 
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
@@ -61,15 +63,31 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	dxCommon = new DirectXCommon();
 	dxCommon->Initialize(winApp);
 
+	
 	//テクスチャマネージャの初期化
 	TextureManager::GetInstance()->Initialize(dxCommon);
 
 	ModelManager::GetInstance()->Initialize(dxCommon);
+
+	CameraManager::GetInstance()->Initialize();
+
+	CameraManager::GetInstance()->SetCamera("default");
+	CameraManager::GetInstance()->SetCamera("Camera2");
+
+	CameraManager::GetInstance()->FindCamera("default");
+	CameraManager::GetInstance()->GetCamera()->SetRotate({0.3f,0.0f,0.0f});
+	CameraManager::GetInstance()->GetCamera()->SetTranslate({ 0.0f,4.0f,-10.0f });
+	CameraManager::GetInstance()->FindCamera("Camera2");
+	CameraManager::GetInstance()->GetCamera()->SetRotate({ 0.3f,-0.8f,0.0f });
+	CameraManager::GetInstance()->GetCamera()->SetTranslate({ 8.0f,4.0f,-8.0f });
+	
+	CameraManager::GetInstance()->FindCamera("default");
+
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 	for (uint32_t i = 0; i < 2; ++i) {
 		Object3d* object3d = new Object3d;
-		object3d->Initialize(dxCommon);
+		object3d->Initialize();
 		object3ds.push_back(object3d);
 	}
 	object3ds[0]->SetModel("plane.obj");
@@ -96,97 +114,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	sprites[3]->SetIsFlipX(true);
 	sprites[3]->SetIsFlipY(true);
 
-	////Sphereの頂点数
-	//const uint32_t kSubdivision = 16;
-	//const uint32_t kVertexNum = kSubdivision * kSubdivision * 4;
-	//ComPtr<ID3D12Resource> vertexResource = CreateBufferResource(device, sizeof(VertexData) * kVertexNum);
-	////頂点バッファビューを作成する
-	//D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	////リソースの先頭のアドレスから使う
-	//vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
-	////使用するリソースのサイズは頂点3つのサイズ
-	//vertexBufferView.SizeInBytes = sizeof(VertexData) * kVertexNum;
-	////1頂点当たりのサイズ
-	//vertexBufferView.StrideInBytes = sizeof(VertexData);
-
-	////頂点リソースにデータを書き込む
-	//VertexData* vertexData = nullptr;
-	////書き込むためのアドレスを取得
-	//vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	////経度分割1つ分の角度
-	//const float KLonEvery = (float)M_PI * 2.0f / float(kSubdivision);
-	////緯度分割1つ分の角度
-	//const float KLatEvery = (float)M_PI / float(kSubdivision);
-	////緯度の方向に分割
-	//for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
-	//	float lat = -(float)M_PI / 2.0f + KLatEvery * latIndex;//0
-	//	for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
-	//		uint32_t start = (latIndex * kSubdivision + lonIndex) * 4;
-	//		float lon = lonIndex * KLonEvery;//
-	//		float u = float(lonIndex) / float(kSubdivision);
-	//		float v = 1.0f - float(latIndex) / float(kSubdivision);
-	//		//頂点にデータを入力する。
-	//		//左下
-	//		vertexData[start].position.x = cos(lat) * cos(lon);
-	//		vertexData[start].position.y = sin(lat);
-	//		vertexData[start].position.z = cos(lat) * sin(lon);
-	//		vertexData[start].position.w = 1.0f;
-	//		vertexData[start].texcoord = { u - 1.0f / float(kSubdivision), v};
-	//		vertexData[start].normal.x = vertexData[start].position.x;
-	//		vertexData[start].normal.y = vertexData[start].position.y;
-	//		vertexData[start].normal.z = vertexData[start].position.z;
-	//		//左上
-	//		vertexData[start + 1].position.x = cos(lat + KLatEvery) * cos(lon);
-	//		vertexData[start + 1].position.y = sin(lat + KLatEvery);
-	//		vertexData[start + 1].position.z = cos(lat + KLatEvery) * sin(lon);
-	//		vertexData[start + 1].position.w = 1.0f;
-	//		vertexData[start + 1].texcoord = { u - 1.0f / float(kSubdivision), v - 1.0f / float(kSubdivision) };
-	//		vertexData[start + 1].normal.x = vertexData[start + 1].position.x;
-	//		vertexData[start + 1].normal.y = vertexData[start + 1].position.y;
-	//		vertexData[start + 1].normal.z = vertexData[start + 1].position.z;
-	//		//右下
-	//		vertexData[start + 2].position.x = cos(lat) * cos(lon + KLonEvery);
-	//		vertexData[start + 2].position.y = sin(lat);
-	//		vertexData[start + 2].position.z = cos(lat) * sin(lon + KLonEvery);
-	//		vertexData[start + 2].position.w = 1.0f;
-	//		vertexData[start + 2].texcoord = { u, v};
-	//		vertexData[start + 2].normal.x = vertexData[start + 2].position.x;
-	//		vertexData[start + 2].normal.y = vertexData[start + 2].position.y;
-	//		vertexData[start + 2].normal.z = vertexData[start + 2].position.z;
-	//		//右上
-	//		vertexData[start + 3].position.x = cos(lat + KLatEvery) * cos(lon + KLonEvery);
-	//		vertexData[start + 3].position.y = sin(lat + KLatEvery);
-	//		vertexData[start + 3].position.z = cos(lat + KLatEvery) * sin(lon + KLonEvery);
-	//		vertexData[start + 3].position.w = 1.0f;
-	//		vertexData[start + 3].texcoord = { u, v - 1.0f / float(kSubdivision) };
-	//		vertexData[start + 3].normal.x = vertexData[start + 3].position.x;
-	//		vertexData[start + 3].normal.y = vertexData[start + 3].position.y;
-	//		vertexData[start + 3].normal.z = vertexData[start + 3].position.z;
-	//	}
-	//}
-
-	////Sphere用のインデックスリソースを作る
-	//const uint32_t kIndexNum = kSubdivision * kSubdivision * 6;
-	//ComPtr<ID3D12Resource> indexResource = CreateBufferResource(device, sizeof(uint32_t) * kIndexNum);
-	////IndexBufferView(IBV)の作成
-	//D3D12_INDEX_BUFFER_VIEW indexBufferView{};
-	////リソースの先頭のアドレスから使う
-	//indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
-	////使用するリソースのサイズはインデックス6つ分のサイズ
-	//indexBufferView.SizeInBytes = sizeof(uint32_t) * kIndexNum;
-	////インデックスはuint32_tとする
-	//indexBufferView.Format = DXGI_FORMAT_R32_UINT;
-	////インデックスリソースにデータを書き込む
-	//uint32_t* indexData = nullptr;
-	//indexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
-	//for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
-	//	for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
-	//		uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
-	//		uint32_t vertex = (latIndex * kSubdivision + lonIndex) * 4;
-	//		indexData[start] = vertex; indexData[start + 1] = vertex + 1; indexData[start + 2] = vertex + 2;
-	//		indexData[start + 3] = vertex + 1; indexData[start + 4] = vertex + 3; indexData[start + 5] = vertex + 2;
-	//	}
-	//}
 
 	MSG msg{};
 	//ウィンドウのxボタンが押されるまでループ
@@ -206,57 +133,83 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//開発用のUIの処理。実際に開発用のUIを出す場合はここをゲーム固有の処理に置き換える
 		ImGui::Begin("Settings");
-		//ImGui::ColorEdit4("Model.Color", &(*materialData).color.x);
 
-		size_t object3dCount = object3ds.size() - 1;
-		for (Object3d* object3d : object3ds) {
-			Vector3 translate = object3d->GetTranslate();
-			ImGui::DragFloat3("**Transform.Translate" + (char)object3dCount, &translate.x, 0.1f);
-			object3d->SetTranslate(translate);
+		if (ImGui::CollapsingHeader("Camera"))
+		{
+			static int e = 0;
+			ImGui::RadioButton("defaultCamera", &e, 0); ImGui::SameLine();
+			ImGui::RadioButton("Camera2", &e, 1); ImGui::SameLine();
+			//ImGui::RadioButton("radio c", &e, 2);ImGui::SameLine();
+			std::string str[2] = { "default","Camera2" };
+			if (ImGui::Button("cheng")) {
+				CameraManager::GetInstance()->FindCamera(str[e]);
+			}
 
-			Vector3 rotate = object3d->GetRotate();
-			ImGui::SliderAngle("**Transform.Rotate.x" + (char)object3dCount, &rotate.x);
-			ImGui::SliderAngle("**Transform.Rotate.y" + (char)object3dCount, &rotate.y);
-			ImGui::SliderAngle("**Transform.Rotate.z" + (char)object3dCount, &rotate.z);
-			object3d->SetRotate(rotate);
+			Vector3 cameraRotate = CameraManager::GetInstance()->GetCamera()->GetRotate();
+			ImGui::DragFloat3("Camera.Rotate", &cameraRotate.x, 0.001f);
+			CameraManager::GetInstance()->GetCamera()->SetRotate(cameraRotate);
 
-			Vector3 scale = object3d->GetScale();
-			ImGui::DragFloat3("**Transform.Scale" + (char)object3dCount, &scale.x, 0.1f);
-			object3d->SetScale(scale);
+			Vector3 cameraPosition = CameraManager::GetInstance()->GetCamera()->GetTranslate();
+			ImGui::DragFloat3("Camera.Translate", &cameraPosition.x, 0.01f);
+			CameraManager::GetInstance()->GetCamera()->SetTranslate(cameraPosition);
 
 			ImGui::Text("\n");
-
-			object3dCount--;
 		}
-		size_t spriteCount = sprites.size() - 1;
-		for (Sprite* sprite : sprites) {
-			Vector2 position = sprite->GetPosition();
-			ImGui::DragFloat2("****Sprite.Translate" + (char)spriteCount, &position.x, 1.0f, 0.0f, 640.0f);
-			if (position.y > 360.0f) {
-				position.y = 360.0f;
+		if (ImGui::CollapsingHeader("Object3d"))
+		{
+			size_t object3dCount = object3ds.size() - 1;
+			for (Object3d* object3d : object3ds) {
+				Vector3 translate = object3d->GetTranslate();
+				ImGui::DragFloat3("**Transform.Translate" + (char)object3dCount, &translate.x, 0.1f);
+				object3d->SetTranslate(translate);
+
+				Vector3 rotate = object3d->GetRotate();
+				ImGui::SliderAngle("**Transform.Rotate.x" + (char)object3dCount, &rotate.x);
+				ImGui::SliderAngle("**Transform.Rotate.y" + (char)object3dCount, &rotate.y);
+				ImGui::SliderAngle("**Transform.Rotate.z" + (char)object3dCount, &rotate.z);
+				object3d->SetRotate(rotate);
+
+				Vector3 scale = object3d->GetScale();
+				ImGui::DragFloat3("**Transform.Scale" + (char)object3dCount, &scale.x, 0.1f);
+				object3d->SetScale(scale);
+
+				//ImGui::ColorEdit4("Model.Color", &(*materialData).color.x);
+
+				ImGui::Text("\n");
+
+				object3dCount--;
 			}
-			sprite->SetPosition(position);
-
-			float rotation = sprite->GetRotation();
-			ImGui::SliderAngle("****Sprite.Rotate" + (char)spriteCount, &rotation);
-			sprite->SetRotation(rotation);
-
-			Vector2 size = sprite->GetSize();
-			ImGui::DragFloat2("****Sprite.Scale" + (char)spriteCount, &size.x, 1.0f, 0.0f, 640.0f);
-			if (size.y > 360.0f) {
-				size.y = 360.0f;
-			}
-			sprite->SetSize(size);
-
-			Vector4 color = sprite->GetColor();
-			ImGui::ColorEdit4("****Sprite.Color" + (char)spriteCount, &color.x);
-			sprite->SetColor(color);
-
-			ImGui::Text("\n");
-			spriteCount--;
 		}
-		/*ImGui::DragFloat3("Camera.Rotate", &cameraTransform.rotate.x, 0.001f);
-		ImGui::DragFloat3("Camera.Translate", &cameraTransform.translate.x, 0.01f);*/
+		if (ImGui::CollapsingHeader("Sprite"))
+		{
+			size_t spriteCount = sprites.size() - 1;
+			for (Sprite* sprite : sprites) {
+				Vector2 position = sprite->GetPosition();
+				ImGui::DragFloat2("****Sprite.Translate" + (char)spriteCount, &position.x, 1.0f, 0.0f, 640.0f);
+				if (position.y > 360.0f) {
+					position.y = 360.0f;
+				}
+				sprite->SetPosition(position);
+
+				float rotation = sprite->GetRotation();
+				ImGui::SliderAngle("****Sprite.Rotate" + (char)spriteCount, &rotation);
+				sprite->SetRotation(rotation);
+
+				Vector2 size = sprite->GetSize();
+				ImGui::DragFloat2("****Sprite.Scale" + (char)spriteCount, &size.x, 1.0f, 0.0f, 640.0f);
+				if (size.y > 360.0f) {
+					size.y = 360.0f;
+				}
+				sprite->SetSize(size);
+
+				Vector4 color = sprite->GetColor();
+				ImGui::ColorEdit4("****Sprite.Color" + (char)spriteCount, &color.x);
+				sprite->SetColor(color);
+
+				ImGui::Text("\n");
+				spriteCount--;
+			}
+		}
 		//ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 		//ImGui::ColorEdit4("DirectionalLightData.Color", &directionalLightData->color.x);
 		//ImGui::DragFloat3("DirectionalLightData.Direction", &directionalLightData->direction.x, 0.01f, -1.0f, 1.0f);
@@ -267,18 +220,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);*/
 		ImGui::End();
 
-		//if (input->PushKey(DIK_A)) {
-		//	cameraTransform.translate.x -= 0.1f;
-		//}
-		//else if (input->PushKey(DIK_D)) {
-		//	cameraTransform.translate.x += 0.1f;
-		//}
-		//if (input->PushKey(DIK_W)) {
-		//	cameraTransform.translate.y += 0.1f;
-		//}
-		//else if (input->PushKey(DIK_S)) {
-		//	cameraTransform.translate.y -= 0.1f;
-		//}
+		
 		for (Object3d* object3d : object3ds) {
 			object3d->Update();
 		}
@@ -295,6 +237,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//Modelの描画準備Modelの描画に共通グラフィックコマンドを積む
 		ModelManager::GetInstance()->DrawCommonSetting();
+
+		CameraManager::GetInstance()->GetCamera()->Update();
+
 		for (Object3d* object3d : object3ds) {
 			object3d->Draw();
 		}
@@ -319,6 +264,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//終了
 	ModelManager::GetInstance()->Finalize();
 	TextureManager::GetInstance()->Finalize();
+	CameraManager::GetInstance()->Finalize();
 	winApp->Finalize();
 	
 	//解放

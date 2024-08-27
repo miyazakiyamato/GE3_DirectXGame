@@ -1,5 +1,7 @@
 #pragma once
+#include "ModelCommon.h"
 #include "Model.h"
+#include "Camera.h"
 
 class Object3d{
 private:
@@ -14,16 +16,15 @@ private:
 	};
 public://メンバ関数
 	//初期化
-	void Initialize(DirectXCommon* dxCommon);
+	void Initialize();
 	//更新
 	void Update();
 	//描画
 	void Draw();
 private:
-	DirectXCommon* dxCommon_ = nullptr;
+	ModelCommon* modelCommon_ = nullptr;
 
 	Model* model_ = nullptr;
-
 	//バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource;
@@ -33,8 +34,6 @@ private:
 
 	//Transform変数を作る。
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	//カメラのTransform変数を作る。
-	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.3f,0.0f,0.0f},{0.0f,4.0f,-10.0f} };
 public:
 	void SetModel(const std::string& filePath);
 	void SetScale(const Vector3& scale) { transform.scale = scale; }

@@ -114,9 +114,6 @@
     <ClCompile Include="engine\3d\Model.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\ModelCommon.cpp">
-      <Filter>ソース ファイル\engine\3d</Filter>
-    </ClCompile>
     <ClCompile Include="engine\3d\Object3d.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
@@ -154,6 +151,15 @@
       <Filter>ソース ファイル\engine\manager</Filter>
     </ClCompile>
     <ClCompile Include="engine\manager\TextureManager.cpp">
+      <Filter>ソース ファイル\engine\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\Camera.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\ModelCommon.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\manager\CameraManager.cpp">
       <Filter>ソース ファイル\engine\manager</Filter>
     </ClCompile>
   </ItemGroup>
@@ -231,6 +237,12 @@
       <Filter>ヘッダー ファイル\engine\manager</Filter>
     </ClInclude>
     <ClInclude Include="engine\manager\TextureManager.h">
+      <Filter>ヘッダー ファイル\engine\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\Camera.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\manager\CameraManager.h">
       <Filter>ヘッダー ファイル\engine\manager</Filter>
     </ClInclude>
   </ItemGroup>

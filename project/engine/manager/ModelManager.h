@@ -31,5 +31,7 @@ private:
 	std::map<std::string, std::unique_ptr<Model>> models;
 
 	std::unique_ptr<ModelCommon> modelCommon = nullptr;
+public:
+	ModelCommon* GetModelCommon() const { return modelCommon.get(); }
 };
 
