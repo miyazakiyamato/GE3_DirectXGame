@@ -1,5 +1,7 @@
 #pragma once
 #include "DirectXCommon.h"
+#include "Camera.h"
+
 class ModelCommon{
 public://メンバ関数
 	//初期化
