@@ -6,9 +6,9 @@ using namespace Microsoft::WRL;
 
 void Sprite::Initialize(SpriteCommon* spriteCommon, std::string textureFilePath){
 	spriteCommon_ = spriteCommon;
-
+	
 	TextureManager::GetInstance()->LoadTexture(textureFilePath);
-	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
+	textureFilePath_ = textureFilePath;
 
 	//Sprite用の頂点リソースを作る
 	vertexResource = spriteCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * 6);
@@ -80,7 +80,7 @@ void Sprite::Update(){
 	vertexData[3].position = { right,top,0.0f,1.0f };//右上
 
 	//テクスチャの頂点
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureIndex);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureFilePath_);
 	float tex_left = textureLeftTop_.x / metadata.width;
 	float tex_right = (textureLeftTop_.x + textureSize_.x) / metadata.width;
 	float tex_top = textureLeftTop_.y / metadata.height;
@@ -132,7 +132,7 @@ void Sprite::Draw(){
 	//TransformationMatrixCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
-	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex));
+	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureFilePath_));
 	//描画！(DrawColl/ドローコール)
 	//commandList->DrawInstanced(6, 1, 0, 0);
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -140,7 +140,7 @@ void Sprite::Draw(){
 
 void Sprite::AdjustTextureSize(){
 	//テクスチャデータを取得
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureIndex);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureFilePath_);
 	//画像サイズをテクスチャサイズに合わせる
 	textureSize_.x = static_cast<float>(metadata.width);
 	textureSize_.y = static_cast<float>(metadata.height);
@@ -148,7 +148,7 @@ void Sprite::AdjustTextureSize(){
 
 void Sprite::SetTexture(std::string textureFilePath){
 	TextureManager::GetInstance()->LoadTexture(textureFilePath);
-	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
+	textureFilePath_ = textureFilePath;
 	//画像サイズをテクスチャサイズに合わせる
 	AdjustTextureSize();
 }

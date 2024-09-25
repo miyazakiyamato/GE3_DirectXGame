@@ -18,9 +18,6 @@ namespace {
 }
 
 class DirectXCommon{
-public:
-	//最大SRV数(最大テクスチャ枚数)
-	static const uint32_t kMaxSRVCount;
 public://メンバ関数
 	//初期化
 	void Initialize(WinApp* winApp);
@@ -45,9 +42,6 @@ public://メンバ関数
 	//指定の番号のCPUデスクリプタハンドルを取得
 	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, const uint32_t& descriptorSize, const uint32_t& index);
 	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, const uint32_t& descriptorSize, const uint32_t& index);
-	//SRVの指定番号のデスクリプタハンドルを取得する
-	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVCPUDescriptorHandle(uint32_t index);
-	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
 	//深度ステンシルビューの初期化
 	void CreateDepthStencilView();
 	//フェンスの初期化
@@ -103,12 +97,10 @@ private://メンバ変数
 	//デスクリプタヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap = nullptr;
 	//デスクリプタヒープサイズ
-	uint32_t descriptorSizeSRV;
 	uint32_t descriptorSizeRTV;
 	uint32_t descriptorSizeDSV;
 	//ディスクリプタヒープの生成
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap = nullptr;
 	//RTVの設定
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};

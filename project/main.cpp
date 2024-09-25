@@ -29,6 +29,7 @@
 #include "D3DResourceLeakChecker.h"
 #include "Camera.h"
 #include "CameraManager.h"
+#include "SrvManager.h"
 
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
@@ -46,6 +47,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	WinApp* winApp = nullptr;
 	Input* input = nullptr;
 	DirectXCommon* dxCommon = nullptr;
+	SrvManager* srvManager = nullptr;
 	std::vector<Object3d*> object3ds;
 	SpriteCommon* spriteCommon = nullptr;
 	std::vector<Sprite*> sprites;
@@ -55,17 +57,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	winApp = new WinApp();
 	winApp->Initialize();
 
-	//入力の初期化
-	input = new Input();
-	input->Initialize(winApp);
-
 	//DirecXの初期化
 	dxCommon = new DirectXCommon();
 	dxCommon->Initialize(winApp);
 
+	//入力の初期化
+	input = new Input();
+	input->Initialize(winApp);
 	
+	srvManager = new SrvManager();
+	srvManager->Initialize(dxCommon);
+
 	//テクスチャマネージャの初期化
-	TextureManager::GetInstance()->Initialize(dxCommon);
+	TextureManager::GetInstance()->Initialize(dxCommon,srvManager);
 
 	ModelManager::GetInstance()->Initialize(dxCommon);
 
@@ -85,6 +89,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
+
 	for (uint32_t i = 0; i < 2; ++i) {
 		Object3d* object3d = new Object3d;
 		object3d->Initialize();
@@ -102,13 +107,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* sprite = new Sprite;
-		sprite->Initialize(spriteCommon,"Resources/uvChecker.png");
+		sprite->Initialize(spriteCommon,"resources/uvChecker.png");
 		sprite->SetPosition({200.0f * float(i), 100});
 		sprite->SetSize({ 100.0f,100.0f });
 		sprites.push_back(sprite);
 	}
 	sprites[0]->SetTextureSize({64.0f,64.0f});
-	sprites[1]->SetTexture("Resources/monsterBall.png");
+	sprites[1]->SetTexture("resources/monsterBall.png");
 	sprites[1]->SetIsFlipX(true);
 	sprites[2]->SetIsFlipY(true);
 	sprites[3]->SetIsFlipX(true);
@@ -127,98 +132,98 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//ゲームの処理
 		input->Update();
 
-		ImGui_ImplDX12_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
+		//ImGui_ImplDX12_NewFrame();
+		//ImGui_ImplWin32_NewFrame();
+		//ImGui::NewFrame();
 
-		//開発用のUIの処理。実際に開発用のUIを出す場合はここをゲーム固有の処理に置き換える
-		ImGui::Begin("Settings");
+		////開発用のUIの処理。実際に開発用のUIを出す場合はここをゲーム固有の処理に置き換える
+		//ImGui::Begin("Settings");
 
-		if (ImGui::CollapsingHeader("Camera"))
-		{
-			static int e = 0;
-			ImGui::RadioButton("defaultCamera", &e, 0); ImGui::SameLine();
-			ImGui::RadioButton("Camera2", &e, 1); ImGui::SameLine();
-			//ImGui::RadioButton("radio c", &e, 2);ImGui::SameLine();
-			std::string str[2] = { "default","Camera2" };
-			if (ImGui::Button("cheng")) {
-				CameraManager::GetInstance()->FindCamera(str[e]);
-			}
+		//if (ImGui::CollapsingHeader("Camera"))
+		//{
+		//	static int e = 0;
+		//	ImGui::RadioButton("defaultCamera", &e, 0); ImGui::SameLine();
+		//	ImGui::RadioButton("Camera2", &e, 1); ImGui::SameLine();
+		//	//ImGui::RadioButton("radio c", &e, 2);ImGui::SameLine();
+		//	std::string str[2] = { "default","Camera2" };
+		//	if (ImGui::Button("cheng")) {
+		//		CameraManager::GetInstance()->FindCamera(str[e]);
+		//	}
 
-			Vector3 cameraRotate = CameraManager::GetInstance()->GetCamera()->GetRotate();
-			ImGui::DragFloat3("Camera.Rotate", &cameraRotate.x, 0.001f);
-			CameraManager::GetInstance()->GetCamera()->SetRotate(cameraRotate);
+		//	Vector3 cameraRotate = CameraManager::GetInstance()->GetCamera()->GetRotate();
+		//	ImGui::DragFloat3("Camera.Rotate", &cameraRotate.x, 0.001f);
+		//	CameraManager::GetInstance()->GetCamera()->SetRotate(cameraRotate);
 
-			Vector3 cameraPosition = CameraManager::GetInstance()->GetCamera()->GetTranslate();
-			ImGui::DragFloat3("Camera.Translate", &cameraPosition.x, 0.01f);
-			CameraManager::GetInstance()->GetCamera()->SetTranslate(cameraPosition);
+		//	Vector3 cameraPosition = CameraManager::GetInstance()->GetCamera()->GetTranslate();
+		//	ImGui::DragFloat3("Camera.Translate", &cameraPosition.x, 0.01f);
+		//	CameraManager::GetInstance()->GetCamera()->SetTranslate(cameraPosition);
 
-			ImGui::Text("\n");
-		}
-		if (ImGui::CollapsingHeader("Object3d"))
-		{
-			size_t object3dCount = object3ds.size() - 1;
-			for (Object3d* object3d : object3ds) {
-				Vector3 translate = object3d->GetTranslate();
-				ImGui::DragFloat3("**Transform.Translate" + (char)object3dCount, &translate.x, 0.1f);
-				object3d->SetTranslate(translate);
+		//	ImGui::Text("\n");
+		//}
+		//if (ImGui::CollapsingHeader("Object3d"))
+		//{
+		//	size_t object3dCount = object3ds.size() - 1;
+		//	for (Object3d* object3d : object3ds) {
+		//		Vector3 translate = object3d->GetTranslate();
+		//		ImGui::DragFloat3("**Transform.Translate" + (char)object3dCount, &translate.x, 0.1f);
+		//		object3d->SetTranslate(translate);
 
-				Vector3 rotate = object3d->GetRotate();
-				ImGui::SliderAngle("**Transform.Rotate.x" + (char)object3dCount, &rotate.x);
-				ImGui::SliderAngle("**Transform.Rotate.y" + (char)object3dCount, &rotate.y);
-				ImGui::SliderAngle("**Transform.Rotate.z" + (char)object3dCount, &rotate.z);
-				object3d->SetRotate(rotate);
+		//		Vector3 rotate = object3d->GetRotate();
+		//		ImGui::SliderAngle("**Transform.Rotate.x" + (char)object3dCount, &rotate.x);
+		//		ImGui::SliderAngle("**Transform.Rotate.y" + (char)object3dCount, &rotate.y);
+		//		ImGui::SliderAngle("**Transform.Rotate.z" + (char)object3dCount, &rotate.z);
+		//		object3d->SetRotate(rotate);
 
-				Vector3 scale = object3d->GetScale();
-				ImGui::DragFloat3("**Transform.Scale" + (char)object3dCount, &scale.x, 0.1f);
-				object3d->SetScale(scale);
+		//		Vector3 scale = object3d->GetScale();
+		//		ImGui::DragFloat3("**Transform.Scale" + (char)object3dCount, &scale.x, 0.1f);
+		//		object3d->SetScale(scale);
 
-				//ImGui::ColorEdit4("Model.Color", &(*materialData).color.x);
+		//		//ImGui::ColorEdit4("Model.Color", &(*materialData).color.x);
 
-				ImGui::Text("\n");
+		//		ImGui::Text("\n");
 
-				object3dCount--;
-			}
-		}
-		if (ImGui::CollapsingHeader("Sprite"))
-		{
-			size_t spriteCount = sprites.size() - 1;
-			for (Sprite* sprite : sprites) {
-				Vector2 position = sprite->GetPosition();
-				ImGui::DragFloat2("****Sprite.Translate" + (char)spriteCount, &position.x, 1.0f, 0.0f, 640.0f);
-				if (position.y > 360.0f) {
-					position.y = 360.0f;
-				}
-				sprite->SetPosition(position);
+		//		object3dCount--;
+		//	}
+		//}
+		//if (ImGui::CollapsingHeader("Sprite"))
+		//{
+		//	size_t spriteCount = sprites.size() - 1;
+		//	for (Sprite* sprite : sprites) {
+		//		Vector2 position = sprite->GetPosition();
+		//		ImGui::DragFloat2("****Sprite.Translate" + (char)spriteCount, &position.x, 1.0f, 0.0f, 640.0f);
+		//		if (position.y > 360.0f) {
+		//			position.y = 360.0f;
+		//		}
+		//		sprite->SetPosition(position);
 
-				float rotation = sprite->GetRotation();
-				ImGui::SliderAngle("****Sprite.Rotate" + (char)spriteCount, &rotation);
-				sprite->SetRotation(rotation);
+		//		float rotation = sprite->GetRotation();
+		//		ImGui::SliderAngle("****Sprite.Rotate" + (char)spriteCount, &rotation);
+		//		sprite->SetRotation(rotation);
 
-				Vector2 size = sprite->GetSize();
-				ImGui::DragFloat2("****Sprite.Scale" + (char)spriteCount, &size.x, 1.0f, 0.0f, 640.0f);
-				if (size.y > 360.0f) {
-					size.y = 360.0f;
-				}
-				sprite->SetSize(size);
+		//		Vector2 size = sprite->GetSize();
+		//		ImGui::DragFloat2("****Sprite.Scale" + (char)spriteCount, &size.x, 1.0f, 0.0f, 640.0f);
+		//		if (size.y > 360.0f) {
+		//			size.y = 360.0f;
+		//		}
+		//		sprite->SetSize(size);
 
-				Vector4 color = sprite->GetColor();
-				ImGui::ColorEdit4("****Sprite.Color" + (char)spriteCount, &color.x);
-				sprite->SetColor(color);
+		//		Vector4 color = sprite->GetColor();
+		//		ImGui::ColorEdit4("****Sprite.Color" + (char)spriteCount, &color.x);
+		//		sprite->SetColor(color);
 
-				ImGui::Text("\n");
-				spriteCount--;
-			}
-		}
-		//ImGui::Checkbox("useMonsterBall", &useMonsterBall);
-		//ImGui::ColorEdit4("DirectionalLightData.Color", &directionalLightData->color.x);
-		//ImGui::DragFloat3("DirectionalLightData.Direction", &directionalLightData->direction.x, 0.01f, -1.0f, 1.0f);
-		//directionalLightData->direction = Vector3::Normalize(directionalLightData->direction);
-		//ImGui::DragFloat("DirectionalLightData.Intensity", &directionalLightData->intensity, 0.01f, 0.0f, 1.0f);
-		/*ImGui::DragFloat2("UVTranslate", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
-		ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
-		ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);*/
-		ImGui::End();
+		//		ImGui::Text("\n");
+		//		spriteCount--;
+		//	}
+		//}
+		////ImGui::Checkbox("useMonsterBall", &useMonsterBall);
+		////ImGui::ColorEdit4("DirectionalLightData.Color", &directionalLightData->color.x);
+		////ImGui::DragFloat3("DirectionalLightData.Direction", &directionalLightData->direction.x, 0.01f, -1.0f, 1.0f);
+		////directionalLightData->direction = Vector3::Normalize(directionalLightData->direction);
+		////ImGui::DragFloat("DirectionalLightData.Intensity", &directionalLightData->intensity, 0.01f, 0.0f, 1.0f);
+		///*ImGui::DragFloat2("UVTranslate", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
+		//ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
+		//ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);*/
+		//ImGui::End();
 
 		
 		for (Object3d* object3d : object3ds) {
@@ -228,10 +233,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			sprite->Update();
 		}
 		//ImGuiの内部コマンドを生成する
-		ImGui::Render();
+		//ImGui::Render();
 
 		//描画前処理
 		dxCommon->PreDraw();
+
+		srvManager->PreDraw();
+
 		// コマンドリストの取得
 		ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon->GetCommandList();
 
@@ -250,17 +258,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			sprite->Draw();
 		}
 		//実際のcommandListのImGuiの描画コマンドを積む
-		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
+		//ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
 
 		//描画後処理
 		dxCommon->PostDraw();
 	}
 
-	//ImGuiの終了処理。
-	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-	
+	////ImGuiの終了処理。
+	//ImGui_ImplDX12_Shutdown();
+	//ImGui_ImplWin32_Shutdown();
+	//ImGui::DestroyContext();
+	//
 	//終了
 	ModelManager::GetInstance()->Finalize();
 	TextureManager::GetInstance()->Finalize();
@@ -275,6 +283,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	for (Object3d* object3d : object3ds) {
 		delete object3d;
 	}
+	delete srvManager;
 	delete input;
 	delete dxCommon;
 	delete winApp;

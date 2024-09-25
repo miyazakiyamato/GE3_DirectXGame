@@ -38,8 +38,6 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 
 	//.objの参照しているテクスチャファイル読み込み
 	TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
-	//読み込んだテクスチャの番号を取得
-	modelData.material.textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData.material.textureFilePath);
 }
 
 void Model::Draw(){
@@ -51,7 +49,7 @@ void Model::Draw(){
 	//マテリアルCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
-	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData.material.textureIndex));
+	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData.material.textureFilePath));
 	//描画！(DrawCall/ドローコール)3頂点で1つのインスタンス。インスタンスについては
 	commandList->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 	//commandList->DrawIndexedInstanced(kIndexNum, 1, 0, 0, 0);
