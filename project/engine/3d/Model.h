@@ -18,7 +18,6 @@ private:
 	struct MaterialData {
 		std::string mtlFilePath;
 		std::string textureFilePath;
-		uint32_t textureIndex = 0;
 	};
 	struct ModelData {
 		std::vector<VertexData> vertices;

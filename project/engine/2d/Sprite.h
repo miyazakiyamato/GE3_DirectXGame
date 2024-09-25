@@ -49,8 +49,8 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView;
 
-	//テクスチャ番号
-	uint32_t textureIndex = 0;
+	//テクスチャ
+	std::string textureFilePath_ = "";
 	//アンカーポイント
 	Vector2 anchorPoint_ = { 0.0f,0.0f };
 	//左右フリップ
