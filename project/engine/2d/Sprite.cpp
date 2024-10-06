@@ -2,8 +2,6 @@
 #include "SpriteCommon.h"
 #include "TextureManager.h"
 
-using namespace Microsoft::WRL;
-
 void Sprite::Initialize(SpriteCommon* spriteCommon, std::string textureFilePath){
 	spriteCommon_ = spriteCommon;
 	
@@ -122,7 +120,7 @@ void Sprite::Update(){
 
 void Sprite::Draw(){
 	// コマンドリストの取得
-	ComPtr<ID3D12GraphicsCommandList> commandList = spriteCommon_->GetDxCommon()->GetCommandList();
+	ID3D12GraphicsCommandList* commandList = spriteCommon_->GetDxCommon()->GetCommandList();
 
 	//Spriteの描画。変更が必要なものだけ変更する
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);//VBVを設定

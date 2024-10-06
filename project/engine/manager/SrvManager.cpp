@@ -1,14 +1,15 @@
 #include "SrvManager.h"
+#include <cassert>
 
 const uint32_t SrvManager::kMaxSRVCount = 512;
 
 void SrvManager::Initialize(DirectXCommon* dxCommon){
-	directXCommon = dxCommon;
+	dxCommon_ = dxCommon;
 
 	//デスクリプタヒープの生成。SRVはShader内で触るものなので、ShaderVisibleはture
-	descriptorHeap = directXCommon->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
+	descriptorHeap = dxCommon_->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
 	//デスクリプタ1個分のサイズを取得して記録
-	descriptorSize = directXCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	descriptorSize = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
 uint32_t SrvManager::ALLocate(){
@@ -43,7 +44,7 @@ void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResou
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; //2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = UINT(MipLevels);
 
-	directXCommon->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUDescriptorHandle(srvIndex));
+	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUDescriptorHandle(srvIndex));
 }
 
 void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByStride){
@@ -54,11 +55,11 @@ void SrvManager::PreDraw(){
 	//描画用のDescriptorHeapの設定
 	ID3D12DescriptorHeap* descriptorHeaps[] = { descriptorHeap.Get() };
 	//SRV用のデスクリプタヒープを指定する
-	directXCommon->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
+	dxCommon_->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
 }
 
 void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParaneterIndex, uint32_t srvIndex){
-	directXCommon->GetCommandList()->SetGraphicsRootDescriptorTable(RootParaneterIndex, GetGPUDescriptorHandle(srvIndex));
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(RootParaneterIndex, GetGPUDescriptorHandle(srvIndex));
 }
 
 bool SrvManager::AvailabilityCheck(){
@@ -67,5 +68,10 @@ bool SrvManager::AvailabilityCheck(){
 	}
 
 	return false;
+}
+
+ID3D12DescriptorHeap* SrvManager::GetDescriptorHeapForImGui()
+{
+	return descriptorHeap.Get();
 }
 

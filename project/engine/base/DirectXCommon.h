@@ -124,7 +124,9 @@ private://メンバ変数
 	//フェンス値
 	UINT16 fenceVal = 0;
 public:
-	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() { return device; }
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetCommandList() { return commandList; }
+	ID3D12Device* GetDevice() { return device.Get(); }
+	ID3D12GraphicsCommandList* GetCommandList() { return commandList.Get(); }
+	//バックバッファの数を取得
+	size_t GetBackBufferCount() const { return swapChainDesc.BufferCount; }
 };
 

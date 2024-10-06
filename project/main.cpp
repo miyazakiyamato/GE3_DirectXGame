@@ -6,12 +6,6 @@
 #include <cmath>
 #include <vector>
 
-#include "externals/DirectXTex/DirectXTex.h"
-
-#include "externals/imgui/imgui.h"
-#include "externals/imgui/imgui_impl_dx12.h"
-#include "externals/imgui/imgui_impl_win32.h"
-
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
@@ -30,13 +24,10 @@
 #include "Camera.h"
 #include "CameraManager.h"
 #include "SrvManager.h"
+#include "ImGuiManager.h"
 
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
-
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-using namespace Microsoft::WRL;
 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -48,6 +39,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Input* input = nullptr;
 	DirectXCommon* dxCommon = nullptr;
 	SrvManager* srvManager = nullptr;
+	ImGuiManager* imGuiManager = nullptr;
 	std::vector<Object3d*> object3ds;
 	SpriteCommon* spriteCommon = nullptr;
 	std::vector<Sprite*> sprites;
@@ -67,6 +59,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	
 	srvManager = new SrvManager();
 	srvManager->Initialize(dxCommon);
+
+	imGuiManager = new ImGuiManager();
+	imGuiManager->Initialize(winApp,dxCommon,srvManager);
 
 	//テクスチャマネージャの初期化
 	TextureManager::GetInstance()->Initialize(dxCommon,srvManager);
@@ -241,7 +236,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		srvManager->PreDraw();
 
 		// コマンドリストの取得
-		ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon->GetCommandList();
+		ID3D12GraphicsCommandList* commandList = dxCommon->GetCommandList();
 
 		//Modelの描画準備Modelの描画に共通グラフィックコマンドを積む
 		ModelManager::GetInstance()->DrawCommonSetting();
@@ -273,6 +268,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ModelManager::GetInstance()->Finalize();
 	TextureManager::GetInstance()->Finalize();
 	CameraManager::GetInstance()->Finalize();
+	imGuiManager->Finalize();
 	winApp->Finalize();
 	
 	//解放
@@ -283,6 +279,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	for (Object3d* object3d : object3ds) {
 		delete object3d;
 	}
+	delete imGuiManager;
 	delete srvManager;
 	delete input;
 	delete dxCommon;
