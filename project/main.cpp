@@ -5,6 +5,7 @@
 #include <dxgidebug.h>
 #include <cmath>
 #include <vector>
+#include <imgui.h>
 
 #include "Vector2.h"
 #include "Vector3.h"
@@ -103,7 +104,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* sprite = new Sprite;
 		sprite->Initialize(spriteCommon,"resources/uvChecker.png");
-		sprite->SetPosition({200.0f * float(i), 100});
+		sprite->SetPosition({100 + 200.0f * float(i), 100});
 		sprite->SetSize({ 100.0f,100.0f });
 		sprites.push_back(sprite);
 	}
@@ -127,22 +128,45 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//ゲームの処理
 		input->Update();
 
-		//ImGui_ImplDX12_NewFrame();
-		//ImGui_ImplWin32_NewFrame();
-		//ImGui::NewFrame();
+		imGuiManager->Begin();
 
-		////開発用のUIの処理。実際に開発用のUIを出す場合はここをゲーム固有の処理に置き換える
+		
+		//開発用のUIの処理。実際に開発用のUIを出す場合はここをゲーム固有の処理に置き換える
 		//ImGui::Begin("Settings");
+		//ImGui::ShowDemoWindow();
+
+		// ウインドウのサイズを固定する
+		ImGui::SetNextWindowSize(ImVec2(500, 100));
+		// ウインドウの位置を設定する
+		ImGui::SetNextWindowPos(ImVec2(300, 100));
+		// ウインドウフラグに NoResize を指定
+		ImGui::Begin("Settings", NULL, ImGuiWindowFlags_NoResize);
 
 		//if (ImGui::CollapsingHeader("Camera"))
 		//{
-		//	static int e = 0;
-		//	ImGui::RadioButton("defaultCamera", &e, 0); ImGui::SameLine();
-		//	ImGui::RadioButton("Camera2", &e, 1); ImGui::SameLine();
-		//	//ImGui::RadioButton("radio c", &e, 2);ImGui::SameLine();
-		//	std::string str[2] = { "default","Camera2" };
-		//	if (ImGui::Button("cheng")) {
-		//		CameraManager::GetInstance()->FindCamera(str[e]);
+		//	static ImGuiComboFlags flags = 0;
+		//	const char* items[] = { "default","Camera2" };
+		//	static int item_selected_idx = 0; // Here we store our selection data as an index.
+
+		//	// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
+		//	const char* combo_preview_value = items[item_selected_idx];
+
+		//	if (ImGui::BeginCombo("Now Camera", combo_preview_value, flags))
+		//	{
+		//		for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+		//		{
+		//			const bool is_selected = (item_selected_idx == n);
+		//			if (ImGui::Selectable(items[n], is_selected)) {
+		//				item_selected_idx = n;
+		//				CameraManager::GetInstance()->FindCamera(items[n]);
+		//			}
+
+		//			// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+		//			if (is_selected) {
+		//				ImGui::SetItemDefaultFocus();
+		//			}
+		//		}
+		//		ImGui::EndCombo();
 		//	}
 
 		//	Vector3 cameraRotate = CameraManager::GetInstance()->GetCamera()->GetRotate();
@@ -180,46 +204,45 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//		object3dCount--;
 		//	}
 		//}
-		//if (ImGui::CollapsingHeader("Sprite"))
-		//{
-		//	size_t spriteCount = sprites.size() - 1;
-		//	for (Sprite* sprite : sprites) {
-		//		Vector2 position = sprite->GetPosition();
-		//		ImGui::DragFloat2("****Sprite.Translate" + (char)spriteCount, &position.x, 1.0f, 0.0f, 640.0f);
-		//		if (position.y > 360.0f) {
-		//			position.y = 360.0f;
-		//		}
-		//		sprite->SetPosition(position);
+		//if (ImGui::CollapsingHeader("Sprite")){
+			size_t spriteCount = 0;
+			for (Sprite* sprite : sprites) {
+				Vector2 position = sprite->GetPosition();
+				ImGui::DragFloat2(("Sprite" + std::to_string(spriteCount) + ".Translate").c_str(), &position.x, 1.0f, 0.0f, 1180.0f, "%.1f");
+				/*if (position.y > 640.0f) {
+					position.y = 640.0f;
+				}*/
+				sprite->SetPosition(position);
 
-		//		float rotation = sprite->GetRotation();
-		//		ImGui::SliderAngle("****Sprite.Rotate" + (char)spriteCount, &rotation);
-		//		sprite->SetRotation(rotation);
+				float rotation = sprite->GetRotation();
+				ImGui::SliderAngle(("Sprite" + std::to_string(spriteCount) + ".Rotate").c_str(), &rotation);
+				sprite->SetRotation(rotation);
 
-		//		Vector2 size = sprite->GetSize();
-		//		ImGui::DragFloat2("****Sprite.Scale" + (char)spriteCount, &size.x, 1.0f, 0.0f, 640.0f);
-		//		if (size.y > 360.0f) {
-		//			size.y = 360.0f;
-		//		}
-		//		sprite->SetSize(size);
+				Vector2 size = sprite->GetSize();
+				ImGui::DragFloat2(("Sprite" + std::to_string(spriteCount) + ".Scale").c_str(), &size.x, 1.0f, 0.0f, 640.0f, "%.1f");
+				if (size.y > 360.0f) {
+					size.y = 360.0f;
+				}
+				sprite->SetSize(size);
 
-		//		Vector4 color = sprite->GetColor();
-		//		ImGui::ColorEdit4("****Sprite.Color" + (char)spriteCount, &color.x);
-		//		sprite->SetColor(color);
+				Vector4 color = sprite->GetColor();
+				ImGui::ColorEdit4(("Sprite" + std::to_string(spriteCount) + ".Color").c_str(), &color.x);
+				sprite->SetColor(color);
 
-		//		ImGui::Text("\n");
-		//		spriteCount--;
-		//	}
+				ImGui::Text("\n");
+				spriteCount++;
+			}
 		//}
-		////ImGui::Checkbox("useMonsterBall", &useMonsterBall);
-		////ImGui::ColorEdit4("DirectionalLightData.Color", &directionalLightData->color.x);
-		////ImGui::DragFloat3("DirectionalLightData.Direction", &directionalLightData->direction.x, 0.01f, -1.0f, 1.0f);
-		////directionalLightData->direction = Vector3::Normalize(directionalLightData->direction);
-		////ImGui::DragFloat("DirectionalLightData.Intensity", &directionalLightData->intensity, 0.01f, 0.0f, 1.0f);
-		///*ImGui::DragFloat2("UVTranslate", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
-		//ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
-		//ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);*/
-		//ImGui::End();
-
+		//ImGui::Checkbox("useMonsterBall", &useMonsterBall);
+		//ImGui::ColorEdit4("DirectionalLightData.Color", &directionalLightData->color.x);
+		//ImGui::DragFloat3("DirectionalLightData.Direction", &directionalLightData->direction.x, 0.01f, -1.0f, 1.0f);
+		//directionalLightData->direction = Vector3::Normalize(directionalLightData->direction);
+		//ImGui::DragFloat("DirectionalLightData.Intensity", &directionalLightData->intensity, 0.01f, 0.0f, 1.0f);
+		/*ImGui::DragFloat2("UVTranslate", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
+		ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
+		ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);*/
+		ImGui::End();
+		imGuiManager->End();
 		
 		for (Object3d* object3d : object3ds) {
 			object3d->Update();
@@ -253,17 +276,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			sprite->Draw();
 		}
 		//実際のcommandListのImGuiの描画コマンドを積む
-		//ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
+		imGuiManager->Draw();
 
 		//描画後処理
 		dxCommon->PostDraw();
 	}
 
-	////ImGuiの終了処理。
-	//ImGui_ImplDX12_Shutdown();
-	//ImGui_ImplWin32_Shutdown();
-	//ImGui::DestroyContext();
-	//
 	//終了
 	ModelManager::GetInstance()->Finalize();
 	TextureManager::GetInstance()->Finalize();
