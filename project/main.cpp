@@ -127,7 +127,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		}
 		//ゲームの処理
 		input->Update();
-
+		
+#ifdef _DEBUG
 		imGuiManager->Begin();
 
 		
@@ -243,6 +244,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);*/
 		ImGui::End();
 		imGuiManager->End();
+#endif //_DEBUG
 		
 		for (Object3d* object3d : object3ds) {
 			object3d->Update();
@@ -275,8 +277,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		for (Sprite* sprite : sprites) {
 			sprite->Draw();
 		}
+
+#ifdef _DEBUG
 		//実際のcommandListのImGuiの描画コマンドを積む
 		imGuiManager->Draw();
+#endif //_DEBUG
 
 		//描画後処理
 		dxCommon->PostDraw();
