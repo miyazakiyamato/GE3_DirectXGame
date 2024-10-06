@@ -2,8 +2,6 @@
 #include "ModelManager.h"
 #include "CameraManager.h"
 
-using namespace Microsoft::WRL;
-
 void Object3d::Initialize(){
 	modelCommon_ = ModelManager::GetInstance()->GetModelCommon();
 
@@ -43,7 +41,7 @@ void Object3d::Update(){
 
 void Object3d::Draw(){
 	// コマンドリストの取得
-	ComPtr<ID3D12GraphicsCommandList> commandList = modelCommon_->GetDxCommon()->GetCommandList();
+	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDxCommon()->GetCommandList();
 
 	//wvp用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());

@@ -1,12 +1,12 @@
-﻿#pragma once
+#pragma once
 #define DIRECTINPUT_VERSION 0x800
 #include <Windows.h>
 #include <dinput.h>
 #include <wrl.h>
-#include "WinApp.h"
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
+class WinApp;
 class Input{
 public:
 	//namespace省略

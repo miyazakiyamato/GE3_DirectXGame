@@ -4,8 +4,6 @@
 #include <sstream>
 #include "TextureManager.h"
 
-using namespace Microsoft::WRL;
-
 void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPath, const std::string& filename){
 	modelCommon_ = modelCommon;
 
@@ -42,7 +40,7 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 
 void Model::Draw(){
 	// コマンドリストの取得
-	ComPtr<ID3D12GraphicsCommandList> commandList = modelCommon_->GetDxCommon()->GetCommandList();
+	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDxCommon()->GetCommandList();
 
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView); //VBVを設定
 	//commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定

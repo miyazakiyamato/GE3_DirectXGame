@@ -20,8 +20,11 @@ public:
 	void SetGraphicsRootDescriptorTable(UINT RootParaneterIndex, uint32_t srvIndex);
 
 	bool AvailabilityCheck();
+
+	//ImGui用
+	ID3D12DescriptorHeap* GetDescriptorHeapForImGui();
 private:
-	DirectXCommon* directXCommon = nullptr;
+	DirectXCommon* dxCommon_ = nullptr;
 
 	//最大SRV数
 	static const uint32_t kMaxSRVCount;
@@ -30,6 +33,6 @@ private:
 	//SRV用でスクリプタヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap;
 	//次に使用するSRVインデックス
-	uint32_t useIndex = 0;
+	uint32_t useIndex = 1;
 };
 

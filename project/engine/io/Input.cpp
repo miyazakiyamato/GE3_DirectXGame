@@ -1,4 +1,5 @@
-﻿#include "Input.h"
+#include "Input.h"
+#include "WinApp.h"
 #include <cassert>
 
 void Input::Initialize(WinApp* winApp){
