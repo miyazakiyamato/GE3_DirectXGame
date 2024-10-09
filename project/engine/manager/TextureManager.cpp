@@ -15,13 +15,18 @@ TextureManager* TextureManager::GetInstance()
 void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager){
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
-	//SRVの数と同数
-	//textureDatas.reserve(srvManager_->GetKMaxSRVCount());
+	//スプライト共通部の初期化
+	spriteCommon = std::make_unique<SpriteCommon>();
+	spriteCommon->Initialize(dxCommon);
 }
 
 void TextureManager::Finalize(){
 	delete instance;
 	instance = nullptr;
+}
+
+void TextureManager::DrawCommonSetting() {
+	spriteCommon->DrawCommonSetting();
 }
 
 void TextureManager::LoadTexture(const std::string& filePath){

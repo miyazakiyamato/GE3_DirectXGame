@@ -24,8 +24,6 @@
 #include "ImGuiManager.h"
 #include "AudioManager.h"
 
-#pragma comment(lib,"dxguid.lib")
-#pragma comment(lib,"dxcompiler.lib")
 class Framework{
 public://メンバ関数
 	virtual ~Framework() = default;
@@ -54,7 +52,5 @@ protected://メンバ変数
 	SrvManager* srvManager = nullptr;
 	//ImGui
 	ImGuiManager* imGuiManager = nullptr;
-	//スプライト共通部
-	SpriteCommon* spriteCommon = nullptr;
 };
 

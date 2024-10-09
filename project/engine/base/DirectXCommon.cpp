@@ -47,8 +47,6 @@ void DirectXCommon::Initialize(WinApp* winApp){
 	CreateScissorRect();
 	//DXCコンパイラの生成
 	CreateDXCCompiler();
-	//IMGuiの初期化
-	CreateImGui();
 }
 
 void DirectXCommon::PreDraw(){
@@ -337,6 +335,7 @@ void DirectXCommon::CreateRTVDescriptorHeaps(){
 	assert(SUCCEEDED(hr));
 
 	//RTVの設定
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; //出力結果をSRGBに変換して書き込む
 	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; //2dテクスチャとして書き込む
 	//ディスクリプタの先頭を取得する
@@ -410,21 +409,6 @@ void DirectXCommon::CreateDXCCompiler(){
 	//現時点でincludeはしないが、includeに対応するための設定を行っておく
 	hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
 	assert(SUCCEEDED(hr));
-}
-
-void DirectXCommon::CreateImGui(){
-	////ImGuiの初期化。
-	//IMGUI_CHECKVERSION();
-	//ImGui::CreateContext();
-	//ImGui::StyleColorsDark();
-	//ImGui_ImplWin32_Init(winApp_->GetHwnd());
-	//ImGui_ImplDX12_Init(device.Get(),
-	//	swapChainDesc.BufferCount,
-	//	rtvDesc.Format,
-	//	srvDescriptorHeap.Get(),
-	//	srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-	//	srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-
 }
 
 Microsoft::WRL::ComPtr<IDxcBlob> DirectXCommon::CompileShader(const std::wstring& filePath, const wchar_t* profile){

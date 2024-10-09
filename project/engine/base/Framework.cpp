@@ -35,10 +35,6 @@ void Framework::Initialize(){
 	CameraManager::GetInstance()->FindCamera("default");
 	CameraManager::GetInstance()->GetCamera()->SetRotate({ 0.3f,0.0f,0.0f });
 	CameraManager::GetInstance()->GetCamera()->SetTranslate({ 0.0f,4.0f,-10.0f });
-
-	//スプライト共通部の初期化
-	spriteCommon = new SpriteCommon;
-	spriteCommon->Initialize(dxCommon);
 }
 
 void Framework::Finalize(){
@@ -51,7 +47,6 @@ void Framework::Finalize(){
 	winApp->Finalize();
 
 	//解放
-	delete spriteCommon;
 	delete imGuiManager;
 	delete srvManager;
 	delete input;

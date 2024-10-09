@@ -128,10 +128,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\math\Vector3.cpp" />
     <ClCompile Include="engine\math\Vector4.cpp" />
     <ClCompile Include="engine\manager\ImGuiManager.cpp" />
-    <ClCompile Include="Framework.cpp" />
+    <ClCompile Include="engine\base\Framework.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\manager\SrvManager.cpp" />
-    <ClCompile Include="MyGame.cpp" />
+    <ClCompile Include="engine\scene\MyGame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\manager\AudioManager.h" />
@@ -156,8 +156,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\Vector4.h" />
     <ClInclude Include="engine\manager\SrvManager.h" />
     <ClInclude Include="engine\manager\ImGuiManager.h" />
-    <ClInclude Include="Framework.h" />
-    <ClInclude Include="MyGame.h" />
+    <ClInclude Include="engine\base\Framework.h" />
+    <ClInclude Include="engine\scene\MyGame.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
