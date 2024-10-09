@@ -26,6 +26,7 @@
 #include "CameraManager.h"
 #include "SrvManager.h"
 #include "ImGuiManager.h"
+#include "AudioManager.h"
 
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
@@ -86,6 +87,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ModelManager::GetInstance()->LoadModel("plane.obj");
 	ModelManager::GetInstance()->LoadModel("axis.obj");
 
+	AudioManager::GetInstance()->Initialize();
+	AudioManager::GetInstance()->LoadWave("maou_se_system48.wav");
+
 	for (uint32_t i = 0; i < 2; ++i) {
 		Object3d* object3d = new Object3d;
 		object3d->Initialize();
@@ -128,13 +132,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//ゲームの処理
 		input->Update();
 		
+		if (input->TriggerKey(DIK_SPACE)) {
+			AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
+		}
+
 #ifdef _DEBUG
 		imGuiManager->Begin();
 
 		
 		//開発用のUIの処理。実際に開発用のUIを出す場合はここをゲーム固有の処理に置き換える
-		//ImGui::Begin("Settings");
-		//ImGui::ShowDemoWindow();
 
 		// ウインドウのサイズを固定する
 		ImGui::SetNextWindowSize(ImVec2(500, 100));
@@ -142,6 +148,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::SetNextWindowPos(ImVec2(300, 100));
 		// ウインドウフラグに NoResize を指定
 		ImGui::Begin("Settings", NULL, ImGuiWindowFlags_NoResize);
+		//ImGui::Begin("Settings");
+		//ImGui::ShowDemoWindow();
 
 		//if (ImGui::CollapsingHeader("Camera"))
 		//{
@@ -288,6 +296,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	}
 
 	//終了
+	AudioManager::GetInstance()->Finalize();
 	ModelManager::GetInstance()->Finalize();
 	TextureManager::GetInstance()->Finalize();
 	CameraManager::GetInstance()->Finalize();
