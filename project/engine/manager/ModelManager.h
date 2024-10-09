@@ -4,7 +4,7 @@
 #include "Model.h"
 
 class ModelManager{
-public:
+public://メンバ関数
 	//シングルトンインスタンスの取得
 	static ModelManager* GetInstance();
 	//初期化
@@ -19,19 +19,19 @@ public:
 	void LoadModel(const std::string& filePath);
 	//モデルの検索
 	Model* FindModel(const std::string& filePath);
-private:
+private://シングルインスタンス
 	static ModelManager* instance;
 
 	ModelManager() = default;
 	~ModelManager() = default;
 	ModelManager(ModelManager&) = delete;
 	ModelManager& operator=(ModelManager&) = delete;
-private:
+private://メンバ変数
 	//モデルデータ
 	std::map<std::string, std::unique_ptr<Model>> models;
 
 	std::unique_ptr<ModelCommon> modelCommon = nullptr;
-public:
+public://ゲッターセッター
 	ModelCommon* GetModelCommon() const { return modelCommon.get(); }
 };
 

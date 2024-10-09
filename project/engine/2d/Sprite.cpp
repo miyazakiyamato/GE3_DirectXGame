@@ -2,8 +2,8 @@
 #include "SpriteCommon.h"
 #include "TextureManager.h"
 
-void Sprite::Initialize(SpriteCommon* spriteCommon, std::string textureFilePath){
-	spriteCommon_ = spriteCommon;
+void Sprite::Initialize(std::string textureFilePath){
+	spriteCommon_ = TextureManager::GetInstance()->GetSpriteCommon();
 	
 	TextureManager::GetInstance()->LoadTexture(textureFilePath);
 	textureFilePath_ = textureFilePath;

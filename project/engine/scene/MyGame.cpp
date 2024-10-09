@@ -37,7 +37,7 @@ void MyGame::Initialize(){
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* sprite = new Sprite;
-		sprite->Initialize(spriteCommon, "resources/uvChecker.png");
+		sprite->Initialize("resources/uvChecker.png");
 		sprite->SetPosition({ 100 + 200.0f * float(i), 100 });
 		sprite->SetSize({ 100.0f,100.0f });
 		sprites.push_back(sprite);
@@ -117,52 +117,52 @@ void MyGame::Update(){
 	}
 	if (ImGui::CollapsingHeader("Object3d"))
 	{
-		size_t object3dCount = object3ds.size() - 1;
+		size_t object3dCount = 0;
 		for (Object3d* object3d : object3ds) {
 			Vector3 translate = object3d->GetTranslate();
-			ImGui::DragFloat3("**Transform.Translate" + (char)object3dCount, &translate.x, 0.1f);
+			ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Translate").c_str(), &translate.x, 0.1f);
 			object3d->SetTranslate(translate);
 
 			Vector3 rotate = object3d->GetRotate();
-			ImGui::SliderAngle("**Transform.Rotate.x" + (char)object3dCount, &rotate.x);
-			ImGui::SliderAngle("**Transform.Rotate.y" + (char)object3dCount, &rotate.y);
-			ImGui::SliderAngle("**Transform.Rotate.z" + (char)object3dCount, &rotate.z);
+			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) +".Transform.Rotate.x").c_str(), &rotate.x);
+			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.y").c_str(), &rotate.y);
+			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.z").c_str(), &rotate.z);
 			object3d->SetRotate(rotate);
 
 			Vector3 scale = object3d->GetScale();
-			ImGui::DragFloat3("**Transform.Scale" + (char)object3dCount, &scale.x, 0.1f);
+			ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Scale").c_str(), &scale.x, 0.1f);
 			object3d->SetScale(scale);
 
 			//ImGui::ColorEdit4("Model.Color", &(*materialData).color.x);
 
 			ImGui::Text("\n");
 
-			object3dCount--;
+			object3dCount++;
 		}
 	}
 	if (ImGui::CollapsingHeader("Sprite")) {
 		size_t spriteCount = 0;
 		for (Sprite* sprite : sprites) {
 			Vector2 position = sprite->GetPosition();
-			ImGui::DragFloat2(("Sprite" + std::to_string(spriteCount) + ".Translate").c_str(), &position.x, 1.0f, 0.0f, 1180.0f, "%.1f");
+			ImGui::DragFloat2(("Sprite " + std::to_string(spriteCount) + ".Translate").c_str(), &position.x, 1.0f, 0.0f, 1180.0f, "%.1f");
 			/*if (position.y > 640.0f) {
 				position.y = 640.0f;
 			}*/
 			sprite->SetPosition(position);
 
 			float rotation = sprite->GetRotation();
-			ImGui::SliderAngle(("Sprite" + std::to_string(spriteCount) + ".Rotate").c_str(), &rotation);
+			ImGui::SliderAngle(("Sprite " + std::to_string(spriteCount) + ".Rotate").c_str(), &rotation);
 			sprite->SetRotation(rotation);
 
 			Vector2 size = sprite->GetSize();
-			ImGui::DragFloat2(("Sprite" + std::to_string(spriteCount) + ".Scale").c_str(), &size.x, 1.0f, 0.0f, 640.0f, "%.1f");
+			ImGui::DragFloat2(("Sprite " + std::to_string(spriteCount) + ".Scale").c_str(), &size.x, 1.0f, 0.0f, 640.0f, "%.1f");
 			if (size.y > 360.0f) {
 				size.y = 360.0f;
 			}
 			sprite->SetSize(size);
 
 			Vector4 color = sprite->GetColor();
-			ImGui::ColorEdit4(("Sprite" + std::to_string(spriteCount) + ".Color").c_str(), &color.x);
+			ImGui::ColorEdit4(("Sprite " + std::to_string(spriteCount) + ".Color").c_str(), &color.x);
 			sprite->SetColor(color);
 
 			ImGui::Text("\n");
@@ -208,7 +208,7 @@ void MyGame::Draw(){
 	}
 
 	//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
-	spriteCommon->DrawCommonSetting();
+	TextureManager::GetInstance()->DrawCommonSetting();
 	for (Sprite* sprite : sprites) {
 		sprite->Draw();
 	}

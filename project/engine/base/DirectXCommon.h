@@ -11,6 +11,8 @@
 #include "WinApp.h"
 #include "externals/DirectXTex/DirectXTex.h"
 
+#pragma comment(lib,"dxguid.lib")
+#pragma comment(lib,"dxcompiler.lib")
 
 namespace {
 	//RTVのかず
@@ -52,8 +54,6 @@ public://メンバ関数
 	void CreateScissorRect();
 	//DXCコンパイラの生成
 	void CreateDXCCompiler();
-	//IMGuiの初期化
-	void CreateImGui();
 	//シェーダーのコンパイル
 	Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(
 		//CompilerするShaderファイルへのパス
@@ -102,8 +102,6 @@ private://メンバ変数
 	//ディスクリプタヒープの生成
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap = nullptr;
-	//RTVの設定
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 	//RTV
 	std::array<D3D12_CPU_DESCRIPTOR_HANDLE,kRTVHandleNum> rtvHandles;
 	//スワップチェインリソース

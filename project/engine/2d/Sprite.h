@@ -25,15 +25,15 @@ private:
 	};
 public://メンバ関数
 	//初期化
-	void Initialize(SpriteCommon* spriteCommon,std::string textureFilePath);
+	void Initialize(std::string textureFilePath);
 	//更新
 	void Update();
 	//描画
 	void Draw();
-private:
+private://ローカル関数
 	//テクスチャサイズをイメージに合わせる
 	void AdjustTextureSize();
-private:
+private://メンバ変数
 	SpriteCommon* spriteCommon_ = nullptr;
 	//バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
@@ -64,7 +64,7 @@ private:
 
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };
 	Vector2 textureSize_ = { 100.0f,100.0f };
-public:
+public://ゲッターセッター
 	const Vector2& GetPosition() { return position_; }
 	void SetPosition(const Vector2& position) { position_ = position; }
 	float GetRotation() { return rotation_; }

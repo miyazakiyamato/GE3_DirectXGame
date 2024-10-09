@@ -4,12 +4,12 @@
 #include <d3d12.h>
 #include <unordered_map>
 #include "externals/DirectXTex/DirectXTex.h"
-
+#include "SpriteCommon.h"
 
 class DirectXCommon;
 class SrvManager;
 class TextureManager{
-private:
+private://構造体
 	//テクスチャ一枚分のデータ
 	struct TextureData{
 		DirectX::TexMetadata metadata;
@@ -19,13 +19,15 @@ private:
 		D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU;
 		D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU;
 	};
-public:
+public://メンバ関数
 	//シングルインスタンスの取得
 	static TextureManager* GetInstance();
 	//初期化
 	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
 	//終了
 	void Finalize();
+	//共通描画設定
+	void DrawCommonSetting();
 	//テクスチャファイルの読み込み
 	void LoadTexture(const std::string& filePath);
 
@@ -35,18 +37,21 @@ public:
 	const DirectX::TexMetadata& GetMetaData(const std::string& filePath);
 	//SRVインデックスの取得
 	uint32_t GetSrvIndex(const std::string& filePath);
-private:
+private://シングルインスタンス
 	static TextureManager* instance;
 
 	TextureManager() = default;
 	~TextureManager() = default;
 	TextureManager(TextureManager&) = delete;
 	TextureManager& operator=(TextureManager&) = delete;
-
-	//
+private://メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
+	//スプライト共通部
+	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	//テクスチャデータ
 	std::unordered_map<std::string,TextureData> textureDatas;
+public:
+	SpriteCommon* GetSpriteCommon() const { return spriteCommon.get(); }
 };
 

@@ -78,9 +78,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="engine\2d\Sprite.cpp">
       <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
@@ -147,11 +144,14 @@
     <ClCompile Include="engine\manager\ImGuiManager.cpp">
       <Filter>ソース ファイル\engine\manager</Filter>
     </ClCompile>
-    <ClCompile Include="MyGame.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\base\Framework.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="Framework.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\scene\MyGame.cpp">
+      <Filter>ソース ファイル\engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>ヘッダー ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,11 +221,11 @@
     <ClInclude Include="engine\manager\ImGuiManager.h">
       <Filter>ヘッダー ファイル\engine\manager</Filter>
     </ClInclude>
-    <ClInclude Include="MyGame.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\base\Framework.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="Framework.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\scene\MyGame.h">
+      <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
