@@ -23,6 +23,9 @@ void AudioManager::Initialize(){
 	result = xAudio2->CreateMasteringVoice(&masterVoice);
 	assert(SUCCEEDED(result));
 
+	// Media Foundationの初期化
+	result = MFStartup(MF_VERSION);
+	assert(SUCCEEDED(result));
 }
 
 void AudioManager::Finalize(){
@@ -30,6 +33,9 @@ void AudioManager::Finalize(){
 	xAudio2.Reset();
 	//音声データ解放
 	soundDatas.clear();
+
+	// Media Foundationの終了
+	MFShutdown();
 
 	delete instance;
 	instance = nullptr;
@@ -128,6 +134,80 @@ void AudioManager::LoadWave(const std::string& filePath)
 	soundData.bufferSize = data.size;
 }
 
+void AudioManager::LoadMP3(const std::string& filePath){
+	// 読み込み済みなら早期return
+	if (soundDatas.contains(filePath)) {
+		return;
+	}
+
+	const std::string filename = audioFilePath + filePath;
+
+	IMFSourceReader* pSourceReader = nullptr;
+	IMFMediaType* pAudioType = nullptr;
+
+	// Media FoundationでMP3ファイルを読み込む
+	HRESULT result = MFCreateSourceReaderFromURL(std::wstring(filename.begin(), filename.end()).c_str(), nullptr, &pSourceReader);
+	assert(SUCCEEDED(result));
+
+	// PCM形式へのデコード設定
+	result = MFCreateMediaType(&pAudioType);
+	assert(SUCCEEDED(result));
+	pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
+	pAudioType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
+	result = pSourceReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, NULL, pAudioType);
+	assert(SUCCEEDED(result));
+
+	// デコードされたPCMデータの読み込み
+	IMFSample* pSample = nullptr;
+	DWORD streamIndex, flags;
+	LONGLONG llTimeStamp;
+	std::vector<BYTE> pcmData;
+
+	while (true) {
+		result = pSourceReader->ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM, 0, &streamIndex, &flags, &llTimeStamp, &pSample);
+		if (FAILED(result) || (flags & MF_SOURCE_READERF_ENDOFSTREAM)) {
+			break;  // ストリームの終わり
+		}
+
+		if (pSample) {
+			IMFMediaBuffer* pBuffer = nullptr;
+			pSample->ConvertToContiguousBuffer(&pBuffer);
+
+			BYTE* pAudioData = nullptr;
+			DWORD bufferSize = 0;
+			pBuffer->Lock(&pAudioData, NULL, &bufferSize);
+
+			pcmData.insert(pcmData.end(), pAudioData, pAudioData + bufferSize);
+
+			pBuffer->Unlock();
+			pBuffer->Release();
+			pSample->Release();
+		}
+	}
+
+	// 読み込んだPCMデータをXAudio2用に設定
+	SoundData soundData;
+	soundData.pBuffer = new BYTE[pcmData.size()];
+	std::copy(pcmData.begin(), pcmData.end(), soundData.pBuffer);
+	soundData.bufferSize = static_cast<unsigned int>(pcmData.size());
+
+	// WAVEFORMATEXの設定
+	WAVEFORMATEX wfex = {};
+	wfex.wFormatTag = WAVE_FORMAT_PCM;
+	wfex.nChannels = 2;  // ステレオ
+	wfex.nSamplesPerSec = 44100;  // サンプルレート
+	wfex.wBitsPerSample = 16;  // 16ビット
+	wfex.nBlockAlign = wfex.nChannels * (wfex.wBitsPerSample / 8);
+	wfex.nAvgBytesPerSec = wfex.nSamplesPerSec * wfex.nBlockAlign;
+	soundData.wfex = wfex;
+
+	soundDatas[filePath] = soundData;
+
+	// クリーンアップ
+	pSourceReader->Release();
+	pAudioType->Release();
+}
+
 void AudioManager::PlayWave(const std::string& filePath){
 	//音声データの参照を取得
 	SoundData& soundData = soundDatas[filePath];
@@ -148,4 +228,22 @@ void AudioManager::PlayWave(const std::string& filePath){
 	//波型データの生成
 	result = pSourceVoice->SubmitSourceBuffer(&buf);
 	result = pSourceVoice->Start();
+}
+
+void AudioManager::PlayMP3(const std::string& filePath){
+	SoundData& soundData = soundDatas[filePath];
+
+	IXAudio2SourceVoice* sourceVoice = nullptr;
+	HRESULT result = xAudio2->CreateSourceVoice(&sourceVoice, &soundData.wfex);
+	assert(SUCCEEDED(result));
+
+	XAUDIO2_BUFFER buffer = {};
+	buffer.pAudioData = soundData.pBuffer;
+	buffer.AudioBytes = soundData.bufferSize;
+	buffer.Flags = XAUDIO2_END_OF_STREAM;
+
+	result = sourceVoice->SubmitSourceBuffer(&buffer);
+	assert(SUCCEEDED(result));
+
+	sourceVoice->Start();
 }

@@ -3,8 +3,14 @@
 #include <fstream>
 #include <wrl.h>
 #include <unordered_map>
+#include <mfapi.h>          // Media Foundationのヘッダファイル追加
+#include <mfplay.h>
+#include <mfreadwrite.h>
 
 #pragma comment(lib,"xaudio2.lib")
+#pragma comment(lib, "mfplat.lib")  // Media Foundationのリンク設定追加
+#pragma comment(lib, "mf.lib")
+#pragma comment(lib, "mfreadwrite.lib")
 
 class AudioManager{
 public://namespace省略
@@ -36,10 +42,11 @@ public://メンバ関数
 	//終了
 	void Finalize();
 	//音声データ読み込み
-	void LoadWave(const std::string& filePath);
+	void LoadWave(const std::string& filePath); // WAVE読み込み用関数
+	void LoadMP3(const std::string& filePath);  // MP3読み込み用関数
 	//音声再生
-	void PlayWave(const std::string& filePath);
-
+	void PlayWave(const std::string& filePath); // WAVE再生用関数
+	void PlayMP3(const std::string& filePath);  // MP3再生用関数
 private://メンバ変数
 	static AudioManager* instance;
 
@@ -53,7 +60,7 @@ private://メンバ変数
 
 	const std::string audioFilePath = "resources/";
 
-	//音声格納
+	// 音声格納
 	std::unordered_map<std::string, SoundData> soundDatas;
 };
 

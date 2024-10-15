@@ -22,6 +22,7 @@ void MyGame::Initialize(){
 
 	AudioManager::GetInstance()->Initialize();
 	AudioManager::GetInstance()->LoadWave("maou_se_system48.wav");
+	AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
 
 	for (uint32_t i = 0; i < 2; ++i) {
 		Object3d* object3d = new Object3d;
@@ -67,7 +68,8 @@ void MyGame::Update(){
 	Framework::Update();
 
 	if (input->TriggerKey(DIK_SPACE)) {
-		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
+		//AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
+		AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
 	}
 
 #ifdef _DEBUG
