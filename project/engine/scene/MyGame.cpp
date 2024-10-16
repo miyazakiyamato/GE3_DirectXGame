@@ -1,4 +1,5 @@
 #include "MyGame.h"
+#include "GameScene.h"
 
 void MyGame::Initialize(){
 	//基底クラスの初期化処理

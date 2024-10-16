@@ -6,7 +6,7 @@
 #include "AudioManager.h"
 
 void GameScene::Initialize(){
-	input_ = Input::GetInstance();
+	BaseScene::Initialize();
 
 	//開発用のUIの処理。
 	// ウインドウのサイズを固定する
@@ -63,9 +63,12 @@ void GameScene::Finalize(){
 	for (Object3d* object3d : object3ds) {
 		delete object3d;
 	}
+	BaseScene::Finalize();
 }
 
 void GameScene::Update(){
+	BaseScene::Update();
+
 	if (input_->TriggerKey(DIK_SPACE)) {
 		//AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
 		AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");

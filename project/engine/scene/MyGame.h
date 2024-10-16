@@ -1,6 +1,6 @@
 #pragma once
 #include "Framework.h"
-#include "GameScene.h"
+#include "BaseScene.h"
 
 class MyGame : public Framework{
 public://メンバ関数
@@ -13,6 +13,6 @@ public://メンバ関数
 	//描画
 	void Draw() override;
 private://メンバ変数
-	GameScene* gameScene = nullptr;
+	BaseScene* gameScene = nullptr;
 };
 
