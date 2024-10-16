@@ -12,8 +12,7 @@ void Framework::Initialize(){
 	dxCommon->Initialize(winApp);
 
 	//入力の初期化
-	input = new Input();
-	input->Initialize(winApp);
+	Input::GetInstance()->Initialize(winApp);
 	
 	//SRVの初期化
 	srvManager = new SrvManager();
@@ -44,12 +43,12 @@ void Framework::Finalize(){
 	TextureManager::GetInstance()->Finalize();
 	CameraManager::GetInstance()->Finalize();
 	imGuiManager->Finalize();
+	Input::GetInstance()->Finalize();
 	winApp->Finalize();
 
 	//解放
 	delete imGuiManager;
 	delete srvManager;
-	delete input;
 	delete dxCommon;
 	delete winApp;
 
@@ -58,7 +57,7 @@ void Framework::Finalize(){
 
 void Framework::Update(){
 	//ゲームの処理
-	input->Update();
+	Input::GetInstance()->Update();
 }
 
 void Framework::Run(){

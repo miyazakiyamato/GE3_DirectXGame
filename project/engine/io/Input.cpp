@@ -2,6 +2,16 @@
 #include "WinApp.h"
 #include <cassert>
 
+Input* Input::instance = nullptr;
+
+Input* Input::GetInstance()
+{
+	if (instance == nullptr) {
+		instance = new Input();
+	}
+	return instance;
+}
+
 void Input::Initialize(WinApp* winApp){
 	//借りてきたWinAppのインスタンスを記録
 	winApp_ = winApp;
@@ -21,6 +31,11 @@ void Input::Initialize(WinApp* winApp){
 	//排他制御レベルのセット
 	result = keyboard->SetCooperativeLevel(winApp_->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 	assert(SUCCEEDED(result));
+}
+
+void Input::Finalize(){
+	delete instance;
+	instance = nullptr;
 }
 
 void Input::Update(){

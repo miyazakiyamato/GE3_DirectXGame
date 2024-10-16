@@ -46,8 +46,6 @@ protected://メンバ変数
 	WinApp* winApp = nullptr;
 	//DirecX
 	DirectXCommon* dxCommon = nullptr;
-	//入力
-	Input* input = nullptr;
 	//SRV
 	SrvManager* srvManager = nullptr;
 	//ImGui

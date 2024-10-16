@@ -1,7 +1,6 @@
 #pragma once
 #include "Framework.h"
-#include "Sprite.h"
-#include "Object3d.h"
+#include "GameScene.h"
 
 class MyGame : public Framework{
 public://メンバ関数
@@ -14,7 +13,6 @@ public://メンバ関数
 	//描画
 	void Draw() override;
 private://メンバ変数
-	std::vector<Object3d*> object3ds;
-	std::vector<Sprite*> sprites;
+	GameScene* gameScene = nullptr;
 };
 
