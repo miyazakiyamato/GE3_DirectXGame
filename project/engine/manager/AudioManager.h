@@ -3,14 +3,8 @@
 #include <fstream>
 #include <wrl.h>
 #include <unordered_map>
-#include <mfapi.h>          // Media Foundationのヘッダファイル追加
-#include <mfplay.h>
-#include <mfreadwrite.h>
 
-#pragma comment(lib,"xaudio2.lib")
-#pragma comment(lib, "mfplat.lib")  // Media Foundationのリンク設定追加
-#pragma comment(lib, "mf.lib")
-#pragma comment(lib, "mfreadwrite.lib")
+#pragma comment(lib, "xaudio2.lib")    // XAudio2のライブラリ
 
 class AudioManager{
 public://namespace省略

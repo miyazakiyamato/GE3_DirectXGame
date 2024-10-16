@@ -1,5 +1,39 @@
 #include "AudioManager.h"
 #include <cassert>
+#include <mfapi.h>          // Media Foundationの基本ヘッダー
+#include <mfidl.h>          // Media FoundationのCOMインターフェイスのヘッダー
+#include <mfreadwrite.h>    // Media Foundationのファイル読み書き用ヘッダー
+
+#pragma comment(lib, "Uuid.Lib")       // GUIDを扱うためのライブラリ
+#pragma comment(lib, "Mfplat.lib")     // Media Foundationのライブラリ
+#pragma comment(lib, "Mf.lib")         // Media Foundationのメインライブラリ
+#pragma comment(lib, "mfreadwrite.lib")// Media Foundationのファイル読み書き用ライブラリ
+
+#include <initguid.h>  // GUIDの初期化を有効にするために必要
+
+// MF_MT_MAJOR_TYPE の定義
+DEFINE_GUID(MF_MT_MAJOR_TYPE,
+	0x48eba18e, 0xf8c9, 0x4687, 0xbf, 0x11, 0x0a, 0x74, 0xc9, 0xf9, 0x6a, 0x8f);
+
+// MFMediaType_Audio の定義
+DEFINE_GUID(MFMediaType_Audio,
+	0x73647561, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
+
+// MF_MT_SUBTYPE の定義
+DEFINE_GUID(MF_MT_SUBTYPE,
+	0xf7e34c9a, 0x42e8, 0x4714, 0xb7, 0x35, 0x82, 0xa8, 0x43, 0xb6, 0xe2, 0x3d);
+
+// MFAudioFormat_PCM の定義
+DEFINE_GUID(MFAudioFormat_PCM,
+	0x00000001, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
+
+// MF_MT_AUDIO_SAMPLES_PER_SECOND の定義
+DEFINE_GUID(MF_MT_AUDIO_SAMPLES_PER_SECOND,
+	0x4A4E8647, 0xB66B, 0x4C6D, 0x9E, 0xB1, 0x7E, 0xF7, 0xBB, 0xA5, 0x0C, 0xE4);
+
+// MF_MT_AUDIO_NUM_CHANNELS の定義
+DEFINE_GUID(MF_MT_AUDIO_NUM_CHANNELS,
+	0x7D85B7C2, 0x1F30, 0x4625, 0xBA, 0x9B, 0x45, 0x65, 0xC3, 0x2B, 0x8E, 0xFF);
 
 AudioManager* AudioManager::instance = nullptr;
 
@@ -150,10 +184,60 @@ void AudioManager::LoadMP3(const std::string& filePath){
 	assert(SUCCEEDED(result));
 
 	// PCM形式へのデコード設定
+	// Media Typeの作成
 	result = MFCreateMediaType(&pAudioType);
 	assert(SUCCEEDED(result));
-	pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
-	pAudioType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
+
+	// ストリーム情報を取得する
+	UINT32 sampleRate = 44100;
+	UINT32 channelCount = 2;
+	UINT32 bytesPerSample{};
+
+	// 最初のオーディオストリームのフォーマットを取得
+	result = pSourceReader->GetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, &pAudioType);
+	if (SUCCEEDED(result)) {
+		// サンプルレートを取得
+		result = MFGetAttributeUINT32(pAudioType, MF_MT_AUDIO_SAMPLES_PER_SECOND, sampleRate);
+		if (FAILED(result)) {
+			pSourceReader->Release();
+			pAudioType->Release();
+			return;
+		}
+
+		// チャンネル数を取得
+		result = MFGetAttributeUINT32(pAudioType, MF_MT_AUDIO_NUM_CHANNELS, channelCount);
+		if (FAILED(result)) {
+			pSourceReader->Release();
+			pAudioType->Release();
+			return;
+		}
+
+		// IMFMediaTypeの設定
+		result = pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
+		if (SUCCEEDED(result)) {
+			result = pAudioType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM); // PCM形式に設定
+		}
+		if (SUCCEEDED(result)) {
+			result = pAudioType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, sampleRate);
+		}
+		if (SUCCEEDED(result)) {
+			result = pAudioType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, channelCount);
+		}
+	}
+
+	//// メジャータイプをオーディオに設定
+	//result = pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
+	//assert(SUCCEEDED(result));
+	//// サブタイプをPCMに設定
+	//result = pAudioType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
+	//assert(SUCCEEDED(result));
+	//// サンプルレートを44100に設定（MP3ファイルのサンプルレートが異なる場合は適宜変更）
+	//result = pAudioType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, 44100);
+	//assert(SUCCEEDED(result));
+	//// チャネル数を2（ステレオ）に設定
+	//result = pAudioType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, 2);
+	//assert(SUCCEEDED(result));
+
 	result = pSourceReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, NULL, pAudioType);
 	assert(SUCCEEDED(result));
 
@@ -193,12 +277,13 @@ void AudioManager::LoadMP3(const std::string& filePath){
 
 	// WAVEFORMATEXの設定
 	WAVEFORMATEX wfex = {};
-	wfex.wFormatTag = WAVE_FORMAT_PCM;
-	wfex.nChannels = 2;  // ステレオ
-	wfex.nSamplesPerSec = 44100;  // サンプルレート
-	wfex.wBitsPerSample = 16;  // 16ビット
+	wfex.wFormatTag = WAVE_FORMAT_PCM;        // PCMフォーマット
+	wfex.nChannels = channelCount;            // MP3ファイルから取得したチャンネル数
+	wfex.nSamplesPerSec = sampleRate;         // MP3ファイルから取得したサンプルレート
+	wfex.wBitsPerSample = 16;                  // 16ビットPCMを使用
 	wfex.nBlockAlign = wfex.nChannels * (wfex.wBitsPerSample / 8);
 	wfex.nAvgBytesPerSec = wfex.nSamplesPerSec * wfex.nBlockAlign;
+	// soundData.wfexに設定
 	soundData.wfex = wfex;
 
 	soundDatas[filePath] = soundData;
