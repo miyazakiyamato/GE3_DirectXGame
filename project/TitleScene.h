@@ -1,8 +1,7 @@
 #pragma once
-#include "Framework.h"
 #include "BaseScene.h"
 
-class MyGame : public Framework{
+class TitleScene : public BaseScene {
 public://メンバ関数
 	//初期化
 	void Initialize() override;

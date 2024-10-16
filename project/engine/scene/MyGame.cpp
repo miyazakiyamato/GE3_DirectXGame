@@ -1,16 +1,16 @@
 #include "MyGame.h"
 #include "GameScene.h"
+#include "TitleScene.h"
 
 void MyGame::Initialize(){
 	//基底クラスの初期化処理
 	Framework::Initialize();
 
-	gameScene = new GameScene();
-	gameScene->Initialize();
+	//最初のシーンセット
+	sceneManager->SetNextScene(new TitleScene());
 }
 
 void MyGame::Finalize(){
-	gameScene->Finalize();
 	//基底クラスの終了処理
 	Framework::Finalize();
 }
@@ -18,12 +18,6 @@ void MyGame::Finalize(){
 void MyGame::Update(){
 	//基底クラスの更新処理
 	Framework::Update();
-
-	imGuiManager->Begin();
-	
-	gameScene->Update();
-
-	imGuiManager->End();
 }
 
 void MyGame::Draw(){
@@ -39,7 +33,7 @@ void MyGame::Draw(){
 
 	CameraManager::GetInstance()->GetCamera()->Update();
 		
-	gameScene->Draw();
+	sceneManager->Draw();
 
 #ifdef _DEBUG
 	//実際のcommandListのImGuiの描画コマンドを積む

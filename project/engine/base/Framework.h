@@ -23,6 +23,7 @@
 #include "SrvManager.h"
 #include "ImGuiManager.h"
 #include "AudioManager.h"
+#include "SceneManager.h"
 
 class Framework{
 public://メンバ関数
@@ -50,5 +51,7 @@ protected://メンバ変数
 	SrvManager* srvManager = nullptr;
 	//ImGui
 	ImGuiManager* imGuiManager = nullptr;
+	//シーン
+	SceneManager* sceneManager = nullptr;
 };
 

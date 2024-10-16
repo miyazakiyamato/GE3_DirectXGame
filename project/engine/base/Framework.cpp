@@ -34,10 +34,14 @@ void Framework::Initialize(){
 	CameraManager::GetInstance()->FindCamera("default");
 	CameraManager::GetInstance()->GetCamera()->SetRotate({ 0.3f,0.0f,0.0f });
 	CameraManager::GetInstance()->GetCamera()->SetTranslate({ 0.0f,4.0f,-10.0f });
+	
+	//シーンマネージャの初期化
+	sceneManager = SceneManager::GetInstance();
 }
 
 void Framework::Finalize(){
 	//終了
+	sceneManager->Finalize();
 	AudioManager::GetInstance()->Finalize();
 	ModelManager::GetInstance()->Finalize();
 	TextureManager::GetInstance()->Finalize();
@@ -51,13 +55,17 @@ void Framework::Finalize(){
 	delete srvManager;
 	delete dxCommon;
 	delete winApp;
-
-	//CloseHandle(fenceEvent);
 }
 
 void Framework::Update(){
 	//ゲームの処理
 	Input::GetInstance()->Update();
+
+	imGuiManager->Begin();
+
+	sceneManager->Update();
+
+	imGuiManager->End();
 }
 
 void Framework::Run(){

@@ -1,6 +1,7 @@
 #pragma once
 #include "Input.h"
 
+class SceneManager;
 class BaseScene{
 public://メンバ関数
 	//初期化
@@ -13,7 +14,10 @@ public://メンバ関数
 	virtual void Draw() = 0;
 private://メンバ変数
 
-protected:
+protected://継承
+	SceneManager* sceneManager_ = nullptr;
 	Input* input_ = nullptr;
+public://ゲッターセッター
+	virtual void SetSceneManager(SceneManager* sceneManager) { sceneManager_ = sceneManager; }
 };
 
