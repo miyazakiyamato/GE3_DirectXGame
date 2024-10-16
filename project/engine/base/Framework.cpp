@@ -1,4 +1,5 @@
 #include "Framework.h"
+#include "SceneFactory.h"
 
 void Framework::Initialize(){
 	(void)CoInitializeEx(0, COINIT_MULTITHREADED);
@@ -36,12 +37,14 @@ void Framework::Initialize(){
 	CameraManager::GetInstance()->GetCamera()->SetTranslate({ 0.0f,4.0f,-10.0f });
 	
 	//シーンマネージャの初期化
-	sceneManager = SceneManager::GetInstance();
+	sceneFactory_ = new SceneFactory();
+	sceneManager_ = SceneManager::GetInstance();
+	sceneManager_->SetSceneFactory(sceneFactory_);
 }
 
 void Framework::Finalize(){
 	//終了
-	sceneManager->Finalize();
+	sceneManager_->Finalize();
 	AudioManager::GetInstance()->Finalize();
 	ModelManager::GetInstance()->Finalize();
 	TextureManager::GetInstance()->Finalize();
@@ -51,6 +54,7 @@ void Framework::Finalize(){
 	winApp->Finalize();
 
 	//解放
+	delete sceneFactory_;
 	delete imGuiManager;
 	delete srvManager;
 	delete dxCommon;
@@ -63,7 +67,7 @@ void Framework::Update(){
 
 	imGuiManager->Begin();
 
-	sceneManager->Update();
+	sceneManager_->Update();
 
 	imGuiManager->End();
 }

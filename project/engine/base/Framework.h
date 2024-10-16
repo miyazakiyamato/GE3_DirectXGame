@@ -24,6 +24,7 @@
 #include "ImGuiManager.h"
 #include "AudioManager.h"
 #include "SceneManager.h"
+#include "AbstractSceneFactory.h"
 
 class Framework{
 public://メンバ関数
@@ -52,6 +53,8 @@ protected://メンバ変数
 	//ImGui
 	ImGuiManager* imGuiManager = nullptr;
 	//シーン
-	SceneManager* sceneManager = nullptr;
+	SceneManager* sceneManager_ = nullptr;
+	//シーンファクトリー
+	AbstractSceneFactory* sceneFactory_ = nullptr;
 };
 
