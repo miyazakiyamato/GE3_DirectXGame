@@ -8,7 +8,7 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 	modelCommon_ = modelCommon;
 
 	//モデルの読み込み
-	LoadObjFile(directoryPath,filename);
+	LoadObjFile(directoryPath + "/" + filename,filename + ".obj");
 	//頂点リソースを作る
 	vertexResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * modelData.vertices.size());
 	//頂点バッファビューを作成する
