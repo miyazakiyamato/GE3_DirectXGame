@@ -21,26 +21,29 @@ void GameScene::Initialize(){
 
 	CameraManager::GetInstance()->FindCamera("default");
 
-	ModelManager::GetInstance()->LoadModel("plane.obj");
-	ModelManager::GetInstance()->LoadModel("axis.obj");
 
 	AudioManager::GetInstance()->Initialize();
 	AudioManager::GetInstance()->LoadWave("maou_se_system48.wav");
 	AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
 
-	for (uint32_t i = 0; i < 3; ++i) {
+	for (uint32_t i = 0; i < 2; ++i) {
 		Object3d* object3d = new Object3d;
 		object3d->Initialize();
 		object3ds.push_back(object3d);
 	}
-	object3ds[0]->SetModel("plane.obj");
+
+	ModelManager::GetInstance()->LoadModel("plane");
+	ModelManager::GetInstance()->LoadModel("fence");
+	ModelManager::GetInstance()->LoadModel("axis");
+
+	object3ds[0]->SetModel("plane");
 	object3ds[0]->SetTranslate({ -2,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
-	object3ds[1]->SetModel("plane.obj");
+	/*object3ds[1]->SetModel("plane.obj");
 	object3ds[1]->SetTranslate({ -1,0,0 });
-	object3ds[1]->SetRotate({ 0,3.14f,0 });
-	object3ds[2]->SetModel("axis.obj");
-	object3ds[2]->SetTranslate({ 3,0,0 });
+	object3ds[1]->SetRotate({ 0,3.14f,0 });*/
+	object3ds[1]->SetModel("axis");
+	object3ds[1]->SetTranslate({ 3,0,0 });
 
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
