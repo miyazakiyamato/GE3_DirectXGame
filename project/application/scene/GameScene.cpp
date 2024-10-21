@@ -28,7 +28,7 @@ void GameScene::Initialize(){
 	AudioManager::GetInstance()->LoadWave("maou_se_system48.wav");
 	AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
 
-	for (uint32_t i = 0; i < 2; ++i) {
+	for (uint32_t i = 0; i < 3; ++i) {
 		Object3d* object3d = new Object3d;
 		object3d->Initialize();
 		object3ds.push_back(object3d);
@@ -36,8 +36,11 @@ void GameScene::Initialize(){
 	object3ds[0]->SetModel("plane.obj");
 	object3ds[0]->SetTranslate({ -2,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
-	object3ds[1]->SetModel("axis.obj");
-	object3ds[1]->SetTranslate({ 3,0,0 });
+	object3ds[1]->SetModel("plane.obj");
+	object3ds[1]->SetTranslate({ -1,0,0 });
+	object3ds[1]->SetRotate({ 0,3.14f,0 });
+	object3ds[2]->SetModel("axis.obj");
+	object3ds[2]->SetTranslate({ 3,0,0 });
 
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
@@ -135,7 +138,9 @@ void GameScene::Update(){
 			ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Scale").c_str(), &scale.x, 0.1f);
 			object3d->SetScale(scale);
 
-			//ImGui::ColorEdit4("Model.Color", &(*materialData).color.x);
+			Vector4 color = object3d->GetColor();
+			ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".Color").c_str(), &color.x);
+			object3d->SetColor(color);
 
 			ImGui::Text("\n");
 

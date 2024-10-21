@@ -55,5 +55,8 @@ private:
 	//バッファリソースの使い道を補足するバッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	//D3D12_INDEX_BUFFER_VIEW indexBufferView;
+public://ゲッターセッター
+	void SetColor(const Vector4& color) { materialData->color = color; }
+	const Vector4& GetColor() { return materialData->color; }
 };
 
