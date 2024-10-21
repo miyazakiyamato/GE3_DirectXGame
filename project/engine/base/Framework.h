@@ -23,6 +23,8 @@
 #include "SrvManager.h"
 #include "ImGuiManager.h"
 #include "AudioManager.h"
+#include "SceneManager.h"
+#include "AbstractSceneFactory.h"
 
 class Framework{
 public://メンバ関数
@@ -46,11 +48,13 @@ protected://メンバ変数
 	WinApp* winApp = nullptr;
 	//DirecX
 	DirectXCommon* dxCommon = nullptr;
-	//入力
-	Input* input = nullptr;
 	//SRV
 	SrvManager* srvManager = nullptr;
 	//ImGui
 	ImGuiManager* imGuiManager = nullptr;
+	//シーン
+	SceneManager* sceneManager_ = nullptr;
+	//シーンファクトリー
+	AbstractSceneFactory* sceneFactory_ = nullptr;
 };
 

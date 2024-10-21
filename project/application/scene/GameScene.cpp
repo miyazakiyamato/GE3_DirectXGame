@@ -1,8 +1,12 @@
-#include "MyGame.h"
+#include "GameScene.h"
+#include <imgui.h>
+#include "Input.h"
+#include "CameraManager.h"
+#include "ModelManager.h"
+#include "AudioManager.h"
 
-void MyGame::Initialize(){
-	//基底クラスの初期化処理
-	Framework::Initialize();
+void GameScene::Initialize(){
+	BaseScene::Initialize();
 
 	//開発用のUIの処理。
 	// ウインドウのサイズを固定する
@@ -22,8 +26,9 @@ void MyGame::Initialize(){
 
 	AudioManager::GetInstance()->Initialize();
 	AudioManager::GetInstance()->LoadWave("maou_se_system48.wav");
+	AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
 
-	for (uint32_t i = 0; i < 2; ++i) {
+	for (uint32_t i = 0; i < 3; ++i) {
 		Object3d* object3d = new Object3d;
 		object3d->Initialize();
 		object3ds.push_back(object3d);
@@ -31,8 +36,11 @@ void MyGame::Initialize(){
 	object3ds[0]->SetModel("plane.obj");
 	object3ds[0]->SetTranslate({ -2,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
-	object3ds[1]->SetModel("axis.obj");
-	object3ds[1]->SetTranslate({ 3,0,0 });
+	object3ds[1]->SetModel("plane.obj");
+	object3ds[1]->SetTranslate({ -1,0,0 });
+	object3ds[1]->SetRotate({ 0,3.14f,0 });
+	object3ds[2]->SetModel("axis.obj");
+	object3ds[2]->SetTranslate({ 3,0,0 });
 
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
@@ -50,7 +58,7 @@ void MyGame::Initialize(){
 	sprites[3]->SetIsFlipY(true);
 }
 
-void MyGame::Finalize(){
+void GameScene::Finalize(){
 	//解放
 	for (Sprite* sprite : sprites) {
 		delete sprite;
@@ -58,21 +66,18 @@ void MyGame::Finalize(){
 	for (Object3d* object3d : object3ds) {
 		delete object3d;
 	}
-	//基底クラスの終了処理
-	Framework::Finalize();
+	BaseScene::Finalize();
 }
 
-void MyGame::Update(){
-	//基底クラスの更新処理
-	Framework::Update();
+void GameScene::Update(){
+	BaseScene::Update();
 
-	if (input->TriggerKey(DIK_SPACE)) {
-		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
+	if (input_->TriggerKey(DIK_SPACE)) {
+		//AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
+		AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
 	}
 
 #ifdef _DEBUG
-	imGuiManager->Begin();
-
 	//// ウインドウフラグに NoResize を指定
 	//ImGui::Begin("Settings", NULL, ImGuiWindowFlags_NoResize);
 	ImGui::Begin("Settings");
@@ -124,7 +129,7 @@ void MyGame::Update(){
 			object3d->SetTranslate(translate);
 
 			Vector3 rotate = object3d->GetRotate();
-			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) +".Transform.Rotate.x").c_str(), &rotate.x);
+			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.x").c_str(), &rotate.x);
 			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.y").c_str(), &rotate.y);
 			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.z").c_str(), &rotate.z);
 			object3d->SetRotate(rotate);
@@ -133,7 +138,9 @@ void MyGame::Update(){
 			ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Scale").c_str(), &scale.x, 0.1f);
 			object3d->SetScale(scale);
 
-			//ImGui::ColorEdit4("Model.Color", &(*materialData).color.x);
+			Vector4 color = object3d->GetColor();
+			ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".Color").c_str(), &color.x);
+			object3d->SetColor(color);
 
 			ImGui::Text("\n");
 
@@ -178,7 +185,6 @@ void MyGame::Update(){
 	ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);*/
 	ImGui::End();
-	imGuiManager->End();
 #endif //_DEBUG
 
 	for (Object3d* object3d : object3ds) {
@@ -189,35 +195,11 @@ void MyGame::Update(){
 	}
 }
 
-void MyGame::Draw(){
-	//描画前処理
-	dxCommon->PreDraw();
-
-	srvManager->PreDraw();
-
-	// コマンドリストの取得
-	ID3D12GraphicsCommandList* commandList = dxCommon->GetCommandList();
-
-	//Modelの描画準備Modelの描画に共通グラフィックコマンドを積む
-	ModelManager::GetInstance()->DrawCommonSetting();
-
-	CameraManager::GetInstance()->GetCamera()->Update();
-
+void GameScene::Draw(){
 	for (Object3d* object3d : object3ds) {
 		object3d->Draw();
 	}
-
-	//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
-	TextureManager::GetInstance()->DrawCommonSetting();
 	for (Sprite* sprite : sprites) {
 		sprite->Draw();
 	}
-
-#ifdef _DEBUG
-	//実際のcommandListのImGuiの描画コマンドを積む
-	imGuiManager->Draw();
-#endif //_DEBUG
-
-	//描画後処理
-	dxCommon->PostDraw();
 }

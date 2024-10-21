@@ -49,6 +49,7 @@ void Object3d::Draw(){
 	commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource.Get()->GetGPUVirtualAddress());
 
 	if (model_) {
+		model_->SetColor(color_);
 		model_->Draw();
 	}
 
@@ -57,4 +58,5 @@ void Object3d::Draw(){
 void Object3d::SetModel(const std::string& filePath){
 	//モデルを検索してセット
 	model_ = ModelManager::GetInstance()->FindModel(filePath);
+	color_ = model_->GetColor();
 }

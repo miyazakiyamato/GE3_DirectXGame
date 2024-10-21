@@ -12,12 +12,15 @@ public:
 	//namespace省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-public:
+public://メンバ関数
+	//シングルインスタンスの取得
+	static Input* GetInstance();
 	//初期化
 	void Initialize(WinApp* winApp);
+	//終了
+	void Finalize();
 	//更新
 	void Update();
-
 	/// <summary>
 	/// キーの押下をチェック
 	/// </summary>
@@ -30,7 +33,14 @@ public:
 	/// <param name = "keyNumber>キー番号(DIK_0等)</param>
 	/// <returns>トリガーか</returns>
 	bool TriggerKey(BYTE keyNumber);
-private:
+private://シングルインスタンス
+	static Input* instance;
+
+	Input() = default;
+	~Input() = default;
+	Input(Input&) = delete;
+	Input& operator=(Input&) = delete;
+private://メンバ変数
 	//WindowsAPI
 	WinApp* winApp_ = nullptr;
 

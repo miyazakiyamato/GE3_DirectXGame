@@ -1,4 +1,5 @@
 #include "Framework.h"
+#include "SceneFactory.h"
 
 void Framework::Initialize(){
 	(void)CoInitializeEx(0, COINIT_MULTITHREADED);
@@ -12,8 +13,7 @@ void Framework::Initialize(){
 	dxCommon->Initialize(winApp);
 
 	//入力の初期化
-	input = new Input();
-	input->Initialize(winApp);
+	Input::GetInstance()->Initialize(winApp);
 	
 	//SRVの初期化
 	srvManager = new SrvManager();
@@ -35,30 +35,41 @@ void Framework::Initialize(){
 	CameraManager::GetInstance()->FindCamera("default");
 	CameraManager::GetInstance()->GetCamera()->SetRotate({ 0.3f,0.0f,0.0f });
 	CameraManager::GetInstance()->GetCamera()->SetTranslate({ 0.0f,4.0f,-10.0f });
+	
+	//シーンマネージャの初期化
+	sceneFactory_ = new SceneFactory();
+	sceneManager_ = SceneManager::GetInstance();
+	sceneManager_->SetSceneFactory(sceneFactory_);
 }
 
 void Framework::Finalize(){
 	//終了
+	sceneManager_->Finalize();
 	AudioManager::GetInstance()->Finalize();
 	ModelManager::GetInstance()->Finalize();
 	TextureManager::GetInstance()->Finalize();
 	CameraManager::GetInstance()->Finalize();
 	imGuiManager->Finalize();
+	Input::GetInstance()->Finalize();
 	winApp->Finalize();
 
 	//解放
+	delete sceneFactory_;
 	delete imGuiManager;
 	delete srvManager;
-	delete input;
 	delete dxCommon;
 	delete winApp;
-
-	//CloseHandle(fenceEvent);
 }
 
 void Framework::Update(){
 	//ゲームの処理
-	input->Update();
+	Input::GetInstance()->Update();
+
+	imGuiManager->Begin();
+
+	sceneManager_->Update();
+
+	imGuiManager->End();
 }
 
 void Framework::Run(){
