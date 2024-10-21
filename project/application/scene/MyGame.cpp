@@ -23,12 +23,6 @@ void MyGame::Draw(){
 	dxCommon->PreDraw();
 	srvManager->PreDraw();
 
-	//Modelの描画準備Modelの描画に共通グラフィックコマンドを積む
-	ModelManager::GetInstance()->DrawCommonSetting();
-
-	//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
-	TextureManager::GetInstance()->DrawCommonSetting();
-
 	CameraManager::GetInstance()->GetCamera()->Update();
 		
 	sceneManager_->Draw();

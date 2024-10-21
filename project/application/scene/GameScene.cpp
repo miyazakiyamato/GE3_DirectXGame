@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "CameraManager.h"
 #include "ModelManager.h"
+#include "TextureManager.h"
 #include "AudioManager.h"
 
 void GameScene::Initialize(){
@@ -36,7 +37,7 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("fence");
 	ModelManager::GetInstance()->LoadModel("axis");
 
-	object3ds[0]->SetModel("plane");
+	object3ds[0]->SetModel("fence");
 	object3ds[0]->SetTranslate({ -2,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
 	/*object3ds[1]->SetModel("plane.obj");
@@ -199,9 +200,14 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
+	//Modelの描画準備Modelの描画に共通グラフィックコマンドを積む
+	ModelManager::GetInstance()->DrawCommonSetting();
+
 	for (Object3d* object3d : object3ds) {
 		object3d->Draw();
 	}
+	//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
+	TextureManager::GetInstance()->DrawCommonSetting();
 	for (Sprite* sprite : sprites) {
 		sprite->Draw();
 	}
