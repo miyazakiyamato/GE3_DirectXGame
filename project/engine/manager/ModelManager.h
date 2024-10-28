@@ -14,6 +14,8 @@ public://メンバ関数
 
 	//共通描画設定
 	void DrawCommonSetting();
+	//
+	void ChangeBlendMode(ModelCommon::BlendMode blendMode);
 
 	//モデルファイルの読み込み
 	void LoadModel(const std::string& filePath);

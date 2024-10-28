@@ -23,6 +23,11 @@ public://メンバ関数
 	void DrawCommonSetting();
 	//ブレンドモード設定
 	D3D12_BLEND_DESC SetBlendModeNone();
+	D3D12_BLEND_DESC SetBlendModeNormal();
+	D3D12_BLEND_DESC SetBlendModeAdd();
+	D3D12_BLEND_DESC SetBlendModeSubtract();
+	D3D12_BLEND_DESC SetBlendModeMultiply();
+	D3D12_BLEND_DESC SetBlendModeScreen();
 
 private:
 	//ルートシグネチャの作成
@@ -35,9 +40,10 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 	//ブレンドモード
-	BlendMode blendMode = BlendMode::kNone;
+	BlendMode blendMode_ = BlendMode::kNone;
 	static D3D12_BLEND_DESC (ModelCommon::*spFuncTable[])();
 public:
 	DirectXCommon* GetDxCommon() { return dxCommon_; }
+	void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 };
 
