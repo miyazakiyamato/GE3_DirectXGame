@@ -146,8 +146,7 @@ void GameScene::Update(){
 				const bool is_selected = (item_selected_idx == n);
 				if (ImGui::Selectable(items[n], is_selected)) {
 					item_selected_idx = n;
-					//ModelManager::GetInstance()->ChangeBlendMode(items[n]);
-					CameraManager::GetInstance()->FindCamera(items[n]);
+					ModelManager::GetInstance()->ChangeBlendMode(static_cast<ModelCommon::BlendMode>(n));
 				}
 
 				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)

@@ -11,6 +11,7 @@ void ModelCommon::Initialize(DirectXCommon* dxCommon){
 }
 
 void ModelCommon::DrawCommonSetting(){
+	CreateGraphicsPipeline();
 	// コマンドリストの取得
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
 
@@ -252,5 +253,9 @@ void ModelCommon::CreateGraphicsPipeline(){
 }
 D3D12_BLEND_DESC (ModelCommon::* ModelCommon::spFuncTable[])() = {
 	&ModelCommon::SetBlendModeNone,
+	&ModelCommon::SetBlendModeNormal,
 	&ModelCommon::SetBlendModeAdd,
+	&ModelCommon::SetBlendModeSubtract,
+	&ModelCommon::SetBlendModeMultiply,
+	&ModelCommon::SetBlendModeScreen,
 };
