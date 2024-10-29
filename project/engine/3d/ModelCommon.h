@@ -4,6 +4,9 @@
 
 class ModelCommon{
 public:
+	//namespace省略
+	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+	//ブレンドモード
 	enum class BlendMode {
 		kNone,      //!< ブレンドなし
 		kNormal,    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
@@ -37,8 +40,8 @@ private:
 private:
 	DirectXCommon* dxCommon_ = nullptr;
 
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
+	ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+	ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 	//ブレンドモード
 	BlendMode blendMode_ = BlendMode::kNone;
 	static D3D12_BLEND_DESC (ModelCommon::*spFuncTable[])();

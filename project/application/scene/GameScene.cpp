@@ -183,6 +183,37 @@ void GameScene::Update(){
 		}
 	}
 	if (ImGui::CollapsingHeader("Sprite")) {
+		static ImGuiComboFlags flags = 0;
+		const char* items[] = {
+		"None",      //!< ブレンドなし
+		"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
+		"Add",       //!< 加算。Src * SrcA + Dest * 1
+		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
+		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
+		"Screen", };
+		static int item_selected_idx = 0; // Here we store our selection data as an index.
+
+		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
+		const char* combo_preview_value = items[item_selected_idx];
+
+		if (ImGui::BeginCombo("Now Blend", combo_preview_value, flags))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+			{
+				const bool is_selected = (item_selected_idx == n);
+				if (ImGui::Selectable(items[n], is_selected)) {
+					item_selected_idx = n;
+					TextureManager::GetInstance()->ChangeBlendMode(static_cast<SpriteCommon::BlendMode>(n));
+				}
+
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+
 		size_t spriteCount = 0;
 		for (Sprite* sprite : sprites) {
 			Vector2 position = sprite->GetPosition();
