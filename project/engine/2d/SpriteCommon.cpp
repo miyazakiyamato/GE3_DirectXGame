@@ -11,7 +11,6 @@ void SpriteCommon::Initialize(DirectXCommon* dxCommon){
 }
 
 void SpriteCommon::DrawCommonSetting(){
-	CreateGraphicsPipeline();
 	// コマンドリストの取得
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
 

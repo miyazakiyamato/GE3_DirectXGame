@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
-#include "ModelCommon.h"
-#include "externals/DirectXTex/d3dx12.h"
+#include "d3dx12.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
@@ -10,6 +9,9 @@
 class ModelCommon;
 class Model{
 private:
+	//namespace省略
+	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+	//構造体
 	struct VertexData {
 		Vector4 position;
 		Vector2 texcoord;
@@ -45,9 +47,9 @@ private:
 	//Objファイルのデータ
 	ModelData modelData;
 	//バッファリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
-	//Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
+	ComPtr<ID3D12Resource> vertexResource;
+	//ComPtr<ID3D12Resource> indexResource;
+	ComPtr<ID3D12Resource> materialResource;
 	//バッファリソース内のデータを指すポインタ
 	VertexData* vertexData = nullptr;
 	//uint32_t* indexData = nullptr;

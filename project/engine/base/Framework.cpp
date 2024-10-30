@@ -26,6 +26,9 @@ void Framework::Initialize(){
 	//テクスチャマネージャの初期化
 	TextureManager::GetInstance()->Initialize(dxCommon, srvManager);
 
+	//パーティクルマネージャの初期化
+	ParticleManager::GetInstance()->Initialize(dxCommon);
+
 	//モデルマネージャの初期化
 	ModelManager::GetInstance()->Initialize(dxCommon);
 	
@@ -47,6 +50,7 @@ void Framework::Finalize(){
 	sceneManager_->Finalize();
 	AudioManager::GetInstance()->Finalize();
 	ModelManager::GetInstance()->Finalize();
+	ParticleManager::GetInstance()->Finalize();
 	TextureManager::GetInstance()->Finalize();
 	CameraManager::GetInstance()->Finalize();
 	imGuiManager->Finalize();

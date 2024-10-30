@@ -2,6 +2,7 @@
 #include <cassert>
 #include <fstream>
 #include <sstream>
+#include "ModelCommon.h"
 #include "TextureManager.h"
 
 void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPath, const std::string& filename){

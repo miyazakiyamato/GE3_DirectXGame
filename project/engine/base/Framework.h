@@ -25,6 +25,7 @@
 #include "AudioManager.h"
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
+#include "ParticleManager.h"
 
 class Framework{
 public://メンバ関数

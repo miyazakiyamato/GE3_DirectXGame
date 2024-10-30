@@ -1,16 +1,16 @@
-#include "ModelCommon.h"
+#include "ParticleCommon.h"
 #include "Logger.h"
 
 using namespace Microsoft::WRL;
 using namespace Logger;
 
-void ModelCommon::Initialize(DirectXCommon* dxCommon){
+void ParticleCommon::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 
 	CreateGraphicsPipeline();
 }
 
-void ModelCommon::DrawCommonSetting(){
+void ParticleCommon::DrawCommonSetting() {
 	// コマンドリストの取得
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
 
@@ -21,7 +21,7 @@ void ModelCommon::DrawCommonSetting(){
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-D3D12_BLEND_DESC ModelCommon::SetBlendModeNone(){//BlendStateの設定
+D3D12_BLEND_DESC ParticleCommon::SetBlendModeNone() {//BlendStateの設定
 	D3D12_BLEND_DESC blendDesc{};
 	//すべての色要素を書き込む
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
@@ -29,7 +29,7 @@ D3D12_BLEND_DESC ModelCommon::SetBlendModeNone(){//BlendStateの設定
 	return blendDesc;
 }
 
-D3D12_BLEND_DESC ModelCommon::SetBlendModeNormal()
+D3D12_BLEND_DESC ParticleCommon::SetBlendModeNormal()
 {
 	D3D12_BLEND_DESC blendDesc{};
 	//すべての色要素を書き込む
@@ -47,7 +47,7 @@ D3D12_BLEND_DESC ModelCommon::SetBlendModeNormal()
 	return blendDesc;
 }
 
-D3D12_BLEND_DESC ModelCommon::SetBlendModeAdd()
+D3D12_BLEND_DESC ParticleCommon::SetBlendModeAdd()
 {
 	D3D12_BLEND_DESC blendDesc{};
 	//すべての色要素を書き込む
@@ -65,7 +65,7 @@ D3D12_BLEND_DESC ModelCommon::SetBlendModeAdd()
 	return blendDesc;
 }
 
-D3D12_BLEND_DESC ModelCommon::SetBlendModeSubtract()
+D3D12_BLEND_DESC ParticleCommon::SetBlendModeSubtract()
 {
 	D3D12_BLEND_DESC blendDesc{};
 	//すべての色要素を書き込む
@@ -83,7 +83,7 @@ D3D12_BLEND_DESC ModelCommon::SetBlendModeSubtract()
 	return blendDesc;
 }
 
-D3D12_BLEND_DESC ModelCommon::SetBlendModeMultiply()
+D3D12_BLEND_DESC ParticleCommon::SetBlendModeMultiply()
 {
 	D3D12_BLEND_DESC blendDesc{};
 	//すべての色要素を書き込む
@@ -101,7 +101,7 @@ D3D12_BLEND_DESC ModelCommon::SetBlendModeMultiply()
 	return blendDesc;
 }
 
-D3D12_BLEND_DESC ModelCommon::SetBlendModeScreen()
+D3D12_BLEND_DESC ParticleCommon::SetBlendModeScreen()
 {
 	D3D12_BLEND_DESC blendDesc{};
 	//すべての色要素を書き込む
@@ -119,7 +119,7 @@ D3D12_BLEND_DESC ModelCommon::SetBlendModeScreen()
 	return blendDesc;
 }
 
-void ModelCommon::CreateRootSignature(){
+void ParticleCommon::CreateRootSignature() {
 	HRESULT hr;
 
 	//RootSignature作成
@@ -137,16 +137,23 @@ void ModelCommon::CreateRootSignature(){
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;//CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;//PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
-	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;//CBVを使う
+
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;//CBVを使う
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;//VertexShaderで使う
-	rootParameters[1].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
+	rootParameters[1].DescriptorTable.pDescriptorRanges = descriptorRange;
+	rootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
+	//rootParameters[1].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
+
+
 	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;//DescriptorTableを使う
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;//PixelShaderで使う
 	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange;//Tableの中身の配列を指定
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);//Tableで利用する数
+
 	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;//CBVを使う
 	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;//PixelShaderで使う
 	rootParameters[3].Descriptor.ShaderRegister = 1;//レジスタ番号1を使う
+
 	descriptionRootSignature.pParameters = rootParameters; //ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters); //配列の長さ
 
@@ -179,7 +186,7 @@ void ModelCommon::CreateRootSignature(){
 	assert(SUCCEEDED(hr));
 }
 
-void ModelCommon::CreateGraphicsPipeline(){
+void ParticleCommon::CreateGraphicsPipeline() {
 	HRESULT hr;
 
 	CreateRootSignature();
@@ -210,10 +217,10 @@ void ModelCommon::CreateGraphicsPipeline(){
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	//Shaderをコンパイルする
-	ComPtr<IDxcBlob> vertexShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Object3D.VS.hlsl", L"vs_6_0");
+	ComPtr<IDxcBlob> vertexShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Particle.VS.hlsl", L"vs_6_0");
 	assert(vertexShaderBlob != nullptr);
 
-	ComPtr<IDxcBlob> pixelShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Object3D.PS.hlsl", L"ps_6_0");
+	ComPtr<IDxcBlob> pixelShaderBlob = dxCommon_->CompileShader(L"Resources/shaders/Particle.PS.hlsl", L"ps_6_0");
 	assert(pixelShaderBlob != nullptr);
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
@@ -250,11 +257,11 @@ void ModelCommon::CreateGraphicsPipeline(){
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
 }
-D3D12_BLEND_DESC (ModelCommon::* ModelCommon::spFuncTable[])() = {
-	&ModelCommon::SetBlendModeNone,
-	&ModelCommon::SetBlendModeNormal,
-	&ModelCommon::SetBlendModeAdd,
-	&ModelCommon::SetBlendModeSubtract,
-	&ModelCommon::SetBlendModeMultiply,
-	&ModelCommon::SetBlendModeScreen,
+D3D12_BLEND_DESC(ParticleCommon::* ParticleCommon::spFuncTable[])() = {
+	&ParticleCommon::SetBlendModeNone,
+	&ParticleCommon::SetBlendModeNormal,
+	&ParticleCommon::SetBlendModeAdd,
+	&ParticleCommon::SetBlendModeSubtract,
+	&ParticleCommon::SetBlendModeMultiply,
+	&ParticleCommon::SetBlendModeScreen,
 };

@@ -26,7 +26,7 @@ void ModelManager::DrawCommonSetting(){
 
 void ModelManager::ChangeBlendMode(ModelCommon::BlendMode blendMode){
 	modelCommon->SetBlendMode(blendMode);
-	//modelCommon->DrawCommonSetting();
+	modelCommon->CreateGraphicsPipeline();
 }
 
 void ModelManager::LoadModel(const std::string& filePath){

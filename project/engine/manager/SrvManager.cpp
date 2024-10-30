@@ -1,5 +1,6 @@
 #include "SrvManager.h"
 #include <cassert>
+#include <Particle.h>
 
 const uint32_t SrvManager::kMaxSRVCount = 512;
 
@@ -48,7 +49,15 @@ void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResou
 }
 
 void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByStride){
-	srvIndex; pResource; numElements; structureByStride;
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	srvDesc.Buffer.FirstElement = 0;
+	srvDesc.Buffer.NumElements = structureByStride;
+	srvDesc.Buffer.StructureByteStride = sizeof(Particle::TransformationMatrix);
+
+	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUDescriptorHandle(srvIndex));
 }
 
 void SrvManager::PreDraw(){

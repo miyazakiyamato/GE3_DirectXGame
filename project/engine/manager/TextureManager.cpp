@@ -58,6 +58,7 @@ void TextureManager::LoadTexture(const std::string& filePath){
 
 void TextureManager::ChangeBlendMode(SpriteCommon::BlendMode blendMode){
 	spriteCommon->SetBlendMode(blendMode);
+	spriteCommon->CreateGraphicsPipeline();
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(const std::string& filePath){

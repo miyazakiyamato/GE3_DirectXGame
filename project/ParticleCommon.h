@@ -2,7 +2,7 @@
 #include "DirectXCommon.h"
 #include "Camera.h"
 
-class ModelCommon{
+class ParticleCommon {
 public:
 	//namespace省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
@@ -43,9 +43,8 @@ private:
 	ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 	//ブレンドモード
 	BlendMode blendMode_ = BlendMode::kNormal;
-	static D3D12_BLEND_DESC (ModelCommon::*spFuncTable[])();
+	static D3D12_BLEND_DESC(ParticleCommon::* spFuncTable[])();
 public:
 	DirectXCommon* GetDxCommon() { return dxCommon_; }
 	void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 };
-

@@ -1,5 +1,5 @@
 #pragma once
-#include "externals/DirectXTex/d3dx12.h"
+#include "d3dx12.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
@@ -8,6 +8,9 @@
 class SpriteCommon;
 class Sprite{
 private:
+	//namespace省略
+	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+	//構造体
 	struct VertexData {
 		Vector4 position;
 		Vector2 texcoord;
@@ -36,10 +39,10 @@ private://ローカル関数
 private://メンバ変数
 	SpriteCommon* spriteCommon_ = nullptr;
 	//バッファリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
+	ComPtr<ID3D12Resource> vertexResource;
+	ComPtr<ID3D12Resource> indexResource;
+	ComPtr<ID3D12Resource> materialResource;
+	ComPtr<ID3D12Resource> wvpResource;
 	//バッファリソース内のデータを指すポインタ
 	VertexData* vertexData = nullptr;
 	uint32_t* indexData = nullptr;
@@ -61,7 +64,7 @@ private://メンバ変数
 	Vector2 position_ = { 0.0f,0.0f };
 	float rotation_ = 0.0f;
 	Vector2 size_ = { 640.0f,360.0f };
-
+	//テクスチャサイズ
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };
 	Vector2 textureSize_ = { 100.0f,100.0f };
 public://ゲッターセッター

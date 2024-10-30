@@ -23,11 +23,9 @@ public://メンバ関数
 	void Initialize(DirectXCommon* dxCommon);
 	//共通描画設定
 	void DrawCommonSetting();
-private:
-	//ルートシグネチャの作成
-	void CreateRootSignature();
 	//グラフィックスパイプラインの生成
 	void CreateGraphicsPipeline();
+private:
 	//ブレンドモード設定
 	D3D12_BLEND_DESC SetBlendModeNone();
 	D3D12_BLEND_DESC SetBlendModeNormal();
@@ -35,13 +33,15 @@ private:
 	D3D12_BLEND_DESC SetBlendModeSubtract();
 	D3D12_BLEND_DESC SetBlendModeMultiply();
 	D3D12_BLEND_DESC SetBlendModeScreen();
+	//ルートシグネチャの作成
+	void CreateRootSignature();
 private:
 	DirectXCommon* dxCommon_;
 
 	ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 	ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 	//ブレンドモード
-	BlendMode blendMode_ = BlendMode::kNone;
+	BlendMode blendMode_ = BlendMode::kNormal;
 	static D3D12_BLEND_DESC(SpriteCommon::* spFuncTable[])();
 public:
 	DirectXCommon* GetDxCommon() { return dxCommon_; }
