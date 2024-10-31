@@ -119,57 +119,54 @@ void ParticleManager::Finalize() {
 //}
 
 void ParticleManager::Update() {
-	Matrix4x4 worldMatrix;
-	Matrix4x4 worldViewProjectionMatrix;
-	Matrix4x4 viewProjectionMatrix;
-	Matrix4x4 billboardMatrix;
+    Matrix4x4 viewProjectionMatrix;
+    Matrix4x4 billboardMatrix;
 
-    for (auto& [name, group] : particleGroups) {
+    if (CameraManager::GetInstance()->GetCamera()) {
+        viewProjectionMatrix = CameraManager::GetInstance()->GetCamera()->GetViewProjectionMatrix();
+        billboardMatrix = CameraManager::GetInstance()->GetCamera()->GetWorldMatrix();
+        billboardMatrix.m[3][0] = 0.0f;
+        billboardMatrix.m[3][1] = 0.0f;
+        billboardMatrix.m[3][2] = 0.0f;
+    }
 
-		for (uint32_t index = 0; index < group->kNumInstance; ++index) {
-			// 寿命チェック
-			if (group->particles[index].GetIsAlive() == false) {
-				group->particles[index] = particles.erase(group->particles[index]);
-				continue;
-			}
+    for (std::pair<const std::string, std::unique_ptr<ParticleGroup>>& pair : particleGroups) {
+        ParticleGroup& group = *pair.second;
+        int index = 0;
 
-			// パーティクルの位置や速度の更新
-			group->particles[index].Update();
+        for (std::list<Particle>::iterator it = group.particles.begin(); it != group.particles.end();) {
+            Particle& particle = *it;
 
-			worldMatrix = Matrix4x4::MakeAffineMatrix(group->particles[index].GetScale(), group->particles[index].GetRotate, group->particles[index].GetTranslate);
-			if (CameraManager::GetInstance()->GetCamera()) {
-				viewProjectionMatrix = CameraManager::GetInstance()->GetCamera()->GetViewProjectionMatrix();
-				billboardMatrix = CameraManager::GetInstance()->GetCamera()->GetWorldMatrix();
-				billboardMatrix.m[3][0] = 0.0f;
-				billboardMatrix.m[3][1] = 0.0f;
-				billboardMatrix.m[3][2] = 0.0f;
-				worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;
-			}
-			else {
-				worldViewProjectionMatrix = worldMatrix;
-			}
-			group->instancingData[index].World = worldMatrix;
-			group->instancingData[index].WVP = worldViewProjectionMatrix;
-			group->instancingData[index].color = group->particles[index].GetColor();
-		}
+            particle.Update();
+
+            if (!particle.GetIsAlive()) {
+                it = group.particles.erase(it);
+                continue;
+            }
+
+            Matrix4x4 worldMatrix = particle.GetWorldMatrix();
+            Matrix4x4 worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;
+            group.instancingData[index].World = worldMatrix;
+            group.instancingData[index].WVP = worldViewProjectionMatrix;
+            group.instancingData[index].color = particle.GetColor();
+
+            ++it;
+            ++index;
+        }
     }
 }
 
 void ParticleManager::Draw() {
-	particleCommon_->DrawCommonSetting();
+    ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+    for (std::pair<const std::string, std::unique_ptr<ParticleGroup>>& pair : particleGroups) {
+        ParticleGroup& group = *pair.second;
 
-    for (auto& [name, group] : particleGroups) {
-       // ルートシグネチャにテクスチャのSRVを設定
-        commandList->SetGraphicsRootDescriptorTable(0, group->materialData.srvHandleGPU);
+        commandList->SetGraphicsRootDescriptorTable(0, group.materialData.srvHandleGPU);
+        srvManager_->SetGraphicsRootDescriptorTable(1, group.srvIndexForInstancing);
 
-        // インスタンシング用SRVを設定
-        srvManager_->SetGraphicsRootDescriptorTable(1, group->srvIndexForInstancing);
-
-        // インスタンシング描画のコマンドを発行
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        commandList->DrawInstanced(group->kNumInstance, 1, 0, 0);
+        commandList->DrawInstanced(group.kNumInstance, 1, 0, 0);
     }
 }
 
