@@ -3,7 +3,7 @@
 #include <wrl.h>
 #include <d3d12.h>
 #include <unordered_map>
-#include "externals/DirectXTex/DirectXTex.h"
+#include "DirectXTex.h"
 #include "SpriteCommon.h"
 
 class DirectXCommon;

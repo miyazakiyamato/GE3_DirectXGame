@@ -27,7 +27,7 @@ void Framework::Initialize(){
 	TextureManager::GetInstance()->Initialize(dxCommon, srvManager);
 
 	//パーティクルマネージャの初期化
-	ParticleManager::GetInstance()->Initialize(dxCommon);
+	ParticleManager::GetInstance()->Initialize(dxCommon, srvManager);
 
 	//モデルマネージャの初期化
 	ModelManager::GetInstance()->Initialize(dxCommon);

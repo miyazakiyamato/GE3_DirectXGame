@@ -140,9 +140,9 @@ void ParticleCommon::CreateRootSignature() {
 
 	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;//CBVを使う
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;//VertexShaderで使う
+	rootParameters[1].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
 	rootParameters[1].DescriptorTable.pDescriptorRanges = descriptorRange;
 	rootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
-	//rootParameters[1].Descriptor.ShaderRegister = 0; //レジスタ番号0とバインド
 
 
 	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;//DescriptorTableを使う
@@ -246,7 +246,7 @@ void ParticleCommon::CreateGraphicsPipeline() {
 	//Depthの機能を有効化する
 	depthStencilDesc.DepthEnable = true;
 	//書き込みします
-	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 	//比較関数はLessEqual。つまり、近ければ描画される
 	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	//DepthStencilの設定
