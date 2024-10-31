@@ -26,11 +26,6 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
-	//頂点データの初期化
-	//頂点リソースの生成
-	//頂点バッファビューの生成
-	//頂点リソースに頂点データを書き込む
-
 	for (auto& [name, group] : particleGroups) {
 		//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 		group->instancingResource = dxCommon->CreateBufferResource(sizeof(ParticleForGPU) * group->kNumInstance);
@@ -49,74 +44,6 @@ void ParticleManager::Finalize() {
 	delete instance;
 	instance = nullptr;
 }
-
-//void ParticleManager::Update(){
-//	//ビルボード行列の計算
-//
-//	//ビュー行列とプロジェクション行列をカメラから取得
-//
-//	//全てのパーティクルグループについて処理する
-//	//グループ内の全てのパーティクルについて処理する
-//	
-//	//寿命に達していたらグループから外す
-//
-//	//場の影響を計算(加速)
-//
-//	//移動処理(速度を座標に加算)
-//
-//	//ワールド行列を計算
-//
-//	//ワールドビュープロジェクション行列を合成
-//
-//	//インスタんシング用データ1個分の書き込み
-//
-//	//全パーティーグループ内の全パーティクルについて2重for文で処理する
-//}
-//
-//void ParticleManager::Draw(){
-//	// コマンドリストの取得
-//	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-//
-//	//ルートシグネチャを設定
-//
-//	//PSOを設定
-//
-//	//プリミティブトポロジーを設定
-//
-//	//VBVを設定
-//
-//	//全てのパーティクルグループについて処理する
-//	//テクスチャのSRVのDesctiptorTableを設定
-//	
-//	//インスタんシングデータのSRVのDescriptorTableを設定
-//
-//	//DrawCall(インスタんシング描画)
-//
-//	//1グループで1DrawCallなので、こちらは二重for文にはならない
-//}
-//
-//void ParticleManager::CreateParticleGroup(const std::string name, const std::string textureFilePath){
-//	//登録済みの名前かチェックしてassert
-//
-//	//新たな空のパーティクルグループを作成してコンテナに登録
-//
-//	//新たなパーティクルグループの初期化
-//	//マテリアルデータにテクスチャファイルパスを設定
-//
-//	//マテリアルデータのテクスチャのSRVインデックスを記録
-//
-//	//インスタンシング用リソースの生成
-//
-//	//インスタンシング用にSRVを確保してSRVインデックスを記録
-//
-//	//SRV生成(StructuredBuffer用設定)
-//}
-//
-//void ParticleManager::Emit(const std::string name, const Vector3& position, uint32_t count){
-//	//登録済みのパーティクルグループ名かチェックしてassert
-//
-//	//新たなパーティクルを作成して指定されたパーティクルグループに登録
-//}
 
 void ParticleManager::Update() {
     Matrix4x4 viewProjectionMatrix;
