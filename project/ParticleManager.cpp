@@ -25,19 +25,6 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 	//ランダムエンジンの初期化
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
-
-	for (auto& [name, group] : particleGroups) {
-		//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-		group->instancingResource = dxCommon->CreateBufferResource(sizeof(ParticleForGPU) * group->kNumInstance);
-		//書き込むためのアドレスを取得
-		group->instancingResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&group->instancingData));
-		
-		for (uint32_t index = 0; index < group->kNumInstance; ++index) {
-			group->instancingData[index].WVP = Matrix4x4::MakeIdentity4x4();
-			group->instancingData[index].World = Matrix4x4::MakeIdentity4x4();
-			group->instancingData[index].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-		}
-	}
 }
 
 void ParticleManager::Finalize() {
@@ -111,7 +98,17 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
     group->instancingResource = dxCommon_->CreateBufferResource(group->kNumInstance * sizeof(ParticleForGPU));
     group->srvIndexForInstancing = srvManager_->ALLocate();
     srvManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), group->kNumInstance, sizeof(ParticleForGPU));
+    
+    //WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
+    group->instancingResource = dxCommon_->CreateBufferResource(sizeof(ParticleForGPU) * group->kNumInstance);
+    //書き込むためのアドレスを取得
+    group->instancingResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&group->instancingData));
 
+    for (uint32_t index = 0; index < group->kNumInstance; ++index) {
+        group->instancingData[index].WVP = Matrix4x4::MakeIdentity4x4();
+        group->instancingData[index].World = Matrix4x4::MakeIdentity4x4();
+        group->instancingData[index].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    }
     particleGroups[name] = std::move(group);
 }
 

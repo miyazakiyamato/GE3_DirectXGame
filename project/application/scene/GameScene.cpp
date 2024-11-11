@@ -260,7 +260,9 @@ void GameScene::Update(){
 	for (Object3d* object3d : object3ds) {
 		object3d->Update();
 	}
+
 	ParticleManager::GetInstance()->Update();
+
 	for (Sprite* sprite : sprites) {
 		sprite->Update();
 	}
