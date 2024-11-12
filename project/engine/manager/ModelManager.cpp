@@ -24,6 +24,11 @@ void ModelManager::DrawCommonSetting(){
 	modelCommon->DrawCommonSetting();
 }
 
+void ModelManager::ChangeBlendMode(ModelCommon::BlendMode blendMode){
+	modelCommon->SetBlendMode(blendMode);
+	//modelCommon->DrawCommonSetting();
+}
+
 void ModelManager::LoadModel(const std::string& filePath){
 	//読み込み済みモデルを検索
 	if (models.contains(filePath)) {

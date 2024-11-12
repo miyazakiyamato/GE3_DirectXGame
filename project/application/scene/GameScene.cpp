@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "CameraManager.h"
 #include "ModelManager.h"
+#include "TextureManager.h"
 #include "AudioManager.h"
 
 void GameScene::Initialize(){
@@ -24,7 +25,7 @@ void GameScene::Initialize(){
 
 	AudioManager::GetInstance()->Initialize();
 	AudioManager::GetInstance()->LoadWave("maou_se_system48.wav");
-	AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
+	//AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
 
 	for (uint32_t i = 0; i < 2; ++i) {
 		Object3d* object3d = new Object3d;
@@ -36,7 +37,7 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("fence");
 	ModelManager::GetInstance()->LoadModel("axis");
 
-	object3ds[0]->SetModel("plane");
+	object3ds[0]->SetModel("fence");
 	object3ds[0]->SetTranslate({ -2,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
 	/*object3ds[1]->SetModel("plane.obj");
@@ -76,8 +77,8 @@ void GameScene::Update(){
 	BaseScene::Update();
 
 	if (input_->TriggerKey(DIK_SPACE)) {
-		//AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
-		AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
+		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
+		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
 	}
 
 #ifdef _DEBUG
@@ -125,6 +126,37 @@ void GameScene::Update(){
 	}
 	if (ImGui::CollapsingHeader("Object3d"))
 	{
+		static ImGuiComboFlags flags = 0;
+		const char* items[] = {
+		"None",      //!< ブレンドなし
+		"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
+		"Add",       //!< 加算。Src * SrcA + Dest * 1
+		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
+		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
+		"Screen",};
+		static int item_selected_idx = 0; // Here we store our selection data as an index.
+
+		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
+		const char* combo_preview_value = items[item_selected_idx];
+
+		if (ImGui::BeginCombo("Now Blend", combo_preview_value, flags))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+			{
+				const bool is_selected = (item_selected_idx == n);
+				if (ImGui::Selectable(items[n], is_selected)) {
+					item_selected_idx = n;
+					ModelManager::GetInstance()->ChangeBlendMode(static_cast<ModelCommon::BlendMode>(n));
+				}
+
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+
 		size_t object3dCount = 0;
 		for (Object3d* object3d : object3ds) {
 			Vector3 translate = object3d->GetTranslate();
@@ -199,9 +231,13 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
+	//Modelの描画準備Modelの描画に共通グラフィックコマンドを積む
+	ModelManager::GetInstance()->DrawCommonSetting();
 	for (Object3d* object3d : object3ds) {
 		object3d->Draw();
 	}
+	//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
+	TextureManager::GetInstance()->DrawCommonSetting();
 	for (Sprite* sprite : sprites) {
 		sprite->Draw();
 	}
