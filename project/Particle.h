@@ -9,7 +9,7 @@ class Particle {
 public:
 	//namespace省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-
+	
 public://メンバ関数
 	//初期化
 	void Initialize(std::string textureFilePath);
@@ -18,7 +18,12 @@ public://メンバ関数
 	//描画
 	void Draw();
 private://ローカル関数
+	//テクスチャサイズをイメージに合わせる
+	void AdjustTextureSize();
 private://メンバ変数
+	//テクスチャ
+	std::string textureFilePath_ = "";
+	//デルタタイム
 	const float kDeltaTime_ = 1.0f / 60.0f;
 
 	Transform transform_{};

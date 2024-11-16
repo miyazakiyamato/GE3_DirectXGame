@@ -155,7 +155,8 @@ void Model::LoadColor(const std::string& filePath) {
 		std::istringstream s(line);
 		s >> identifier;//先頭の識別子を読む
 		if (identifier == "Kd") {
-			s >> color.x >> color.y >> color.z >> color.w;
+			s >> color.x >> color.y >> color.z;
+			color.w = 1.0f;
 		}
 	}
 	materialData->color = color;
