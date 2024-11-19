@@ -27,22 +27,22 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 	std::mt19937 randomEngine(seedGenerator());
 
     //Sprite用の頂点リソースを作る
-    vertexResource = dxCommon_->CreateBufferResource(sizeof(VertexData) * 6);
+    vertexResource = dxCommon_->CreateBufferResource(sizeof(VertexData) * static_cast<UINT>(kParticleVertexNum));
 
     //リソースの先頭のアドレスから使う
     vertexBufferView.BufferLocation = vertexResource.Get()->GetGPUVirtualAddress();
     //使用するリソースのサイズは頂点6つ分のサイズ
-    vertexBufferView.SizeInBytes = sizeof(VertexData) * 6;
+    vertexBufferView.SizeInBytes = sizeof(VertexData) * static_cast<UINT>(kParticleVertexNum);
     //1頂点当たりのサイズ
     vertexBufferView.StrideInBytes = sizeof(VertexData);
 
     //IndexSprite用のインデックスリソースを作る
-    indexResource = dxCommon_->CreateBufferResource(sizeof(uint32_t) * 6);
+    indexResource = dxCommon_->CreateBufferResource(sizeof(uint32_t) * static_cast<UINT>(kParticleIndexNum));
 
     //リソースの先頭のアドレスから使う
     indexBufferView.BufferLocation = indexResource.Get()->GetGPUVirtualAddress();
     //使用するリソースのサイズはインデックス6つ分のサイズ
-    indexBufferView.SizeInBytes = sizeof(uint32_t) * 6;
+    indexBufferView.SizeInBytes = sizeof(uint32_t) * static_cast<UINT>(kParticleIndexNum);
     //インデックスはuint32_tとする
     indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 }
@@ -102,18 +102,20 @@ void ParticleManager::Update() {
         for (std::list<Particle>::iterator it = group.particles.begin(); it != group.particles.end();) {
             Particle& particle = *it;
 
-            particle.Update();
-
-            if (!particle.GetIsAlive()) {
+            particle.currentTime += kDeltaTime_;
+            particle.color.w = 1.0f - (particle.currentTime / particle.lifeTime);
+            particle.transform.translate = particle.transform.translate + particle.velocity * kDeltaTime_;
+            if (particle.lifeTime <= particle.currentTime) {
                 it = group.particles.erase(it);
                 continue;
+                return;
             }
 
-            Matrix4x4 worldMatrix = particle.GetWorldMatrix();
+            Matrix4x4 worldMatrix = Matrix4x4::MakeAffineMatrix(particle.transform.scale, particle.transform.rotate, particle.transform.translate);;
             Matrix4x4 worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;
             group.instancingData[index].World = worldMatrix;
             group.instancingData[index].WVP = worldViewProjectionMatrix;
-            group.instancingData[index].color = particle.GetColor();
+            group.instancingData[index].color = particle.color;
 
             ++it;
             ++index;
@@ -130,7 +132,7 @@ void ParticleManager::Draw() {
 
         commandList->IASetVertexBuffers(0, 1, &vertexBufferView);//VBVを設定
         commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
-        commandList->SetGraphicsRootDescriptorTable(0, group.materialData.srvHandleGPU);
+        srvManager_->SetGraphicsRootDescriptorTable(0, group.materialData.srvIndex);
         srvManager_->SetGraphicsRootDescriptorTable(1, group.srvIndexForInstancing);
 
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -146,7 +148,7 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
     group->materialData.textureFilePath = textureFilePath;
 
     // TextureManagerからGPUハンドルを取得
-    group->materialData.srvHandleGPU = TextureManager::GetInstance()->GetSrvHandleGPU(textureFilePath);
+    group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(textureFilePath);
 
     // インスタンシングバッファの作成
     group->instancingResource = dxCommon_->CreateBufferResource(group->kNumInstance * sizeof(ParticleForGPU));
@@ -175,13 +177,12 @@ void ParticleManager::Emit(const std::string name, const Vector3& position, uint
 	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
 
 	for (uint32_t i = 0; i < count; ++i) {
-		Particle particle;
-		particle.Initialize(group.materialData.textureFilePath);
-		particle.SetScale({ 1.0f,1.0f,1.0f });
-		particle.SetRotation({ 0.0f,0.0f,0.0f });
-		particle.SetPosition(position);
-		particle.SetVelocity({ distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) });
-		particle.SetLifeTime(100.0f);
+        Particle particle{};
+		particle.transform.scale = { 1.0f,1.0f,1.0f };
+		particle.transform.rotate = { 0.0f,0.0f,0.0f};
+		particle.transform.translate = position;
+		particle.velocity = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine)};
+		particle.lifeTime = 100.0f;
 		group.particles.push_back(particle);
 	}
 }

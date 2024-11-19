@@ -1,6 +1,5 @@
 #pragma once
 #include <map>
-#include "Particle.h"
 #include "ParticleCommon.h"
 #include "random"
 
@@ -18,15 +17,21 @@ public:
 	};
 	struct MaterialData {
 		std::string textureFilePath;
-		D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU; // テクスチャのGPUハンドル
+		uint32_t srvIndex;
+	};
+	struct Particle {
+		Transform transform;
+		Vector3 velocity;
+		Vector4 color;
+		float lifeTime;
+		float currentTime;
 	};
 	struct ParticleForGPU {
 		Matrix4x4 WVP;
 		Matrix4x4 World;
 		Vector4 color;
 	};
-	struct ParticleGroup
-	{
+	struct ParticleGroup {
 		MaterialData materialData;
 		std::list<Particle> particles;
 		uint32_t srvIndexForInstancing;
@@ -61,7 +66,9 @@ private://メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
 	std::unique_ptr<ParticleCommon> particleCommon_;
-
+	//
+	const size_t kParticleVertexNum = 4;
+	const size_t kParticleIndexNum = 6;
 	//バッファリソース
 	ComPtr<ID3D12Resource> vertexResource;
 	ComPtr<ID3D12Resource> indexResource;
@@ -78,6 +85,8 @@ private://メンバ変数
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };
 	Vector2 textureSize_ = { 100.0f,100.0f };
 
+	//デルタタイム
+	const float kDeltaTime_ = 1.0f / 60.0f;
 	//パーティクルデータ
 	std::map<std::string, std::unique_ptr<ParticleGroup>> particleGroups;
 public://ゲッターセッター

@@ -3,7 +3,6 @@
 #include "BaseScene.h"
 #include "Sprite.h"
 #include "Object3d.h"
-#include "Particle.h"
 
 class GameScene : public BaseScene {
 public://メンバ関数
