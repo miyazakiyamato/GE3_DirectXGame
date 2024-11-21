@@ -3,7 +3,6 @@
 #include "BaseScene.h"
 #include "Sprite.h"
 #include "Object3d.h"
-#include "Particle.h"
 
 class GameScene : public BaseScene {
 public://メンバ関数
@@ -18,7 +17,6 @@ public://メンバ関数
 private://メンバ変数
 	std::vector<Object3d*> object3ds;
 	std::vector<Sprite*> sprites;
-	std::vector<Particle*> particles;
 	/*std::vector<std::unique_ptr<Object3d>> object3ds_;
 	std::vector< std::unique_ptr<Sprite>> sprites_;*/
 };

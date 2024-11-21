@@ -47,14 +47,10 @@ void GameScene::Initialize(){
 	object3ds[1]->SetModel("axis");
 	object3ds[1]->SetTranslate({ 3,0,0 });
 	
-	for (uint32_t i = 0; i < 5; ++i) {
-		Particle* particle = new Particle;
-		particle->Initialize("resources/uvChecker.png");
-		particles.push_back(particle);
-	}
+	ParticleManager::GetInstance()->CreateParticleGroup("uvChecker", "resources/uvChecker.png");
 
 	//スプライトの初期化
-	for (uint32_t i = 0; i < 5; ++i) {
+	/*for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* sprite = new Sprite;
 		sprite->Initialize("resources/uvChecker.png");
 		sprite->SetPosition({ 100 + 200.0f * float(i), 100 });
@@ -66,7 +62,7 @@ void GameScene::Initialize(){
 	sprites[1]->SetIsFlipX(true);
 	sprites[2]->SetIsFlipY(true);
 	sprites[3]->SetIsFlipX(true);
-	sprites[3]->SetIsFlipY(true);
+	sprites[3]->SetIsFlipY(true);*/
 }
 
 void GameScene::Finalize(){
@@ -86,6 +82,7 @@ void GameScene::Update(){
 	if (input_->TriggerKey(DIK_SPACE)) {
 		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
 		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
+		ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
 	}
 
 #ifdef _DEBUG
@@ -263,9 +260,9 @@ void GameScene::Update(){
 	for (Object3d* object3d : object3ds) {
 		object3d->Update();
 	}
-	for (Particle* particle : particles) {
-		particle->Update();
-	}
+
+	ParticleManager::GetInstance()->Update();
+
 	for (Sprite* sprite : sprites) {
 		sprite->Update();
 	}
@@ -278,10 +275,7 @@ void GameScene::Draw(){
 		object3d->Draw();
 	}
 	//Particleの描画準備Modelの描画に共通グラフィックコマンドを積む
-	ParticleManager::GetInstance()->DrawCommonSetting();
-	for (Particle* particle : particles) {
-		particle->Draw();
-	}
+	ParticleManager::GetInstance()->Draw();
 
 	//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
 	TextureManager::GetInstance()->DrawCommonSetting();
