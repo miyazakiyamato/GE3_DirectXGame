@@ -30,6 +30,7 @@ public:
 		Matrix4x4 WVP;
 		Matrix4x4 World;
 		Vector4 color;
+		Matrix4x4 uvTransform;
 	};
 	struct ParticleGroup {
 		MaterialData materialData;
@@ -67,8 +68,8 @@ private://メンバ変数
 	SrvManager* srvManager_ = nullptr;
 	std::unique_ptr<ParticleCommon> particleCommon_;
 	//
-	const size_t kParticleVertexNum = 4;
-	const size_t kParticleIndexNum = 6;
+	const uint32_t kParticleVertexNum = 4;
+	const uint32_t kParticleIndexNum = 6;
 	//バッファリソース
 	ComPtr<ID3D12Resource> vertexResource;
 	ComPtr<ID3D12Resource> indexResource;
@@ -78,6 +79,9 @@ private://メンバ変数
 	//バッファリソースの使い道を補足するバッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView;
+
+	//インスタンスの最大数
+	uint32_t kMaxInstance = 30;
 
 	//アンカーポイント
 	Vector2 anchorPoint_ = { 0.5f,0.5f };

@@ -48,15 +48,18 @@ void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResou
 	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUDescriptorHandle(srvIndex));
 }
 
-void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByStride){
+void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride) {
+	assert(pResource != nullptr); // リソースが有効か確認
+	// SRV記述子を初期化
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN; // 構造化バッファはフォーマット指定なし
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	srvDesc.Buffer.FirstElement = 0;
-	srvDesc.Buffer.NumElements = structureByStride;
-	srvDesc.Buffer.StructureByteStride = sizeof(ParticleManager::ParticleForGPU);
-
+	srvDesc.Buffer.FirstElement = 0; // 最初の要素
+	srvDesc.Buffer.NumElements = numElements; // 構造体の要素数
+	srvDesc.Buffer.StructureByteStride = structureByteStride; // 各要素のバイトサイズ
+	srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE; // デフォルト
+	// SRV作成
 	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUDescriptorHandle(srvIndex));
 }
 
@@ -68,7 +71,18 @@ void SrvManager::PreDraw(){
 }
 
 void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParaneterIndex, uint32_t srvIndex){
-	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(RootParaneterIndex, GetGPUDescriptorHandle(srvIndex));
+	// コマンドリストが有効か確認
+	auto commandList = dxCommon_->GetCommandList();
+	assert(commandList != nullptr);
+
+	// SRVインデックスが範囲内か確認
+	assert(srvIndex < kMaxSRVCount);
+
+	// GPUデスクリプタハンドルを取得
+	auto gpuHandle = GetGPUDescriptorHandle(srvIndex);
+	assert(gpuHandle.ptr != 0); // GPUハンドルが有効か確認
+	// ルートディスクリプタテーブルを設定
+	commandList->SetGraphicsRootDescriptorTable(RootParaneterIndex, gpuHandle);
 }
 
 bool SrvManager::AvailabilityCheck(){
