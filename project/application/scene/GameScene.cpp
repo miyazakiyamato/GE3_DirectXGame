@@ -45,12 +45,13 @@ void GameScene::Initialize(){
 	object3ds[0]->SetTranslate({ -1,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
 	object3ds[1]->SetModel("axis");
-	object3ds[1]->SetTranslate({ 3,0,0 });
+	object3ds[1]->SetTranslate({ 1,0,0 });
+	object3ds[1]->SetRotate({ 0,3.14f,0 });
 	
 	ParticleManager::GetInstance()->CreateParticleGroup("uvChecker", "resources/uvChecker.png");
 
 	//スプライトの初期化
-	/*for (uint32_t i = 0; i < 5; ++i) {
+	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* sprite = new Sprite;
 		sprite->Initialize("resources/uvChecker.png");
 		sprite->SetPosition({ 100 + 200.0f * float(i), 100 });
@@ -62,7 +63,7 @@ void GameScene::Initialize(){
 	sprites[1]->SetIsFlipX(true);
 	sprites[2]->SetIsFlipY(true);
 	sprites[3]->SetIsFlipX(true);
-	sprites[3]->SetIsFlipY(true);*/
+	sprites[3]->SetIsFlipY(true);
 }
 
 void GameScene::Finalize(){
@@ -82,7 +83,7 @@ void GameScene::Update(){
 	if (input_->TriggerKey(DIK_SPACE)) {
 		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
 		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
-		ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
+		ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 1);
 	}
 
 #ifdef _DEBUG

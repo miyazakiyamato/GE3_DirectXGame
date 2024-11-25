@@ -13,7 +13,12 @@ public:
 	struct VertexData {
 		Vector4 position;
 		Vector2 texcoord;
-		Vector3 color;
+		Vector3 normal;
+		//Vector3 color;
+	};
+	struct Material {
+		Vector4 color;
+		Matrix4x4 uvTransform;
 	};
 	struct MaterialData {
 		std::string textureFilePath;
@@ -29,17 +34,33 @@ public:
 	struct ParticleForGPU {
 		Matrix4x4 WVP;
 		Matrix4x4 World;
-		Vector4 color;
-		Matrix4x4 uvTransform;
+		//Vector4 color;
+		//Matrix4x4 uvTransform;
 	};
 	struct ParticleGroup {
+		MaterialData materialData;
+		std::list<Particle> particles;
+		uint32_t kNumInstance;
+		uint32_t srvIndexForInstancing;
+		//バッファリソース
+		ComPtr<ID3D12Resource> vertexResource;
+		ComPtr<ID3D12Resource> materialResource;
+		ComPtr<ID3D12Resource> instancingResource;
+		//バッファリソースの使い道を補足するバッファビュー
+		D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
+		//バッファリソース内のデータを指すポインタ
+		VertexData* vertexData = nullptr;
+		Material* material = nullptr;
+		ParticleForGPU* instancingData = nullptr;
+	};
+	/*struct ParticleGroup {
 		MaterialData materialData;
 		std::list<Particle> particles;
 		uint32_t srvIndexForInstancing;
 		ComPtr<ID3D12Resource> instancingResource;
 		uint32_t kNumInstance;
 		ParticleForGPU* instancingData = nullptr;
-	};
+	};*/
 public://メンバ関数
 	//シングルトンインスタンスの取得
 	static ParticleManager* GetInstance();
@@ -55,6 +76,9 @@ public://メンバ関数
 	void CreateParticleGroup(const std::string name, const std::string textureFilePath);
 	//パーティクルの発生
 	void Emit(const std::string name, const Vector3& position, uint32_t count);
+private://ローカル関数
+	//パーティクルの作成
+	Particle CreateNewParticle(std::mt19937& randomEngine, const Vector3& position);
 private://シングルインスタンス
 	static ParticleManager* instance;
 
@@ -71,20 +95,15 @@ private://メンバ変数
 	const uint32_t kParticleVertexNum = 4;
 	const uint32_t kParticleIndexNum = 6;
 	//バッファリソース
-	ComPtr<ID3D12Resource> vertexResource;
 	ComPtr<ID3D12Resource> indexResource;
 	//バッファリソース内のデータを指すポインタ
-	VertexData* vertexData = nullptr;
 	uint32_t* indexData = nullptr;
 	//バッファリソースの使い道を補足するバッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView;
 
 	//インスタンスの最大数
 	uint32_t kMaxInstance = 30;
 
-	//アンカーポイント
-	Vector2 anchorPoint_ = { 0.5f,0.5f };
 	//テクスチャサイズ
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };
 	Vector2 textureSize_ = { 100.0f,100.0f };
