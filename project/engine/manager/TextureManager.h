@@ -3,7 +3,7 @@
 #include <wrl.h>
 #include <d3d12.h>
 #include <unordered_map>
-#include "externals/DirectXTex/DirectXTex.h"
+#include "DirectXTex.h"
 #include "SpriteCommon.h"
 
 class DirectXCommon;
@@ -30,6 +30,8 @@ public://メンバ関数
 	void DrawCommonSetting();
 	//テクスチャファイルの読み込み
 	void LoadTexture(const std::string& filePath);
+	//ブレンドモードの変更
+	void ChangeBlendMode(SpriteCommon::BlendMode blendMode);
 
 	//テクスチャ番号からGPUハンドルを取得
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGPU(const std::string& filePath);

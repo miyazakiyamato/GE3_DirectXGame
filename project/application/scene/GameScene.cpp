@@ -5,6 +5,7 @@
 #include "ModelManager.h"
 #include "TextureManager.h"
 #include "AudioManager.h"
+#include "ParticleManager.h"
 
 void GameScene::Initialize(){
 	BaseScene::Initialize();
@@ -37,14 +38,17 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("fence");
 	ModelManager::GetInstance()->LoadModel("axis");
 
-	object3ds[0]->SetModel("fence");
+	/*object3ds[0]->SetModel("fence");
 	object3ds[0]->SetTranslate({ -2,0,0 });
+	object3ds[0]->SetRotate({ 0,3.14f,0 });*/
+	object3ds[0]->SetModel("plane");
+	object3ds[0]->SetTranslate({ -1,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
-	/*object3ds[1]->SetModel("plane.obj");
-	object3ds[1]->SetTranslate({ -1,0,0 });
-	object3ds[1]->SetRotate({ 0,3.14f,0 });*/
 	object3ds[1]->SetModel("axis");
-	object3ds[1]->SetTranslate({ 3,0,0 });
+	object3ds[1]->SetTranslate({ 1,0,0 });
+	object3ds[1]->SetRotate({ 0,3.14f,0 });
+	
+	ParticleManager::GetInstance()->CreateParticleGroup("uvChecker", "resources/uvChecker.png");
 
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
@@ -79,6 +83,7 @@ void GameScene::Update(){
 	if (input_->TriggerKey(DIK_SPACE)) {
 		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
 		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
+		ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 1);
 	}
 
 #ifdef _DEBUG
@@ -89,20 +94,20 @@ void GameScene::Update(){
 
 	if (ImGui::CollapsingHeader("Camera"))
 	{
-		static ImGuiComboFlags flags = 0;
+		static ImGuiComboFlags cameraFlags = 0;
 		const char* items[] = { "default","Camera2" };
-		static int item_selected_idx = 0; // Here we store our selection data as an index.
+		static int cameraItem_selected_idx = 0; // Here we store our selection data as an index.
 
 		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
-		const char* combo_preview_value = items[item_selected_idx];
+		const char* combo_preview_value = items[cameraItem_selected_idx];
 
-		if (ImGui::BeginCombo("Now Camera", combo_preview_value, flags))
+		if (ImGui::BeginCombo("Now Camera", combo_preview_value, cameraFlags))
 		{
 			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
 			{
-				const bool is_selected = (item_selected_idx == n);
+				const bool is_selected = (cameraItem_selected_idx == n);
 				if (ImGui::Selectable(items[n], is_selected)) {
-					item_selected_idx = n;
+					cameraItem_selected_idx = n;
 					CameraManager::GetInstance()->FindCamera(items[n]);
 				}
 
@@ -126,7 +131,7 @@ void GameScene::Update(){
 	}
 	if (ImGui::CollapsingHeader("Object3d"))
 	{
-		static ImGuiComboFlags flags = 0;
+		static ImGuiComboFlags Object3dFlags = 0;
 		const char* items[] = {
 		"None",      //!< ブレンドなし
 		"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
@@ -134,18 +139,18 @@ void GameScene::Update(){
 		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
 		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
 		"Screen",};
-		static int item_selected_idx = 0; // Here we store our selection data as an index.
+		static int Object3dItem_selected_idx = 0; // Here we store our selection data as an index.
 
 		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
-		const char* combo_preview_value = items[item_selected_idx];
+		const char* combo_preview_value = items[Object3dItem_selected_idx];
 
-		if (ImGui::BeginCombo("Now Blend", combo_preview_value, flags))
+		if (ImGui::BeginCombo("Now Blend", combo_preview_value, Object3dFlags))
 		{
 			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
 			{
-				const bool is_selected = (item_selected_idx == n);
+				const bool is_selected = (Object3dItem_selected_idx == n);
 				if (ImGui::Selectable(items[n], is_selected)) {
-					item_selected_idx = n;
+					Object3dItem_selected_idx = n;
 					ModelManager::GetInstance()->ChangeBlendMode(static_cast<ModelCommon::BlendMode>(n));
 				}
 
@@ -183,6 +188,37 @@ void GameScene::Update(){
 		}
 	}
 	if (ImGui::CollapsingHeader("Sprite")) {
+		static ImGuiComboFlags spriteFlags = 0;
+		const char* items[] = {
+		"None",      //!< ブレンドなし
+		"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
+		"Add",       //!< 加算。Src * SrcA + Dest * 1
+		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
+		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
+		"Screen", };
+		static int spriteItem_selected_idx = 0; // Here we store our selection data as an index.
+
+		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
+		const char* combo_preview_value = items[spriteItem_selected_idx];
+
+		if (ImGui::BeginCombo("Now Blend", combo_preview_value, spriteFlags))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+			{
+				const bool is_selected = (spriteItem_selected_idx == n);
+				if (ImGui::Selectable(items[n], is_selected)) {
+					spriteItem_selected_idx = n;
+					TextureManager::GetInstance()->ChangeBlendMode(static_cast<SpriteCommon::BlendMode>(n));
+				}
+
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+
 		size_t spriteCount = 0;
 		for (Sprite* sprite : sprites) {
 			Vector2 position = sprite->GetPosition();
@@ -225,6 +261,9 @@ void GameScene::Update(){
 	for (Object3d* object3d : object3ds) {
 		object3d->Update();
 	}
+
+	ParticleManager::GetInstance()->Update();
+
 	for (Sprite* sprite : sprites) {
 		sprite->Update();
 	}
@@ -236,6 +275,9 @@ void GameScene::Draw(){
 	for (Object3d* object3d : object3ds) {
 		object3d->Draw();
 	}
+	//Particleの描画準備Modelの描画に共通グラフィックコマンドを積む
+	ParticleManager::GetInstance()->Draw();
+
 	//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
 	TextureManager::GetInstance()->DrawCommonSetting();
 	for (Sprite* sprite : sprites) {

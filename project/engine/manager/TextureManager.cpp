@@ -56,6 +56,11 @@ void TextureManager::LoadTexture(const std::string& filePath){
 	srvManager_->CreateSRVforTexture2D(textureData.srvIndex, textureData.resource.Get(), textureData.metadata.format, UINT(textureData.metadata.mipLevels));
 }
 
+void TextureManager::ChangeBlendMode(SpriteCommon::BlendMode blendMode){
+	spriteCommon->SetBlendMode(blendMode);
+	spriteCommon->CreateGraphicsPipeline();
+}
+
 D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(const std::string& filePath){
 	//テクスチャ枚数上限チェック
 	assert(srvManager_->AvailabilityCheck());

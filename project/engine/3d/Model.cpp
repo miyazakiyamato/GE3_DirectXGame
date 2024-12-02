@@ -2,6 +2,7 @@
 #include <cassert>
 #include <fstream>
 #include <sstream>
+#include "ModelCommon.h"
 #include "TextureManager.h"
 
 void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPath, const std::string& filename){
@@ -95,9 +96,9 @@ void Model::LoadObjFile(const std::string& directoryPath, const std::string& fil
 			positions.push_back(position);
 		}
 		else if (identifier == "vt") {
-			Vector2 texcood;
-			s >> texcood.x >> texcood.y;
-			texcoords.push_back(texcood);
+			Vector2 texcoord;
+			s >> texcoord.x >> texcoord.y;
+			texcoords.push_back(texcoord);
 		}
 		else if (identifier == "vn") {
 			Vector3 normal;
@@ -154,7 +155,8 @@ void Model::LoadColor(const std::string& filePath) {
 		std::istringstream s(line);
 		s >> identifier;//先頭の識別子を読む
 		if (identifier == "Kd") {
-			s >> color.x >> color.y >> color.z >> color.w;
+			s >> color.x >> color.y >> color.z;
+			color.w = 1.0f;
 		}
 	}
 	materialData->color = color;
