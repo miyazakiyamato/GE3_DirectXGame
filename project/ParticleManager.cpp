@@ -159,8 +159,6 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
     group->srvIndexForInstancing = srvManager_->ALLocate();
     srvManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
 
-    
-
     particleGroups[name] = std::move(group);
 }
 
