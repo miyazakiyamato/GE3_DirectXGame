@@ -42,7 +42,7 @@ private:
 	ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 	ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 	//ブレンドモード
-	BlendMode blendMode_ = BlendMode::kNormal;
+	BlendMode blendMode_ = BlendMode::kAdd;
 	static D3D12_BLEND_DESC(ParticleCommon::* spFuncTable[])();
 public:
 	DirectXCommon* GetDxCommon() { return dxCommon_; }

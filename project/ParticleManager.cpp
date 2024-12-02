@@ -3,6 +3,7 @@
 #include "SrvManager.h"
 #include "TextureManager.h"
 #include "CameraManager.h"
+#include <numbers>
 
 
 ParticleManager* ParticleManager::instance = nullptr;
@@ -56,7 +57,6 @@ void ParticleManager::Update() {
         billboardMatrix.m[3][1] = 0.0f;
         billboardMatrix.m[3][2] = 0.0f;
     }
-
     for (std::pair<const std::string, std::unique_ptr<ParticleGroup>>& pair : particleGroups) {
         ParticleGroup& group = *pair.second;
         int index = 0;
@@ -71,8 +71,8 @@ void ParticleManager::Update() {
                 group.kNumInstance--;
                 continue;
             }
-
-            Matrix4x4 worldMatrix = Matrix4x4::MakeAffineMatrix(particle.transform.scale, particle.transform.rotate, particle.transform.translate);;
+            Matrix4x4 worldMatrix = Matrix4x4::MakeScaleMatrix(particle.transform.scale) * billboardMatrix * Matrix4x4::MakeTranslateMatrix(particle.transform.translate);
+            //Matrix4x4 worldMatrix = Matrix4x4::MakeAffineMatrix(particle.transform.scale, particle.transform.rotate, particle.transform.translate);;
             Matrix4x4 worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;
             group.instancingData[index].World = worldMatrix;
             group.instancingData[index].WVP = worldViewProjectionMatrix;
