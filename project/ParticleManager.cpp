@@ -76,8 +76,7 @@ void ParticleManager::Update() {
             Matrix4x4 worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;
             group.instancingData[index].World = worldMatrix;
             group.instancingData[index].WVP = worldViewProjectionMatrix;
-            //group.instancingData[index].color = particle.color;
-            group.material->color = particle.color;
+            group.instancingData[index].color = particle.color;
 
             ++it;
             ++index;
@@ -96,12 +95,10 @@ void ParticleManager::Draw() {
     for (auto& [name, group] : particleGroups) {
         commandList->IASetVertexBuffers(0, 1, &group->vertexBufferView);// VBVを設定
         commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
-        //マテリアルCBufferの場所を設定
-        commandList->SetGraphicsRootConstantBufferView(0, group->materialResource.Get()->GetGPUVirtualAddress());
         // インスタンシングデータのSRVのDescriptorTableを設定
-        srvManager_->SetGraphicsRootDescriptorTable(1, group->srvIndexForInstancing);
+        srvManager_->SetGraphicsRootDescriptorTable(0, group->srvIndexForInstancing);
         //SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
-        commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(group->materialData.textureFilePath));
+        commandList->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->GetSrvHandleGPU(group->materialData.textureFilePath));
         
         // DrawCall (インスタンシング描画)
         commandList->DrawIndexedInstanced(6, group->kNumInstance, 0, 0, 0);
@@ -139,21 +136,13 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
     float tex_bottom = (textureLeftTop_.y + textureSize_.y) / metadata.height;
 
     // 頂点データを設定（四角形を構成）
-    group->vertexData[0] = { { -0.5f, -0.5f, 0.0f, 1.0f }, { tex_left ,tex_bottom }, { 0.0f,0.0f,-1.0f } };//左下
-    group->vertexData[1] = { { -0.5f,  0.5f, 0.0f, 1.0f }, { tex_left ,tex_top    }, { 0.0f,0.0f,-1.0f } };//左上
-    group->vertexData[2] = { {  0.5f, -0.5f, 0.0f, 1.0f }, { tex_right,tex_bottom }, { 0.0f,0.0f,-1.0f } };//右下
-    group->vertexData[3] = { {  0.5f,  0.5f, 0.0f, 1.0f }, { tex_right,tex_top    }, { 0.0f,0.0f,-1.0f } };//右上
+    group->vertexData[0] = { { -0.5f, -0.5f, 0.0f, 1.0f }, { tex_left ,tex_bottom }, { 1.0f,1.0f,1.0f,1.0f } };//左下
+    group->vertexData[1] = { { -0.5f,  0.5f, 0.0f, 1.0f }, { tex_left ,tex_top    }, { 1.0f,1.0f,1.0f,1.0f } };//左上
+    group->vertexData[2] = { {  0.5f, -0.5f, 0.0f, 1.0f }, { tex_right,tex_bottom }, { 1.0f,1.0f,1.0f,1.0f } };//右下
+    group->vertexData[3] = { {  0.5f,  0.5f, 0.0f, 1.0f }, { tex_right,tex_top    }, { 1.0f,1.0f,1.0f,1.0f } };//右上
     
     // TextureManagerからGPUハンドルを取得
     group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(textureFilePath);
-    //マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-    group->materialResource = dxCommon_->CreateBufferResource(sizeof(Material));
-    //マテリアルにデータを書き込む
-    //書き込むためのアドレスを取得
-    group->materialResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&group->material));
-    //マテリアルデータの初期値を書き込む
-    group->material->color = {1.0f,1.0f,1.0f,1.0f};//色を書き込む
-    group->material->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
 
     //WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
     group->instancingResource = dxCommon_->CreateBufferResource(sizeof(ParticleForGPU) * kMaxInstance);
@@ -164,6 +153,7 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
     for (uint32_t index = 0; index < kMaxInstance; index++) {
         group->instancingData[index].World = Matrix4x4::MakeIdentity4x4();
         group->instancingData[index].WVP = Matrix4x4::MakeIdentity4x4();
+        group->instancingData[index].color = { 1.0f,1.0f,1.0f,1.0f };//色を書き込む
     }
 
     group->srvIndexForInstancing = srvManager_->ALLocate();
@@ -199,7 +189,7 @@ ParticleManager::Particle ParticleManager::CreateNewParticle(std::mt19937& rando
     Vector3 popPosition = position;
     particle.transform.translate = popPosition + Vector3(distribution(randomEngine), distribution(randomEngine), distribution(randomEngine));
     particle.velocity = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
-    particle.color = { 1.0f,1.0f,1.0f,1.0f };
+    particle.color = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine), 1.0f };
     particle.lifeTime = 2.0f;
     return particle;
 }

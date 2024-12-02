@@ -13,12 +13,7 @@ public:
 	struct VertexData {
 		Vector4 position;
 		Vector2 texcoord;
-		Vector3 normal;
-		//Vector3 color;
-	};
-	struct Material {
 		Vector4 color;
-		Matrix4x4 uvTransform;
 	};
 	struct MaterialData {
 		std::string textureFilePath;
@@ -34,7 +29,7 @@ public:
 	struct ParticleForGPU {
 		Matrix4x4 WVP;
 		Matrix4x4 World;
-		//Vector4 color;
+		Vector4 color;
 		//Matrix4x4 uvTransform;
 	};
 	struct ParticleGroup {
@@ -44,13 +39,11 @@ public:
 		uint32_t srvIndexForInstancing;
 		//バッファリソース
 		ComPtr<ID3D12Resource> vertexResource;
-		ComPtr<ID3D12Resource> materialResource;
 		ComPtr<ID3D12Resource> instancingResource;
 		//バッファリソースの使い道を補足するバッファビュー
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 		//バッファリソース内のデータを指すポインタ
 		VertexData* vertexData = nullptr;
-		Material* material = nullptr;
 		ParticleForGPU* instancingData = nullptr;
 	};
 	/*struct ParticleGroup {
