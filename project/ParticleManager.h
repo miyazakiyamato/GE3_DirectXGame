@@ -46,14 +46,6 @@ public:
 		VertexData* vertexData = nullptr;
 		ParticleForGPU* instancingData = nullptr;
 	};
-	/*struct ParticleGroup {
-		MaterialData materialData;
-		std::list<Particle> particles;
-		uint32_t srvIndexForInstancing;
-		ComPtr<ID3D12Resource> instancingResource;
-		uint32_t kNumInstance;
-		ParticleForGPU* instancingData = nullptr;
-	};*/
 public://メンバ関数
 	//シングルトンインスタンスの取得
 	static ParticleManager* GetInstance();
