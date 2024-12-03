@@ -99,7 +99,6 @@ void ParticleManager::Draw() {
         srvManager_->SetGraphicsRootDescriptorTable(0, group->srvIndexForInstancing);
         //SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
         commandList->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->GetSrvHandleGPU(group->materialData.textureFilePath));
-        
         // DrawCall (インスタンシング描画)
         commandList->DrawIndexedInstanced(6, group->kNumInstance, 0, 0, 0);
     }
@@ -165,7 +164,6 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 void ParticleManager::Emit(const std::string name, const Vector3& position, uint32_t count) {
 	assert(particleGroups.count(name) > 0 && "ParticleGroup with this name does not exist.");
     
-   
 	ParticleGroup& group = *particleGroups[name];
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
@@ -185,7 +183,7 @@ ParticleManager::Particle ParticleManager::CreateNewParticle(std::mt19937& rando
     particle.transform.scale = { 1.0f,1.0f,1.0f };
     particle.transform.rotate = { 0.0f,0.0f,0.0f };
     Vector3 popPosition = position;
-    particle.transform.translate = popPosition + Vector3(distribution(randomEngine), distribution(randomEngine), distribution(randomEngine));
+    particle.transform.translate = popPosition;
     particle.velocity = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
     particle.color = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine), 1.0f };
     particle.lifeTime = 2.0f;

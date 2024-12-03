@@ -83,7 +83,7 @@ void GameScene::Update(){
 	if (input_->TriggerKey(DIK_SPACE)) {
 		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
 		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
-		ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 1);
+		ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10000);
 	}
 
 #ifdef _DEBUG
@@ -172,6 +172,7 @@ void GameScene::Update(){
 			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.x").c_str(), &rotate.x);
 			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.y").c_str(), &rotate.y);
 			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.z").c_str(), &rotate.z);
+			rotate.z += 0.01f;
 			object3d->SetRotate(rotate);
 
 			Vector3 scale = object3d->GetScale();
