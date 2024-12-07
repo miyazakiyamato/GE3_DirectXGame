@@ -69,23 +69,24 @@ private://メンバ変数
 	Vector2 textureSize_ = { 100.0f,100.0f };
 public://ゲッターセッター
 	const Vector2& GetPosition() { return position_; }
-	void SetPosition(const Vector2& position) { position_ = position; }
 	float GetRotation() { return rotation_; }
-	void SetRotation(float rotation) { rotation_ = rotation; }
 	const Vector2& GetSize() { return size_; }
-	void SetSize(const Vector2& size) { size_ = size; }
 	const Vector4& GetColor() { return materialData->color; }
+	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
+	bool GetIsFlipX() { return isFlipX_; }
+	bool GetIsFlipY() { return isFlipY_; }
+	const Vector2& GetTextureLeftTop() { return textureLeftTop_; }
+	const Vector2& GetTextureSize() { return textureSize_; }
+	
+	void SetPosition(const Vector2& position) { position_ = position; }
+	void SetRotation(float rotation) { rotation_ = rotation; }
+	void SetSize(const Vector2& size) { size_ = size; }
 	void SetColor(const Vector4& color) { materialData->color = color; }
 	void SetTexture(std::string textureFilePath);
-	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
 	void SetAnchorPoint(const Vector2& anchorPoint) { anchorPoint_ = anchorPoint; }
-	bool GetIsFlipX() { return isFlipX_; }
 	void SetIsFlipX(bool isFlipX) { isFlipX_ = isFlipX; }
-	bool GetIsFlipY() { return isFlipY_; }
 	void SetIsFlipY(bool isFlipY) { isFlipY_ = isFlipY; }
-	const Vector2& GetTextureLeftTop() { return textureLeftTop_; }
 	void SetTextureLeftTop(const Vector2& textureLeftTop) { textureLeftTop_ = textureLeftTop; }
-	const Vector2& GetTextureSize() { return textureSize_; }
 	void SetTextureSize(const Vector2& textureSize) { textureSize_ = textureSize; }
 };
 

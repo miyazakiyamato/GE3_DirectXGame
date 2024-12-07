@@ -104,6 +104,15 @@ void ParticleManager::Draw() {
     }
 }
 
+void ParticleManager::ChangeBlendMode(ParticleCommon::BlendMode blendMode){
+    if (particleCommon_->GetBlendMode() == blendMode) {
+        return;
+    }
+    
+    particleCommon_->SetBlendMode(blendMode);
+    particleCommon_->CreateGraphicsPipeline();
+}
+
 void ParticleManager::CreateParticleGroup(const std::string name, const std::string textureFilePath) {
     assert(particleGroups.count(name) == 0 && "ParticleGroup with this name already exists.");
 

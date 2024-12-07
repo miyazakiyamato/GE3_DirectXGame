@@ -46,5 +46,6 @@ private:
 	static D3D12_BLEND_DESC(ParticleCommon::* spFuncTable[])();
 public:
 	DirectXCommon* GetDxCommon() { return dxCommon_; }
+	BlendMode GetBlendMode() const { return blendMode_; }
 	void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 };
