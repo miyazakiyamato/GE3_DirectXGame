@@ -7,7 +7,7 @@
 using namespace Microsoft::WRL;
 
 D3DResourceLeakChecker::~D3DResourceLeakChecker() {
-#ifdef DEBUG
+#ifdef _DEBUG
 	//リソースリークチェック
 	ComPtr<IDXGIDebug1> debug;
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {

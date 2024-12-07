@@ -45,12 +45,15 @@ void GameScene::Initialize(){
 	object3ds[0]->SetTranslate({ -1,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
 	object3ds[1]->SetModel("axis");
-	object3ds[1]->SetTranslate({ 3,0,0 });
+	object3ds[1]->SetTranslate({ 1,0,0 });
+	object3ds[1]->SetRotate({ 0,3.14f,0 });
 	
-	ParticleManager::GetInstance()->CreateParticleGroup("uvChecker", "resources/uvChecker.png");
+	//ParticleManager::GetInstance()->CreateParticleGroup();
+	particleEmitter_ = new ParticleEmitter();
+	particleEmitter_->Initialize("uvChecker", "resources/uvChecker.png");
 
 	//スプライトの初期化
-	/*for (uint32_t i = 0; i < 5; ++i) {
+	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* sprite = new Sprite;
 		sprite->Initialize("resources/uvChecker.png");
 		sprite->SetPosition({ 100 + 200.0f * float(i), 100 });
@@ -62,7 +65,7 @@ void GameScene::Initialize(){
 	sprites[1]->SetIsFlipX(true);
 	sprites[2]->SetIsFlipY(true);
 	sprites[3]->SetIsFlipX(true);
-	sprites[3]->SetIsFlipY(true);*/
+	sprites[3]->SetIsFlipY(true);
 }
 
 void GameScene::Finalize(){
@@ -82,7 +85,8 @@ void GameScene::Update(){
 	if (input_->TriggerKey(DIK_SPACE)) {
 		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
 		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
-		ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
+		//ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
+		particleEmitter_->Emit();
 	}
 
 #ifdef _DEBUG
@@ -171,6 +175,7 @@ void GameScene::Update(){
 			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.x").c_str(), &rotate.x);
 			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.y").c_str(), &rotate.y);
 			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.z").c_str(), &rotate.z);
+			rotate.z += 0.01f;
 			object3d->SetRotate(rotate);
 
 			Vector3 scale = object3d->GetScale();
@@ -185,6 +190,70 @@ void GameScene::Update(){
 
 			object3dCount++;
 		}
+	}
+	if (ImGui::CollapsingHeader("particle")) {
+		static ImGuiComboFlags particleFlags = 0;
+		const char* items[] = {
+		"None",      //!< ブレンドなし
+		"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
+		"Add",       //!< 加算。Src * SrcA + Dest * 1
+		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
+		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
+		"Screen", };
+		static int particleItem_selected_idx = 0; // Here we store our selection data as an index.
+
+		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
+		const char* combo_preview_value = items[particleItem_selected_idx];
+
+		if (ImGui::BeginCombo("Now Blend", combo_preview_value, particleFlags))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+			{
+				const bool is_selected = (particleItem_selected_idx == n);
+				if (ImGui::Selectable(items[n], is_selected)) {
+					particleItem_selected_idx = n;
+					ParticleManager::GetInstance()->ChangeBlendMode(static_cast<ParticleCommon::BlendMode>(n));
+				}
+
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+
+		/*size_t spriteCount = 0;
+		for (ParticleEmitter* particle : sprites) {*/
+			Vector3 position = particleEmitter_->GetPosition();
+			ImGui::DragFloat2("particleEmitter_.Translate", &position.x, 0.1f, 0.0f, 1180.0f, "%.1f");
+			/*if (position.y > 640.0f) {
+				position.y = 640.0f;
+			}*/
+			particleEmitter_->SetPosition(position);
+
+			Vector3 rotation = particleEmitter_->GetRotation();
+			ImGui::SliderAngle("particleEmitter_.Rotate", &rotation.x);
+			particleEmitter_->SetRotation(rotation);
+
+			Vector3 size = particleEmitter_->GetSize();
+			ImGui::DragFloat2("particleEmitter_.Scale", &size.x, 0.1f, 0.0f, 640.0f, "%.1f");
+			if (size.y > 360.0f) {
+				size.y = 360.0f;
+			}
+			particleEmitter_->SetSize(size);
+
+			int count = particleEmitter_->GetCount();
+			ImGui::DragInt("particleEmitter_.count", &count,1,0,1000);
+			particleEmitter_->SetCount(count);
+
+			float frequency = particleEmitter_->GetFrequency();
+			ImGui::DragFloat("particleEmitter_.frequency", &frequency, 0.1f);
+			particleEmitter_->SetFrequency(frequency);
+
+			ImGui::Text("\n");
+			
+		//}
 	}
 	if (ImGui::CollapsingHeader("Sprite")) {
 		static ImGuiComboFlags spriteFlags = 0;
@@ -261,6 +330,7 @@ void GameScene::Update(){
 		object3d->Update();
 	}
 
+	particleEmitter_->Update();
 	ParticleManager::GetInstance()->Update();
 
 	for (Sprite* sprite : sprites) {

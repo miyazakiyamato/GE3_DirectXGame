@@ -96,9 +96,9 @@ void Model::LoadObjFile(const std::string& directoryPath, const std::string& fil
 			positions.push_back(position);
 		}
 		else if (identifier == "vt") {
-			Vector2 texcood;
-			s >> texcood.x >> texcood.y;
-			texcoords.push_back(texcood);
+			Vector2 texcoord;
+			s >> texcoord.x >> texcoord.y;
+			texcoords.push_back(texcoord);
 		}
 		else if (identifier == "vn") {
 			Vector3 normal;
