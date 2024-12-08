@@ -94,6 +94,18 @@
     <Filter Include="ヘッダー ファイル\application\scene">
       <UniqueIdentifier>{f0476172-834b-4880-9e8d-30a0edf56a1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\particle">
+      <UniqueIdentifier>{7a0df776-b21f-4fb9-b4aa-43628f4b4eda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\particle">
+      <UniqueIdentifier>{4189cd9e-d806-4c51-86e0-322f7119060d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\collision">
+      <UniqueIdentifier>{b8169087-f4ea-496f-bea8-3733f7d46dd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\collision">
+      <UniqueIdentifier>{34fbbf8b-1a2b-4e0e-b0b5-ef9b845490bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\2d\Sprite.cpp">
@@ -189,14 +201,32 @@
     <ClCompile Include="engine\scene\SceneManager.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleManager.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\particle\ParticleCommon.cpp">
+      <Filter>ソース ファイル\engine\particle</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleCommon.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\particle\ParticleEmitter.cpp">
+      <Filter>ソース ファイル\engine\particle</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleEmitter.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\particle\ParticleManager.cpp">
+      <Filter>ソース ファイル\engine\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\math\Easing.cpp">
+      <Filter>ソース ファイル\engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\GlobalVariables.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\collision\Collider.cpp">
+      <Filter>ソース ファイル\engine\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\collision\Collision.cpp">
+      <Filter>ソース ファイル\engine\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\collision\CollisionManager.cpp">
+      <Filter>ソース ファイル\engine\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\collision\ContactRecord.cpp">
+      <Filter>ソース ファイル\engine\collision</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -290,14 +320,35 @@
     <ClInclude Include="engine\scene\SceneManager.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\particle\ParticleCommon.h">
+      <Filter>ヘッダー ファイル\engine\particle</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleCommon.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\particle\ParticleEmitter.h">
+      <Filter>ヘッダー ファイル\engine\particle</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleEmitter.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\particle\ParticleManager.h">
+      <Filter>ヘッダー ファイル\engine\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\Easing.h">
+      <Filter>ヘッダー ファイル\engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\GlobalVariables.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\collision\Collider.h">
+      <Filter>ヘッダー ファイル\engine\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\collision\Collision.h">
+      <Filter>ヘッダー ファイル\engine\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\collision\CollisionManager.h">
+      <Filter>ヘッダー ファイル\engine\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\collision\CollisionTypeIdDef.h">
+      <Filter>ヘッダー ファイル\engine\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\collision\ContactRecord.h">
+      <Filter>ヘッダー ファイル\engine\collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

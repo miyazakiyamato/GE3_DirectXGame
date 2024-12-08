@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 /// <summary>
 /// 3次元ベクトル
 /// </summary>
@@ -22,10 +22,16 @@ public:
 	static Vector3 Min(const Vector3& v, const Vector3& v2);
 	static Vector3 Max(const Vector3& v, const Vector3& v2);
 	static Vector3 Clamp(const Vector3& v, const Vector3& min, const Vector3& max);
+	static Vector3 Cross(const Vector3& v1, const Vector3& v2);
 	//演算子のオーバーロード
+	Vector3 operator-();
 	Vector3 operator+(const Vector3& v2);
 	Vector3 operator-(const Vector3& v2);
 	Vector3 operator*(const float& v2);
 	Vector3 operator/(const float& v2);
+	Vector3& operator+=(const Vector3& v2);
+	Vector3& operator-=(const Vector3& v2);
+	Vector3& operator*=(const float& v2);
+	Vector3& operator/=(const float& v2);
 };
 

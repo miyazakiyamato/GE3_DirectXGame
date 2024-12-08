@@ -28,6 +28,10 @@ void GameScene::Initialize(){
 	AudioManager::GetInstance()->LoadWave("maou_se_system48.wav");
 	//AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
 
+	//衝突マネージャの生成
+	collisionManager_ = std::make_unique<CollisionManager>();
+	collisionManager_->Initialize();
+
 	for (uint32_t i = 0; i < 2; ++i) {
 		Object3d* object3d = new Object3d;
 		object3d->Initialize();
@@ -142,7 +146,7 @@ void GameScene::Update(){
 		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
 		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
 		"Screen",};
-		static int Object3dItem_selected_idx = 0; // Here we store our selection data as an index.
+		static int Object3dItem_selected_idx = 1; // Here we store our selection data as an index.
 
 		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
 		const char* combo_preview_value = items[Object3dItem_selected_idx];
@@ -200,7 +204,7 @@ void GameScene::Update(){
 		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
 		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
 		"Screen", };
-		static int particleItem_selected_idx = 0; // Here we store our selection data as an index.
+		static int particleItem_selected_idx = 2; // Here we store our selection data as an index.
 
 		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
 		const char* combo_preview_value = items[particleItem_selected_idx];
@@ -264,7 +268,7 @@ void GameScene::Update(){
 		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
 		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
 		"Screen", };
-		static int spriteItem_selected_idx = 0; // Here we store our selection data as an index.
+		static int spriteItem_selected_idx = 1; // Here we store our selection data as an index.
 
 		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
 		const char* combo_preview_value = items[spriteItem_selected_idx];
@@ -324,6 +328,9 @@ void GameScene::Update(){
 	ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);*/
 	ImGui::End();
+
+	// デバッグ用にワールドトランスフォームの更新
+	collisionManager_->UpdateWorldTransform();
 #endif //_DEBUG
 
 	for (Object3d* object3d : object3ds) {
@@ -344,6 +351,9 @@ void GameScene::Draw(){
 	for (Object3d* object3d : object3ds) {
 		object3d->Draw();
 	}
+
+	//当たり判定の表示
+	collisionManager_->Draw();
 	//Particleの描画準備Modelの描画に共通グラフィックコマンドを積む
 	ParticleManager::GetInstance()->Draw();
 
@@ -352,4 +362,17 @@ void GameScene::Draw(){
 	for (Sprite* sprite : sprites) {
 		sprite->Draw();
 	}
+}
+
+void GameScene::CheckAllCollisions(){
+	//衝突マネージャのリストクリアする
+	collisionManager_->Reset();
+	//全てのコライダーを衝突マネージャのリストに登録する
+	collisionManager_->AddCollider(player_.get());
+	collisionManager_->AddCollider(hammer_.get());
+	for (const std::unique_ptr<Enemy>& enemy : enemies_) {
+		collisionManager_->AddCollider(enemy.get());
+	}
+	//リスト内の総当たり判定
+	collisionManager_->CheckAllCollisions();
 }
