@@ -1,0 +1,27 @@
+{
+    "Player": {
+        "ArmAmplitude": 0.4000000059604645,
+        "FloatingAmplitude": 0.20000000298023224,
+        "Hammer Translation": [
+            0.0,
+            1.2000000476837158,
+            0.0
+        ],
+        "Head Translation": [
+            0.0,
+            1.5,
+            0.0
+        ],
+        "LArm Translation": [
+            -0.5,
+            1.2999999523162842,
+            0.0
+        ],
+        "Period": 60,
+        "RArm Translation": [
+            0.5,
+            1.2999999523162842,
+            0.0
+        ]
+    }
+}

@@ -25,6 +25,10 @@ void ModelManager::DrawCommonSetting(){
 }
 
 void ModelManager::ChangeBlendMode(ModelCommon::BlendMode blendMode){
+	if (modelCommon->GetBlendMode() == blendMode) {
+		return;
+	}
+	
 	modelCommon->SetBlendMode(blendMode);
 	modelCommon->CreateGraphicsPipeline();
 }

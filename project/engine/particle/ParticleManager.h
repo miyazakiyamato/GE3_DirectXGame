@@ -57,6 +57,8 @@ public://メンバ関数
 	void Update();
 	//描画
 	void Draw();
+	//ブレンドモード変更
+	void ChangeBlendMode(ParticleCommon::BlendMode blendMode);
 	//パーティクルグループの生成
 	void CreateParticleGroup(const std::string name, const std::string textureFilePath);
 	//パーティクルの発生
@@ -87,7 +89,7 @@ private://メンバ変数
 	D3D12_INDEX_BUFFER_VIEW indexBufferView;
 
 	//インスタンスの最大数
-	uint32_t kMaxInstance = 30;
+	uint32_t kMaxInstance = 100;
 
 	//テクスチャサイズ
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };
@@ -98,5 +100,5 @@ private://メンバ変数
 	//パーティクルデータ
 	std::map<std::string, std::unique_ptr<ParticleGroup>> particleGroups;
 public://ゲッターセッター
-
+	std::map<std::string, std::unique_ptr<ParticleGroup>>& GetParticleGroups() { return particleGroups; }
 };

@@ -3,6 +3,9 @@
 #include "BaseScene.h"
 #include "Sprite.h"
 #include "Object3d.h"
+#include "ParticleEmitter.h"
+#include "CollisionManager.h"
+#include "AccelerationField.h"
 
 class GameScene : public BaseScene {
 public://メンバ関数
@@ -14,9 +17,24 @@ public://メンバ関数
 	void Update() override;
 	//描画
 	void Draw() override;
+private:
+	//衝突判定と応答 
+	void CheckAllCollisions();
 private://メンバ変数
+	//衝突マネージャ
+	std::unique_ptr<CollisionManager> collisionManager_;
+
 	std::vector<Object3d*> object3ds;
 	std::vector<Sprite*> sprites;
+
+	bool isAccelerationField = false;
+	AccelerationField* accelerationField_;
+
+	ParticleEmitter* particleEmitter_;
+
+	//デルタタイム
+	const float kDeltaTime_ = 1.0f / 60.0f;
+
 	/*std::vector<std::unique_ptr<Object3d>> object3ds_;
 	std::vector< std::unique_ptr<Sprite>> sprites_;*/
 };

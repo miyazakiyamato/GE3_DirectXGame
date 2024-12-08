@@ -82,6 +82,17 @@ Vector3 Vector3::Clamp(const Vector3& v, const Vector3& min, const Vector3& max)
 	return result;
 }
 
+Vector3 Vector3::Cross(const Vector3& v1, const Vector3& v2)
+{
+	Vector3 ab{ v1.y * v2.z - v1.z * v2.y,v1.z * v2.x - v1.x * v2.z,v1.x * v2.y - v1.y * v2.x };
+	return ab;
+}
+
+Vector3 Vector3::operator-()
+{
+	return Vector3( -(*this).x, -(*this).y, -(*this).z);
+}
+
 Vector3 Vector3::operator+(const Vector3& v2)
 {
 	Vector3 result;
@@ -116,4 +127,40 @@ Vector3 Vector3::operator/(const float& v2)
 	result.y = (*this).y / v2;
 	result.z = (*this).z / v2;
 	return result;
+}
+
+Vector3& Vector3::operator+=(const Vector3& v2)
+{
+	(*this).x = (*this).x + v2.x;
+	(*this).y = (*this).y + v2.y;
+	(*this).z = (*this).z + v2.z;
+
+	return *this;
+}
+
+Vector3& Vector3::operator-=(const Vector3& v2)
+{
+	(*this).x = (*this).x - v2.x;
+	(*this).y = (*this).y - v2.y;
+	(*this).z = (*this).z - v2.z;
+
+	return *this;
+}
+
+Vector3& Vector3::operator*=(const float& v2)
+{
+	(*this).x = (*this).x * v2;
+	(*this).y = (*this).y * v2;
+	(*this).z = (*this).z * v2;
+
+	return *this;
+}
+
+Vector3& Vector3::operator/=(const float& v2)
+{
+	(*this).x = (*this).x / v2;
+	(*this).y = (*this).y / v2;
+	(*this).z = (*this).z / v2;
+
+	return *this;
 }
