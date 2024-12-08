@@ -106,6 +106,12 @@
     <Filter Include="ヘッダー ファイル\engine\collision">
       <UniqueIdentifier>{34fbbf8b-1a2b-4e0e-b0b5-ef9b845490bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\3d">
+      <UniqueIdentifier>{510cf9cb-ba6d-40e4-8927-5bd8de0042ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\3d">
+      <UniqueIdentifier>{39d7f7f8-f6ae-4ffb-8dbc-23584494a65a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\2d\Sprite.cpp">
@@ -228,6 +234,9 @@
     <ClCompile Include="engine\collision\ContactRecord.cpp">
       <Filter>ソース ファイル\engine\collision</Filter>
     </ClCompile>
+    <ClCompile Include="application\3d\AccelerationField.cpp">
+      <Filter>ソース ファイル\application\3d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -349,6 +358,9 @@
     </ClInclude>
     <ClInclude Include="engine\collision\ContactRecord.h">
       <Filter>ヘッダー ファイル\engine\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\3d\AccelerationField.h">
+      <Filter>ヘッダー ファイル\application\3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

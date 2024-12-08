@@ -43,6 +43,7 @@ public:
 	static bool IsCollision(const Ray& ray, const Plane& plane);
 	static bool IsCollision(const Segment& segment, const Plane& plane);
 	static bool IsCollision(const Triangle& triangle, const Segment& segment);
+	static bool IsCollision(const AABB& aabb, const Vector3 point);
 	static bool IsCollision(const AABB& aabb1, const AABB& aabb2);
 	static bool IsCollision(const AABB& aabb, const Sphere& sphere);
 	static bool IsCollision(const AABB& aabb, const Segment& segment);

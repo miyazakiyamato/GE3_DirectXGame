@@ -49,7 +49,7 @@ private:
 	std::map<std::string, Group> datas_;
 
 	//グローバル変数の保存先ファイルパス
-	const std::string kDirectoryPath = "Resources/GlobalVariables/";
+	const std::string kDirectoryPath = "resources/GlobalVariables/";
 
 public:
 	template <typename T>

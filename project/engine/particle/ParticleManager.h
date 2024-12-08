@@ -100,5 +100,5 @@ private://メンバ変数
 	//パーティクルデータ
 	std::map<std::string, std::unique_ptr<ParticleGroup>> particleGroups;
 public://ゲッターセッター
-
+	std::map<std::string, std::unique_ptr<ParticleGroup>>& GetParticleGroups() { return particleGroups; }
 };

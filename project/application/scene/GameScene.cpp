@@ -52,6 +52,10 @@ void GameScene::Initialize(){
 	object3ds[1]->SetTranslate({ 1,0,0 });
 	object3ds[1]->SetRotate({ 0,3.14f,0 });
 	
+	//
+	isAccelerationField = false;
+	accelerationField_ = new AccelerationField;
+
 	//ParticleManager::GetInstance()->CreateParticleGroup();
 	particleEmitter_ = new ParticleEmitter();
 	particleEmitter_->Initialize("uvChecker", "resources/uvChecker.png");
@@ -74,6 +78,8 @@ void GameScene::Initialize(){
 
 void GameScene::Finalize(){
 	//解放
+	delete particleEmitter_;
+	delete accelerationField_;
 	for (Sprite* sprite : sprites) {
 		delete sprite;
 	}
@@ -179,7 +185,6 @@ void GameScene::Update(){
 			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.x").c_str(), &rotate.x);
 			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.y").c_str(), &rotate.y);
 			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.z").c_str(), &rotate.z);
-			rotate.z += 0.01f;
 			object3d->SetRotate(rotate);
 
 			Vector3 scale = object3d->GetScale();
@@ -230,7 +235,7 @@ void GameScene::Update(){
 		/*size_t spriteCount = 0;
 		for (ParticleEmitter* particle : sprites) {*/
 			Vector3 position = particleEmitter_->GetPosition();
-			ImGui::DragFloat2("particleEmitter_.Translate", &position.x, 0.1f, 0.0f, 1180.0f, "%.1f");
+			ImGui::DragFloat2("particleEmitter_.Translate", &position.x, 0.1f);
 			/*if (position.y > 640.0f) {
 				position.y = 640.0f;
 			}*/
@@ -241,7 +246,7 @@ void GameScene::Update(){
 			particleEmitter_->SetRotation(rotation);
 
 			Vector3 size = particleEmitter_->GetSize();
-			ImGui::DragFloat2("particleEmitter_.Scale", &size.x, 0.1f, 0.0f, 640.0f, "%.1f");
+			ImGui::DragFloat2("particleEmitter_.Scale", &size.x, 0.1f);
 			if (size.y > 360.0f) {
 				size.y = 360.0f;
 			}
@@ -254,6 +259,8 @@ void GameScene::Update(){
 			float frequency = particleEmitter_->GetFrequency();
 			ImGui::DragFloat("particleEmitter_.frequency", &frequency, 0.1f);
 			particleEmitter_->SetFrequency(frequency);
+
+			ImGui::Checkbox("isAccelerationField", &isAccelerationField);
 
 			ImGui::Text("\n");
 			
@@ -337,6 +344,24 @@ void GameScene::Update(){
 		object3d->Update();
 	}
 
+	if (isAccelerationField) {
+		for (std::pair<const std::string, std::unique_ptr<ParticleManager::ParticleGroup>>& pair : ParticleManager::GetInstance()->GetParticleGroups()) {
+			ParticleManager::ParticleGroup& group = *pair.second;
+			int index = 0;
+			for (std::list<ParticleManager::Particle>::iterator it = group.particles.begin(); it != group.particles.end();) {
+				ParticleManager::Particle& particle = *it;
+
+				if (Collision::IsCollision(accelerationField_->GetAABB(), particle.transform.translate)) {
+					particle.velocity += accelerationField_->GetAcceleration() * kDeltaTime_;
+
+				}
+
+				++it;
+				++index;
+			}
+		}
+	}
+
 	particleEmitter_->Update();
 	ParticleManager::GetInstance()->Update();
 
@@ -368,11 +393,10 @@ void GameScene::CheckAllCollisions(){
 	//衝突マネージャのリストクリアする
 	collisionManager_->Reset();
 	//全てのコライダーを衝突マネージャのリストに登録する
-	collisionManager_->AddCollider(player_.get());
-	collisionManager_->AddCollider(hammer_.get());
-	for (const std::unique_ptr<Enemy>& enemy : enemies_) {
+
+	/*for (const std::unique_ptr<Enemy>& enemy : enemies_) {
 		collisionManager_->AddCollider(enemy.get());
-	}
+	}*/
 	//リスト内の総当たり判定
 	collisionManager_->CheckAllCollisions();
 }
