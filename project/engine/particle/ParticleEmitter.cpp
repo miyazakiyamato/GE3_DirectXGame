@@ -8,6 +8,7 @@ void ParticleEmitter::Initialize(const std::string name, const std::string textu
 }
 
 void ParticleEmitter::Update(){
+	if (!isEmitUpdate_) { return; }
 	frequencyTime_ -= kDeltaTime_;
 	if (frequencyTime_ <= 0.0f) {
 		frequencyTime_ = frequency_;

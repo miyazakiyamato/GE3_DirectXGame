@@ -89,7 +89,7 @@ private://メンバ変数
 	D3D12_INDEX_BUFFER_VIEW indexBufferView;
 
 	//インスタンスの最大数
-	uint32_t kMaxInstance = 100;
+	uint32_t kMaxInstance = 1000;
 
 	//テクスチャサイズ
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };
