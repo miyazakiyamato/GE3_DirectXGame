@@ -23,8 +23,6 @@ void GameScene::Initialize(){
 
 	CameraManager::GetInstance()->FindCamera("default");
 
-
-	AudioManager::GetInstance()->Initialize();
 	AudioManager::GetInstance()->LoadWave("maou_se_system48.wav");
 	//AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
 
@@ -142,6 +140,48 @@ void GameScene::Update(){
 
 		ImGui::Text("\n");
 	}
+	//if (ImGui::CollapsingHeader("Light"))
+	//{
+	//	static ImGuiComboFlags lightFlags = 0;
+	//	const char* items[] = { "default"/*,"Light2"*/ };
+	//	static int lightItem_selected_idx = 0; // Here we store our selection data as an index.
+
+	//	// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
+	//	const char* combo_preview_value = items[lightItem_selected_idx];
+
+	//	if (ImGui::BeginCombo("Now Light", combo_preview_value, lightFlags))
+	//	{
+	//		for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+	//		{
+	//			const bool is_selected = (lightItem_selected_idx == n);
+	//			if (ImGui::Selectable(items[n], is_selected)) {
+	//				lightItem_selected_idx = n;
+	//				LightManager::GetInstance()->FindLight(items[n]);
+	//			}
+
+	//			// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+	//			if (is_selected) {
+	//				ImGui::SetItemDefaultFocus();
+	//			}
+	//		}
+	//		ImGui::EndCombo();
+	//	}
+	//	
+	//	Vector4 lightColor = LightManager::GetInstance()->GetLight()->GetColor();
+	//	ImGui::ColorEdit4("Light.Color", &lightColor.x);
+	//	LightManager::GetInstance()->GetLight()->SetColor(lightColor);
+
+	//	Vector3 lightDirection = LightManager::GetInstance()->GetLight()->GetDirection();
+	//	ImGui::DragFloat3("Light.Direction", &lightDirection.x, 0.01f);
+	//	lightDirection = lightDirection.Normalize();
+	//	LightManager::GetInstance()->GetLight()->SetDirection(lightDirection);
+
+	//	float lightIntensity = LightManager::GetInstance()->GetLight()->GetIntensity();
+	//	ImGui::DragFloat("Light.Intensity", &lightIntensity, 0.01f);
+	//	LightManager::GetInstance()->GetLight()->SetIntensity(lightIntensity);
+
+	//	ImGui::Text("\n");
+	//}
 	if (ImGui::CollapsingHeader("Object3d"))
 	{
 		static ImGuiComboFlags Object3dFlags = 0;

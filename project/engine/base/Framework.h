@@ -49,10 +49,22 @@ protected://メンバ変数
 	WinApp* winApp = nullptr;
 	//DirecX
 	DirectXCommon* dxCommon = nullptr;
+	//入力
+	Input* input_ = nullptr;
 	//SRV
 	SrvManager* srvManager = nullptr;
 	//ImGui
 	ImGuiManager* imGuiManager = nullptr;
+	//テクスチャマネージャ
+	TextureManager* textureManager_ = nullptr;
+	//パーティクルマネージャ
+	ParticleManager* particleManager_ = nullptr;
+	//モデルマネージャ
+	ModelManager* modelManager_ = nullptr;
+	//カメラマネージャ
+	CameraManager* cameraManager_ = nullptr;
+	//オーディオマネージャの初期化
+	AudioManager* audioManager_ = nullptr;
 	//シーン
 	SceneManager* sceneManager_ = nullptr;
 	//シーンファクトリー

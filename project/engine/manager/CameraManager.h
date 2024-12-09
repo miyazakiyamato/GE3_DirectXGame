@@ -14,7 +14,7 @@ public:
 
 	//カメラの生成
 	void SetCamera(const std::string& filePath);
-	//モデルの検索
+	//カメラの検索
 	void FindCamera(const std::string& filePath);
 private:
 	static CameraManager* instance;
@@ -24,7 +24,7 @@ private:
 	CameraManager(CameraManager&) = delete;
 	CameraManager& operator=(CameraManager&) = delete;
 private:
-	//モデルデータ
+	//カメラデータ
 	std::map<std::string, std::unique_ptr<Camera>> cameras;
 
 	Camera* camera_ = nullptr;

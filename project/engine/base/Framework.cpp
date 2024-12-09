@@ -13,7 +13,8 @@ void Framework::Initialize(){
 	dxCommon->Initialize(winApp);
 
 	//入力の初期化
-	Input::GetInstance()->Initialize(winApp);
+	input_ = Input::GetInstance();
+	input_->Initialize(winApp);
 	
 	//SRVの初期化
 	srvManager = new SrvManager();
@@ -24,21 +25,29 @@ void Framework::Initialize(){
 	imGuiManager->Initialize(winApp, dxCommon, srvManager);
 
 	//テクスチャマネージャの初期化
-	TextureManager::GetInstance()->Initialize(dxCommon, srvManager);
+	textureManager_ = TextureManager::GetInstance();
+	textureManager_->Initialize(dxCommon, srvManager);
 
 	//パーティクルマネージャの初期化
-	ParticleManager::GetInstance()->Initialize(dxCommon, srvManager);
+	particleManager_ = ParticleManager::GetInstance();
+	particleManager_->Initialize(dxCommon, srvManager);
 
 	//モデルマネージャの初期化
-	ModelManager::GetInstance()->Initialize(dxCommon);
+	modelManager_ = ModelManager::GetInstance();
+	modelManager_->Initialize(dxCommon);
 	
 	//カメラマネージャの初期化
-	CameraManager::GetInstance()->Initialize();
-	CameraManager::GetInstance()->SetCamera("default");
-	CameraManager::GetInstance()->FindCamera("default");
-	CameraManager::GetInstance()->GetCamera()->SetRotate({ 0.3f,0.0f,0.0f });
-	CameraManager::GetInstance()->GetCamera()->SetTranslate({ 0.0f,4.0f,-10.0f });
+	cameraManager_ = CameraManager::GetInstance();
+	cameraManager_->Initialize();
+	cameraManager_->SetCamera("default");
+	cameraManager_->FindCamera("default");
+	cameraManager_->GetCamera()->SetRotate({ 0.3f,0.0f,0.0f });
+	cameraManager_->GetCamera()->SetTranslate({ 0.0f,4.0f,-10.0f });
 	
+	//オーディオマネージャの初期化
+	audioManager_ = AudioManager::GetInstance();
+	audioManager_->Initialize();
+
 	//シーンマネージャの初期化
 	sceneFactory_ = new SceneFactory();
 	sceneManager_ = SceneManager::GetInstance();
@@ -48,13 +57,13 @@ void Framework::Initialize(){
 void Framework::Finalize(){
 	//終了
 	sceneManager_->Finalize();
-	AudioManager::GetInstance()->Finalize();
-	ModelManager::GetInstance()->Finalize();
-	ParticleManager::GetInstance()->Finalize();
-	TextureManager::GetInstance()->Finalize();
-	CameraManager::GetInstance()->Finalize();
+	audioManager_->Finalize();
+	cameraManager_->Finalize();
+	modelManager_->Finalize();
+	particleManager_->Finalize();
+	textureManager_->Finalize();
 	imGuiManager->Finalize();
-	Input::GetInstance()->Finalize();
+	input_->Finalize();
 	winApp->Finalize();
 
 	//解放
