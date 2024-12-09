@@ -12,6 +12,12 @@ private:
 		Matrix4x4 WVP;
 		Matrix4x4 World;
 	};
+	struct Material {
+		Vector4 color{1,1,1,1};
+		int enableLighting;
+		float padding[3];
+		Matrix4x4 uvTransform;
+	};
 	struct DirectionalLight {
 		Vector4 color;//!<ライトの色
 		Vector3 direction; //!< ライトの向き
@@ -30,27 +36,31 @@ private://メンバ変数
 	Model* model_ = nullptr;
 	//バッファリソース
 	ComPtr<ID3D12Resource> wvpResource;
+	ComPtr<ID3D12Resource> materialResource;
 	ComPtr<ID3D12Resource> directionalLightResource;
 	//バッファリソース内のデータを指すポインタ
 	TransformationMatrix* wvpData = nullptr;
+	Material* materialData = nullptr;
 	DirectionalLight* directionalLightData = nullptr;
 
 	//Transform変数を作る。
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
-	//Color
-	Vector4 color_{1,1,1,1};
+	Object3d* parent_ = nullptr;
 
 public://ゲッターセッター
 	void SetModel(const std::string& filePath);
 	void SetScale(const Vector3& scale) { transform.scale = scale; }
 	void SetRotate(const Vector3& rotate) { transform.rotate = rotate; }
 	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
-	void SetColor(const Vector4& color) { color_ = color; }
+	void SetColor(const Vector4& color) { materialData->color = color; }
+	void SetParent(Object3d* parent) { parent_ = parent; }
 
 	const Vector3& GetScale() const { return transform.scale; }
 	const Vector3& GetRotate() const { return transform.rotate; }
 	const Vector3& GetTranslate() const { return transform.translate; }
-	const Vector4& GetColor() { return color_; }
+	const Vector4& GetColor() const { return materialData->color; }
+	Vector3 GetCenterPosition() const;
+	const Matrix4x4& GetWorldMatrix() const { return wvpData->World; }
 };
 
