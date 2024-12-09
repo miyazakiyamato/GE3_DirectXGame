@@ -25,12 +25,6 @@ private:
 		std::vector<VertexData> vertices;
 		MaterialData material;
 	};
-	struct Material {
-		Vector4 color;
-		int enableLighting;
-		float padding[3];
-		Matrix4x4 uvTransform;
-	};
 public://メンバ関数
 	//初期化
 	void Initialize(ModelCommon* modelCommon, const std::string& directoryPath, const std::string& filename);
@@ -41,24 +35,21 @@ public://メンバ関数
 	//.objファイルの読み取り
 	void LoadObjFile(const std::string& directoryPath, const std::string& filename);
 	//カラー
-	void LoadColor(const std::string& filePath);
+	Vector4 LoadColor();
 private:
 	ModelCommon* modelCommon_ = nullptr;
 	//Objファイルのデータ
 	ModelData modelData;
 	//バッファリソース
 	ComPtr<ID3D12Resource> vertexResource;
-	//ComPtr<ID3D12Resource> indexResource;
-	ComPtr<ID3D12Resource> materialResource;
+	//Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
+	
 	//バッファリソース内のデータを指すポインタ
 	VertexData* vertexData = nullptr;
 	//uint32_t* indexData = nullptr;
-	Material* materialData = nullptr;
 	//バッファリソースの使い道を補足するバッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	//D3D12_INDEX_BUFFER_VIEW indexBufferView;
 public://ゲッターセッター
-	void SetColor(const Vector4& color) { materialData->color = color; }
-	const Vector4& GetColor() { return materialData->color; }
 };
 

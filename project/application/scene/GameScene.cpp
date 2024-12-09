@@ -32,7 +32,7 @@ void GameScene::Initialize(){
 	collisionManager_ = std::make_unique<CollisionManager>();
 	collisionManager_->Initialize();
 
-	for (uint32_t i = 0; i < 2; ++i) {
+	for (uint32_t i = 0; i < 3; ++i) {
 		Object3d* object3d = new Object3d;
 		object3d->Initialize();
 		object3ds.push_back(object3d);
@@ -42,15 +42,15 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("fence");
 	ModelManager::GetInstance()->LoadModel("axis");
 
-	/*object3ds[0]->SetModel("fence");
-	object3ds[0]->SetTranslate({ -2,0,0 });
-	object3ds[0]->SetRotate({ 0,3.14f,0 });*/
 	object3ds[0]->SetModel("plane");
 	object3ds[0]->SetTranslate({ -1,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
 	object3ds[1]->SetModel("axis");
 	object3ds[1]->SetTranslate({ 1,0,0 });
 	object3ds[1]->SetRotate({ 0,3.14f,0 });
+	object3ds[2]->SetModel("plane");
+	object3ds[2]->SetTranslate({ -2,0,0 });
+	object3ds[2]->SetRotate({ 0,3.14f,0 });
 	
 	//
 	isAccelerationField = false;
@@ -142,64 +142,64 @@ void GameScene::Update(){
 
 		ImGui::Text("\n");
 	}
-	//if (ImGui::CollapsingHeader("Object3d"))
-	//{
-	//	static ImGuiComboFlags Object3dFlags = 0;
-	//	const char* items[] = {
-	//	"None",      //!< ブレンドなし
-	//	"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
-	//	"Add",       //!< 加算。Src * SrcA + Dest * 1
-	//	"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
-	//	"Multiply",  //!< 乗算。Src * 0 + Dest * Src
-	//	"Screen",};
-	//	static int Object3dItem_selected_idx = 1; // Here we store our selection data as an index.
+	if (ImGui::CollapsingHeader("Object3d"))
+	{
+		static ImGuiComboFlags Object3dFlags = 0;
+		const char* items[] = {
+		"None",      //!< ブレンドなし
+		"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
+		"Add",       //!< 加算。Src * SrcA + Dest * 1
+		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
+		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
+		"Screen",};
+		static int Object3dItem_selected_idx = 1; // Here we store our selection data as an index.
 
-	//	// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
-	//	const char* combo_preview_value = items[Object3dItem_selected_idx];
+		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
+		const char* combo_preview_value = items[Object3dItem_selected_idx];
 
-	//	if (ImGui::BeginCombo("Now Blend", combo_preview_value, Object3dFlags))
-	//	{
-	//		for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-	//		{
-	//			const bool is_selected = (Object3dItem_selected_idx == n);
-	//			if (ImGui::Selectable(items[n], is_selected)) {
-	//				Object3dItem_selected_idx = n;
-	//				ModelManager::GetInstance()->ChangeBlendMode(static_cast<ModelCommon::BlendMode>(n));
-	//			}
+		if (ImGui::BeginCombo("Now Blend", combo_preview_value, Object3dFlags))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+			{
+				const bool is_selected = (Object3dItem_selected_idx == n);
+				if (ImGui::Selectable(items[n], is_selected)) {
+					Object3dItem_selected_idx = n;
+					ModelManager::GetInstance()->ChangeBlendMode(static_cast<ModelCommon::BlendMode>(n));
+				}
 
-	//			// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-	//			if (is_selected) {
-	//				ImGui::SetItemDefaultFocus();
-	//			}
-	//		}
-	//		ImGui::EndCombo();
-	//	}
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
 
-	//	size_t object3dCount = 0;
-	//	for (Object3d* object3d : object3ds) {
-	//		Vector3 translate = object3d->GetTranslate();
-	//		ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Translate").c_str(), &translate.x, 0.1f);
-	//		object3d->SetTranslate(translate);
+		size_t object3dCount = 0;
+		for (Object3d* object3d : object3ds) {
+			Vector3 translate = object3d->GetTranslate();
+			ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Translate").c_str(), &translate.x, 0.1f);
+			object3d->SetTranslate(translate);
 
-	//		Vector3 rotate = object3d->GetRotate();
-	//		ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.x").c_str(), &rotate.x);
-	//		ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.y").c_str(), &rotate.y);
-	//		ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.z").c_str(), &rotate.z);
-	//		object3d->SetRotate(rotate);
+			Vector3 rotate = object3d->GetRotate();
+			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.x").c_str(), &rotate.x);
+			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.y").c_str(), &rotate.y);
+			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.z").c_str(), &rotate.z);
+			object3d->SetRotate(rotate);
 
-	//		Vector3 scale = object3d->GetScale();
-	//		ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Scale").c_str(), &scale.x, 0.1f);
-	//		object3d->SetScale(scale);
+			Vector3 scale = object3d->GetScale();
+			ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Scale").c_str(), &scale.x, 0.1f);
+			object3d->SetScale(scale);
 
-	//		Vector4 color = object3d->GetColor();
-	//		ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".Color").c_str(), &color.x);
-	//		object3d->SetColor(color);
+			Vector4 color = object3d->GetColor();
+			ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".Color").c_str(), &color.x);
+			object3d->SetColor(color);
 
-	//		ImGui::Text("\n");
+			ImGui::Text("\n");
 
-	//		object3dCount++;
-	//	}
-	//}
+			object3dCount++;
+		}
+	}
 	if (ImGui::CollapsingHeader("particle")) {
 		static ImGuiComboFlags particleFlags = 0;
 		const char* items[] = {
@@ -274,66 +274,66 @@ void GameScene::Update(){
 			
 		//}
 	}
-	//if (ImGui::CollapsingHeader("Sprite")) {
-	//	static ImGuiComboFlags spriteFlags = 0;
-	//	const char* items[] = {
-	//	"None",      //!< ブレンドなし
-	//	"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
-	//	"Add",       //!< 加算。Src * SrcA + Dest * 1
-	//	"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
-	//	"Multiply",  //!< 乗算。Src * 0 + Dest * Src
-	//	"Screen", };
-	//	static int spriteItem_selected_idx = 1; // Here we store our selection data as an index.
+	if (ImGui::CollapsingHeader("Sprite")) {
+		static ImGuiComboFlags spriteFlags = 0;
+		const char* items[] = {
+		"None",      //!< ブレンドなし
+		"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
+		"Add",       //!< 加算。Src * SrcA + Dest * 1
+		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
+		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
+		"Screen", };
+		static int spriteItem_selected_idx = 1; // Here we store our selection data as an index.
 
-	//	// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
-	//	const char* combo_preview_value = items[spriteItem_selected_idx];
+		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
+		const char* combo_preview_value = items[spriteItem_selected_idx];
 
-	//	if (ImGui::BeginCombo("Now Blend", combo_preview_value, spriteFlags))
-	//	{
-	//		for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-	//		{
-	//			const bool is_selected = (spriteItem_selected_idx == n);
-	//			if (ImGui::Selectable(items[n], is_selected)) {
-	//				spriteItem_selected_idx = n;
-	//				TextureManager::GetInstance()->ChangeBlendMode(static_cast<SpriteCommon::BlendMode>(n));
-	//			}
+		if (ImGui::BeginCombo("Now Blend", combo_preview_value, spriteFlags))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+			{
+				const bool is_selected = (spriteItem_selected_idx == n);
+				if (ImGui::Selectable(items[n], is_selected)) {
+					spriteItem_selected_idx = n;
+					TextureManager::GetInstance()->ChangeBlendMode(static_cast<SpriteCommon::BlendMode>(n));
+				}
 
-	//			// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-	//			if (is_selected) {
-	//				ImGui::SetItemDefaultFocus();
-	//			}
-	//		}
-	//		ImGui::EndCombo();
-	//	}
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
 
-	//	size_t spriteCount = 0;
-	//	for (Sprite* sprite : sprites) {
-	//		Vector2 position = sprite->GetPosition();
-	//		ImGui::DragFloat2(("Sprite " + std::to_string(spriteCount) + ".Translate").c_str(), &position.x, 1.0f, 0.0f, 1180.0f, "%.1f");
-	//		/*if (position.y > 640.0f) {
-	//			position.y = 640.0f;
-	//		}*/
-	//		sprite->SetPosition(position);
+		size_t spriteCount = 0;
+		for (Sprite* sprite : sprites) {
+			Vector2 position = sprite->GetPosition();
+			ImGui::DragFloat2(("Sprite " + std::to_string(spriteCount) + ".Translate").c_str(), &position.x, 1.0f, 0.0f, 1180.0f, "%.1f");
+			/*if (position.y > 640.0f) {
+				position.y = 640.0f;
+			}*/
+			sprite->SetPosition(position);
 
-	//		float rotation = sprite->GetRotation();
-	//		ImGui::SliderAngle(("Sprite " + std::to_string(spriteCount) + ".Rotate").c_str(), &rotation);
-	//		sprite->SetRotation(rotation);
+			float rotation = sprite->GetRotation();
+			ImGui::SliderAngle(("Sprite " + std::to_string(spriteCount) + ".Rotate").c_str(), &rotation);
+			sprite->SetRotation(rotation);
 
-	//		Vector2 size = sprite->GetSize();
-	//		ImGui::DragFloat2(("Sprite " + std::to_string(spriteCount) + ".Scale").c_str(), &size.x, 1.0f, 0.0f, 640.0f, "%.1f");
-	//		if (size.y > 360.0f) {
-	//			size.y = 360.0f;
-	//		}
-	//		sprite->SetSize(size);
+			Vector2 size = sprite->GetSize();
+			ImGui::DragFloat2(("Sprite " + std::to_string(spriteCount) + ".Scale").c_str(), &size.x, 1.0f, 0.0f, 640.0f, "%.1f");
+			if (size.y > 360.0f) {
+				size.y = 360.0f;
+			}
+			sprite->SetSize(size);
 
-	//		Vector4 color = sprite->GetColor();
-	//		ImGui::ColorEdit4(("Sprite " + std::to_string(spriteCount) + ".Color").c_str(), &color.x);
-	//		sprite->SetColor(color);
+			Vector4 color = sprite->GetColor();
+			ImGui::ColorEdit4(("Sprite " + std::to_string(spriteCount) + ".Color").c_str(), &color.x);
+			sprite->SetColor(color);
 
-	//		ImGui::Text("\n");
-	//		spriteCount++;
-	//	}
-	//}
+			ImGui::Text("\n");
+			spriteCount++;
+		}
+	}
 	//ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 	//ImGui::ColorEdit4("DirectionalLightData.Color", &directionalLightData->color.x);
 	//ImGui::DragFloat3("DirectionalLightData.Direction", &directionalLightData->direction.x, 0.01f, -1.0f, 1.0f);
@@ -381,9 +381,9 @@ void GameScene::Update(){
 void GameScene::Draw(){
 	//Modelの描画準備Modelの描画に共通グラフィックコマンドを積む
 	ModelManager::GetInstance()->DrawCommonSetting();
-	/*for (Object3d* object3d : object3ds) {
+	for (Object3d* object3d : object3ds) {
 		object3d->Draw();
-	}*/
+	}
 
 	//当たり判定の表示
 	collisionManager_->Draw();
@@ -392,9 +392,9 @@ void GameScene::Draw(){
 
 	//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
 	TextureManager::GetInstance()->DrawCommonSetting();
-	/*for (Sprite* sprite : sprites) {
+	for (Sprite* sprite : sprites) {
 		sprite->Draw();
-	}*/
+	}
 }
 
 void GameScene::CheckAllCollisions(){

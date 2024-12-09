@@ -24,17 +24,6 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 	vertexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));//書き込むためのアドレスを取得
 	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData)* modelData.vertices.size());//頂点データをリソースにコピー
 
-
-	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	materialResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(Material));
-	//マテリアルにデータを書き込む
-	//書き込むためのアドレスを取得
-	materialResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	//マテリアルデータの初期値を書き込む
-	LoadColor(modelData.material.mtlFilePath);//色を書き込む
-	materialData->enableLighting = true;//Lightingを有効にする
-	materialData->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
-
 	//.objの参照しているテクスチャファイル読み込み
 	TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
 }
@@ -45,8 +34,6 @@ void Model::Draw(){
 
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView); //VBVを設定
 	//commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
-	//マテリアルCBufferの場所を設定
-	commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
 	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData.material.textureFilePath));
 	//描画！(DrawCall/ドローコール)3頂点で1つのインスタンス。インスタンスについては
@@ -144,10 +131,11 @@ void Model::LoadObjFile(const std::string& directoryPath, const std::string& fil
 	}
 }
 
-void Model::LoadColor(const std::string& filePath) {
+Vector4 Model::LoadColor()
+{
 	Vector4 color = {};
 	std::string line;//ファイルから読んだ1行を格納するもの
-	std::ifstream file(filePath);//ファイルを開く
+	std::ifstream file(modelData.material.mtlFilePath);//ファイルを開く
 	assert(file.is_open());//開けなかったら止める
 	//実際にファイルを読む
 	while (std::getline(file, line)) {
@@ -159,6 +147,6 @@ void Model::LoadColor(const std::string& filePath) {
 			color.w = 1.0f;
 		}
 	}
-	materialData->color = color;
+	return color;
 }
 
