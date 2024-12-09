@@ -112,6 +112,12 @@
     <Filter Include="ヘッダー ファイル\application\3d">
       <UniqueIdentifier>{39d7f7f8-f6ae-4ffb-8dbc-23584494a65a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\debug">
+      <UniqueIdentifier>{a60f329c-f917-40b0-bc9d-085c8887bc0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\debug">
+      <UniqueIdentifier>{d4774140-581e-46dd-86e9-5c001333ea17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\2d\Sprite.cpp">
@@ -126,16 +132,7 @@
     <ClCompile Include="engine\3d\Object3d.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\D3DResourceLeakChecker.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
     <ClCompile Include="engine\base\DirectXCommon.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\Logger.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\StringUtility.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\WinApp.cpp">
@@ -174,15 +171,6 @@
     <ClCompile Include="engine\manager\SrvManager.cpp">
       <Filter>ソース ファイル\engine\manager</Filter>
     </ClCompile>
-    <ClCompile Include="engine\manager\AudioManager.cpp">
-      <Filter>ソース ファイル\engine\manager</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\manager\ImGuiManager.cpp">
-      <Filter>ソース ファイル\engine\manager</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\Framework.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClCompile>
@@ -219,9 +207,6 @@
     <ClCompile Include="engine\math\Easing.cpp">
       <Filter>ソース ファイル\engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\GlobalVariables.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
     <ClCompile Include="engine\collision\Collider.cpp">
       <Filter>ソース ファイル\engine\collision</Filter>
     </ClCompile>
@@ -236,6 +221,27 @@
     </ClCompile>
     <ClCompile Include="application\3d\AccelerationField.cpp">
       <Filter>ソース ファイル\application\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\scene\Framework.cpp">
+      <Filter>ソース ファイル\engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\audio\AudioManager.cpp">
+      <Filter>ソース ファイル\engine\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\debug\ImGuiManager.cpp">
+      <Filter>ソース ファイル\engine\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\debug\D3DResourceLeakChecker.cpp">
+      <Filter>ソース ファイル\engine\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\debug\GlobalVariables.cpp">
+      <Filter>ソース ファイル\engine\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\debug\Logger.cpp">
+      <Filter>ソース ファイル\engine\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\debug\StringUtility.cpp">
+      <Filter>ソース ファイル\engine\debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -254,16 +260,7 @@
     <ClInclude Include="engine\3d\Object3d.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\D3DResourceLeakChecker.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
     <ClInclude Include="engine\base\DirectXCommon.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\Logger.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\StringUtility.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
     <ClInclude Include="engine\base\WinApp.h">
@@ -299,15 +296,6 @@
     <ClInclude Include="engine\manager\SrvManager.h">
       <Filter>ヘッダー ファイル\engine\manager</Filter>
     </ClInclude>
-    <ClInclude Include="engine\manager\AudioManager.h">
-      <Filter>ヘッダー ファイル\engine\manager</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\manager\ImGuiManager.h">
-      <Filter>ヘッダー ファイル\engine\manager</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\Framework.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
     <ClInclude Include="application\scene\BaseScene.h">
       <Filter>ヘッダー ファイル\application\scene</Filter>
     </ClInclude>
@@ -341,9 +329,6 @@
     <ClInclude Include="engine\math\Easing.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\GlobalVariables.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
     <ClInclude Include="engine\collision\Collider.h">
       <Filter>ヘッダー ファイル\engine\collision</Filter>
     </ClInclude>
@@ -361,6 +346,27 @@
     </ClInclude>
     <ClInclude Include="application\3d\AccelerationField.h">
       <Filter>ヘッダー ファイル\application\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\scene\Framework.h">
+      <Filter>ヘッダー ファイル\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\debug\GlobalVariables.h">
+      <Filter>ヘッダー ファイル\engine\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\debug\D3DResourceLeakChecker.h">
+      <Filter>ヘッダー ファイル\engine\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\debug\Logger.h">
+      <Filter>ヘッダー ファイル\engine\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\debug\StringUtility.h">
+      <Filter>ヘッダー ファイル\engine\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\audio\AudioManager.h">
+      <Filter>ヘッダー ファイル\engine\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\debug\ImGuiManager.h">
+      <Filter>ヘッダー ファイル\engine\debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
