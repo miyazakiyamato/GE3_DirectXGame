@@ -4,8 +4,6 @@
 
 void Sprite::Initialize(std::string textureFilePath){
 	spriteCommon_ = TextureManager::GetInstance()->GetSpriteCommon();
-	
-	TextureManager::GetInstance()->LoadTexture(textureFilePath);
 	textureFilePath_ = textureFilePath;
 
 	//Sprite用の頂点リソースを作る
@@ -48,14 +46,31 @@ void Sprite::Initialize(std::string textureFilePath){
 	wvpData->WVP = Matrix4x4::MakeIdentity4x4();
 	wvpData->World = Matrix4x4::MakeIdentity4x4();
 
-	//画像サイズをテクスチャサイズに合わせる
-	AdjustTextureSize();
-}
-
-void Sprite::Update(){
 	//頂点リソースにデータを書き込む
 	vertexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	
+	//頂点座標
+	vertexData[0].position = { 0.0f,1.0f,0.0f,1.0f };//左下
+	vertexData[1].position = { 0.0f,0.0f,0.0f,1.0f };//左上
+	vertexData[2].position = { 1.0f,1.0f,0.0f,1.0f };//右下
+	vertexData[3].position = { 1.0f,0.0f,0.0f,1.0f };//右上
+
+	//テクスチャデータセット
+	SetTexture(textureFilePath_);
+	
+	//
+	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
+	vertexData[1].normal = { 0.0f,0.0f,-1.0f };
+	vertexData[2].normal = { 0.0f,0.0f,-1.0f };
+	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
+	
+	//インデックスリソースにデータを書き込む
+	indexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	indexData[0] = 0; indexData[1] = 1; indexData[2] = 2;
+	indexData[3] = 1; indexData[4] = 3; indexData[5] = 2;
+}
+
+void Sprite::Update(){
 	//三角形の頂点
 	float left = 0.0f - anchorPoint_.x;
 	float right = 1.0f - anchorPoint_.x;
@@ -76,29 +91,6 @@ void Sprite::Update(){
 	vertexData[1].position = { left,top,0.0f,1.0f };//左上
 	vertexData[2].position = { right,bottom,0.0f,1.0f };//右下
 	vertexData[3].position = { right,top,0.0f,1.0f };//右上
-
-	//テクスチャの頂点
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureFilePath_);
-	float tex_left = textureLeftTop_.x / metadata.width;
-	float tex_right = (textureLeftTop_.x + textureSize_.x) / metadata.width;
-	float tex_top = textureLeftTop_.y / metadata.height;
-	float tex_bottom = (textureLeftTop_.y + textureSize_.y) / metadata.height;
-
-	//テクスチャ頂点座標
-	vertexData[0].texcoord = { tex_left,tex_bottom };//左下
-	vertexData[1].texcoord = { tex_left,tex_top };//左上
-	vertexData[2].texcoord = { tex_right,tex_bottom };//右下
-	vertexData[3].texcoord = { tex_right,tex_top };//右上
-
-	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[1].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[2].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
-
-	//インデックスリソースにデータを書き込む
-	indexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
-	indexData[0] = 0; indexData[1] = 1; indexData[2] = 2;
-	indexData[3] = 1; indexData[4] = 3; indexData[5] = 2;
 
 	//SpriteのTransform変数を作る。
 	Transform transform{ {size_.x,size_.y,1.0f},{0.0f,0.0f,rotation_},{position_.x,position_.y,0.0f} };
@@ -149,4 +141,17 @@ void Sprite::SetTexture(std::string textureFilePath){
 	textureFilePath_ = textureFilePath;
 	//画像サイズをテクスチャサイズに合わせる
 	AdjustTextureSize();
+
+	//テクスチャの頂点
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureFilePath_);
+	float tex_left = textureLeftTop_.x / metadata.width;
+	float tex_right = (textureLeftTop_.x + textureSize_.x) / metadata.width;
+	float tex_top = textureLeftTop_.y / metadata.height;
+	float tex_bottom = (textureLeftTop_.y + textureSize_.y) / metadata.height;
+
+	//テクスチャ頂点座標
+	vertexData[0].texcoord = { tex_left,tex_bottom };//左下
+	vertexData[1].texcoord = { tex_left,tex_top };//左上
+	vertexData[2].texcoord = { tex_right,tex_bottom };//右下
+	vertexData[3].texcoord = { tex_right,tex_top };//右上
 }
