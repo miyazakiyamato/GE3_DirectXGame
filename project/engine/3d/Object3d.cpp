@@ -20,13 +20,6 @@ void Object3d::Initialize(){
 	//書き込むためのアドレスを取得
 	materialResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 
-	//DirectionalLightのリソースを作る。
-	directionalLightResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(DirectionalLight));
-	//デフォルト値を書き込んでおく
-	directionalLightResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
-	directionalLightData->color = { 1.0f,1.0f,1.0f,1.0f };
-	directionalLightData->direction = { 0.0f,-1.0f,0.0f };
-	directionalLightData->intensity = 1.0f;
 }
 
 void Object3d::Update(){
@@ -57,8 +50,12 @@ void Object3d::Draw(){
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 		//マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
-		//Lighting
-		commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource.Get()->GetGPUVirtualAddress());
+
+		if (directionalLight_) {
+			//Lighting
+			directionalLight_->Draw();
+		}
+
 		model_->Draw();
 	}
 

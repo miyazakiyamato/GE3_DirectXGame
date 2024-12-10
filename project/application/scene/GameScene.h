@@ -6,6 +6,7 @@
 #include "ParticleEmitter.h"
 #include "CollisionManager.h"
 #include "AccelerationField.h"
+#include "Light.h"
 
 class GameScene : public BaseScene {
 public://メンバ関数
@@ -32,6 +33,8 @@ private://メンバ変数
 
 	ParticleEmitter* particleEmitter_;
 
+	//std::unique_ptr<Light> directionalLight_ = nullptr;
+	Light* directionalLight_ = nullptr;
 	//デルタタイム
 	const float kDeltaTime_ = 1.0f / 60.0f;
 

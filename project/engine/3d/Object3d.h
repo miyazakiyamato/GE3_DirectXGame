@@ -2,6 +2,7 @@
 #include "ModelCommon.h"
 #include "Model.h"
 #include "Camera.h"
+#include "Light.h"
 
 class Object3d{
 public:
@@ -37,11 +38,11 @@ private://メンバ変数
 	//バッファリソース
 	ComPtr<ID3D12Resource> wvpResource;
 	ComPtr<ID3D12Resource> materialResource;
-	ComPtr<ID3D12Resource> directionalLightResource;
 	//バッファリソース内のデータを指すポインタ
 	TransformationMatrix* wvpData = nullptr;
 	Material* materialData = nullptr;
-	DirectionalLight* directionalLightData = nullptr;
+
+	Light * directionalLight_ = nullptr;
 
 	//Transform変数を作る。
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
@@ -55,6 +56,7 @@ public://ゲッターセッター
 	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
 	void SetColor(const Vector4& color) { materialData->color = color; }
 	void SetParent(Object3d* parent) { parent_ = parent; }
+	void SetLight(Light* light) { directionalLight_ = light; }
 
 	const Vector3& GetScale() const { return transform.scale; }
 	const Vector3& GetRotate() const { return transform.rotate; }
