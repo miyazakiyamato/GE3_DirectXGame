@@ -1,8 +1,10 @@
 #include "Object3d.hlsli"
+
 struct Material{
     float32_t4 color;
     int32_t enableLighting;
     float32_t4x4 uvTransform;
+    float3x2_t shininess;
 };
 ConstantBuffer<Material> gMaterial : register(b0);
 
@@ -12,6 +14,11 @@ struct DirectionalLight{
     float intensity;//!< 輝度
 };
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
+
+struct Camera{
+    float32_t3 worldPosition;
+};
+ConstantBuffer<Camera> gCamera : register(b2);
 
 struct PixelShaderOutput{
     float32_t4 color : SV_TARGET0;
@@ -24,6 +31,11 @@ PixelShaderOutput main(VertexShaderOutput input){
     PixelShaderOutput output;
     float4 transformedUV = mul(float32_t4(input.texcoord,0.0f, 1.0f), gMaterial.uvTransform);
     float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
+    //Cameraへの方向
+    float3x2_t3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
+    //入射角の反射ベクトル
+    float32_t3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
+    
     
     if (textureColor.a == 0.0)
     {

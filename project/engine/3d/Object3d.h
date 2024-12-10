@@ -24,6 +24,9 @@ private:
 		Vector3 direction; //!< ライトの向き
 		float intensity;//!< 輝度
 	};
+	struct CameraForGpu {
+		Vector3 worldPosition;
+	};
 public://メンバ関数
 	//初期化
 	void Initialize();
