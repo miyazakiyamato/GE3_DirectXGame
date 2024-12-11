@@ -17,7 +17,6 @@
 #include "SpriteCommon.h"
 #include "ModelManager.h"
 #include "Logger.h"
-#include "D3DResourceLeakChecker.h"
 #include "Camera.h"
 #include "CameraManager.h"
 #include "SrvManager.h"
@@ -41,8 +40,6 @@ public://メンバ関数
 	//実行
 	void Run();
 protected://メンバ変数
-	//リークチェック
-	D3DResourceLeakChecker leakCheck;
 
 	//ポインタ
 	//WindowsAPI

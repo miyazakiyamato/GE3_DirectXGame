@@ -39,6 +39,8 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("plane");
 	ModelManager::GetInstance()->LoadModel("fence");
 	ModelManager::GetInstance()->LoadModel("axis");
+	ModelManager::GetInstance()->LoadModel("ground");
+	ModelManager::GetInstance()->LoadModel("skydome");
 
 	object3ds[0]->SetModel("plane");
 	object3ds[0]->SetTranslate({ -1,0,0 });
@@ -50,6 +52,11 @@ void GameScene::Initialize(){
 	object3ds[2]->SetTranslate({ -2,0,0 });
 	object3ds[2]->SetRotate({ 0,3.14f,0 });
 	
+	skydome_ = new Skydome;
+	skydome_->Initialize();
+
+	ground_ = new Ground();
+	ground_->Initialize();
 	//
 	isAccelerationField = false;
 	accelerationField_ = new AccelerationField;
@@ -81,6 +88,8 @@ void GameScene::Finalize(){
 	for (Sprite* sprite : sprites) {
 		delete sprite;
 	}
+	delete ground_;
+	delete skydome_;
 	for (Object3d* object3d : object3ds) {
 		delete object3d;
 	}
@@ -391,7 +400,8 @@ void GameScene::Update(){
 	for (Object3d* object3d : object3ds) {
 		object3d->Update();
 	}
-
+	skydome_->Update();
+	ground_->Update();
 	if (isAccelerationField) {
 		for (std::pair<const std::string, std::unique_ptr<ParticleManager::ParticleGroup>>& pair : ParticleManager::GetInstance()->GetParticleGroups()) {
 			ParticleManager::ParticleGroup& group = *pair.second;
@@ -409,7 +419,6 @@ void GameScene::Update(){
 			}
 		}
 	}
-
 	particleEmitter_->Update();
 	ParticleManager::GetInstance()->Update();
 
@@ -421,10 +430,12 @@ void GameScene::Update(){
 void GameScene::Draw(){
 	//Modelの描画準備Modelの描画に共通グラフィックコマンドを積む
 	ModelManager::GetInstance()->DrawCommonSetting();
+	skydome_->Draw();
+	ground_->Draw();
+	
 	for (Object3d* object3d : object3ds) {
 		object3d->Draw();
 	}
-
 	//当たり判定の表示
 	collisionManager_->Draw();
 	//Particleの描画準備Modelの描画に共通グラフィックコマンドを積む

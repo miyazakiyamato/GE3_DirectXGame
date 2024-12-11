@@ -133,7 +133,7 @@ void Model::LoadObjFile(const std::string& directoryPath, const std::string& fil
 
 Vector4 Model::LoadColor()
 {
-	Vector4 color = {};
+	Vector4 color = {1.0f,1.0f,1.0f,1.0f};
 	std::string line;//ファイルから読んだ1行を格納するもの
 	std::ifstream file(modelData.material.mtlFilePath);//ファイルを開く
 	assert(file.is_open());//開けなかったら止める

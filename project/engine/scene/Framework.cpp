@@ -41,8 +41,8 @@ void Framework::Initialize(){
 	cameraManager_->Initialize();
 	cameraManager_->SetCamera("default");
 	cameraManager_->FindCamera("default");
-	cameraManager_->GetCamera()->SetRotate({ 0.3f,0.0f,0.0f });
-	cameraManager_->GetCamera()->SetTranslate({ 0.0f,4.0f,-10.0f });
+	cameraManager_->GetCamera()->SetRotate({ 0.1f,0.0f,0.0f });
+	cameraManager_->GetCamera()->SetTranslate({ 0.0f,1.0f,-10.0f });
 	
 	//オーディオマネージャの初期化
 	audioManager_ = AudioManager::GetInstance();

@@ -106,6 +106,13 @@ Vector3 Matrix4x4::Transform(const Vector3& Vector, const Matrix4x4& matrix) {
 	return v;
 }
 
+Vector3 Matrix4x4::TransformNormal(const Vector3& Vector, const Matrix4x4& matrix){
+	Vector3 v{
+		Vector.x * matrix.m[0][0] + Vector.y * matrix.m[1][0] + Vector.z * matrix.m[2][0], Vector.x * matrix.m[0][1] + Vector.y * matrix.m[1][1] + Vector.z * matrix.m[2][1],
+		Vector.x * matrix.m[0][2] + Vector.y * matrix.m[1][2] + Vector.z * matrix.m[2][2] };
+	return v;
+}
+
 Matrix4x4 Matrix4x4::MakeRotateXMatrix(float radius) {
 	Matrix4x4 m;
 	m.m[0][0] = 1; m.m[0][1] = 0; m.m[0][2] = 0; m.m[0][3] = 0;

@@ -55,6 +55,7 @@ public://ゲッターセッター
 	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
 	void SetColor(const Vector4& color) { materialData->color = color; }
 	void SetParent(Object3d* parent) { parent_ = parent; }
+	void SetIsLighting(bool isLighting) { materialData->enableLighting = isLighting; }
 
 	const Vector3& GetScale() const { return transform.scale; }
 	const Vector3& GetRotate() const { return transform.rotate; }
