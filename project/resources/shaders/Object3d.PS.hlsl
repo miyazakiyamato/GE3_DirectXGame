@@ -41,13 +41,13 @@ PixelShaderOutput main(VertexShaderOutput input){
     float32_t3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
     //outputカラー
     if (gMaterial.enableLighting != 0){ //Lightingする場合
+        //拡散反射
         float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
         float cos = pow(NdotL * 0.5f + 0.5f,2.0f);
-        float RdotE = dot(reflectLight, toEye);
-        float specularPow = pow(saturate(RdotE), gMaterial.shininess);//反射強度
-        //拡散反射
         float32_t3 diffuse = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
         //鏡面反射
+        float RdotE = dot(reflectLight, toEye);
+        float specularPow = pow(saturate(RdotE), gMaterial.shininess);//反射強度
         float32_t3 specular = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
         //拡散反射・鏡面反射
         output.color.rgb = diffuse + specular;
@@ -57,7 +57,6 @@ PixelShaderOutput main(VertexShaderOutput input){
         output.color = gMaterial.color * textureColor;
     }
     if (output.color.a == 0.0){ discard;}
-    
     
     return output;
 }

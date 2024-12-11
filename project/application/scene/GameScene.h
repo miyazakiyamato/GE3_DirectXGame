@@ -35,6 +35,7 @@ private://メンバ変数
 
 	//std::unique_ptr<Light> directionalLight_ = nullptr;
 	Light* directionalLight_ = nullptr;
+	
 	//デルタタイム
 	const float kDeltaTime_ = 1.0f / 60.0f;
 

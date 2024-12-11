@@ -45,14 +45,15 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("plane");
 	ModelManager::GetInstance()->LoadModel("fence");
 	ModelManager::GetInstance()->LoadModel("axis");
+	ModelManager::GetInstance()->LoadModel("sphere");
 
-	object3ds[0]->SetModel("plane");
+	object3ds[0]->SetModel("sphere");
 	object3ds[0]->SetTranslate({ -1,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
 	object3ds[1]->SetModel("axis");
 	object3ds[1]->SetTranslate({ 1,0,0 });
 	object3ds[1]->SetRotate({ 0,3.14f,0 });
-	object3ds[2]->SetModel("plane");
+	object3ds[2]->SetModel("sphere");
 	object3ds[2]->SetTranslate({ -2,0,0 });
 	object3ds[2]->SetRotate({ 0,3.14f,0 });
 	
