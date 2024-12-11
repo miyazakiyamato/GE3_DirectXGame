@@ -18,6 +18,7 @@ private:
 		int enableLighting;
 		float padding[3];
 		Matrix4x4 uvTransform;
+		float shininess;
 	};
 	struct DirectionalLight {
 		Vector4 color;//!<ライトの色
@@ -41,10 +42,11 @@ private://メンバ変数
 	//バッファリソース
 	ComPtr<ID3D12Resource> wvpResource;
 	ComPtr<ID3D12Resource> materialResource;
+	ComPtr<ID3D12Resource> cameraResource;
 	//バッファリソース内のデータを指すポインタ
 	TransformationMatrix* wvpData = nullptr;
 	Material* materialData = nullptr;
-
+	CameraForGpu* cameraData = nullptr;
 	Light * directionalLight_ = nullptr;
 
 	//Transform変数を作る。

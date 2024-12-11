@@ -20,6 +20,12 @@ void Object3d::Initialize(){
 	//書き込むためのアドレスを取得
 	materialResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 
+	//カメラ用のリソースを作る。今回はcolor1つ分のサイズを用意する
+	cameraResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(CameraForGpu));
+	//カメラのデータを書き込む
+	//書き込むためのアドレスを取得
+	cameraResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
+	cameraData->worldPosition = { 0.0f,0.0f,0.0f };
 }
 
 void Object3d::Update(){
@@ -32,6 +38,10 @@ void Object3d::Update(){
 	if (CameraManager::GetInstance()->GetCamera()) {
 		const Matrix4x4& viewProjectionMatrix = CameraManager::GetInstance()->GetCamera()->GetViewProjectionMatrix();
 		worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;
+
+		Matrix4x4 cameraWorldMatrix = CameraManager::GetInstance()->GetCamera()->GetWorldMatrix();
+
+		cameraData->worldPosition = {cameraWorldMatrix.m[3][0],cameraWorldMatrix.m[3][1],cameraWorldMatrix.m[3][2]};
 	}
 	else {
 		worldViewProjectionMatrix = worldMatrix;
@@ -50,7 +60,8 @@ void Object3d::Draw(){
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 		//マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
-
+		//カメラCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
 		if (directionalLight_) {
 			//Lighting
 			directionalLight_->Draw();
