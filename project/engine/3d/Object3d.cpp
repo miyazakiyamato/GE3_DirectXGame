@@ -13,6 +13,7 @@ void Object3d::Initialize(){
 	//単位行列を書き込んでおく
 	wvpData->WVP = Matrix4x4::MakeIdentity4x4();
 	wvpData->World = Matrix4x4::MakeIdentity4x4();
+	wvpData->WorldInverseTranspose = Matrix4x4::MakeIdentity4x4();
 
 	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	materialResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(Material));
@@ -48,6 +49,7 @@ void Object3d::Update(){
 	}
 	wvpData->WVP = worldViewProjectionMatrix;
 	wvpData->World = worldMatrix;
+	wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(worldMatrix));
 }
 
 void Object3d::Draw(){

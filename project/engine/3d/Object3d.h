@@ -12,6 +12,7 @@ private:
 	struct TransformationMatrix {
 		Matrix4x4 WVP;
 		Matrix4x4 World;
+		Matrix4x4 WorldInverseTranspose;
 	};
 	struct Material {
 		Vector4 color{1,1,1,1};
