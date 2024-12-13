@@ -26,19 +26,13 @@ void GameScene::Initialize(){
 	AudioManager::GetInstance()->LoadWave("maou_se_system48.wav");
 	//AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
 
-	//directionalLight_ = std::make_unique<Light>();
-	directionalLight_ = new Light;
-	directionalLight_->Initialize(ModelManager::GetInstance()->GetModelCommon()->GetDxCommon());
-
 	//衝突マネージャの生成
-	collisionManager_ = std::make_unique<CollisionManager>();
-	collisionManager_->Initialize();
+	/*collisionManager_ = std::make_unique<CollisionManager>();
+	collisionManager_->Initialize();*/
 
 	for (uint32_t i = 0; i < 3; ++i) {
 		Object3d* object3d = new Object3d;
 		object3d->Initialize();
-		//object3d->SetLight(directionalLight_.get());
-		object3d->SetLight(directionalLight_);
 		object3ds.push_back(object3d);
 	}
 
@@ -83,7 +77,6 @@ void GameScene::Initialize(){
 
 void GameScene::Finalize(){
 	//解放
-	delete directionalLight_;
 	delete particleEmitter_;
 	delete accelerationField_;
 	for (Sprite* sprite : sprites) {
@@ -150,44 +143,18 @@ void GameScene::Update(){
 	}
 	if (ImGui::CollapsingHeader("Light"))
 	{
-		//static ImGuiComboFlags lightFlags = 0;
-		//const char* items[] = { "default"/*,"Light2"*/ };
-		//static int lightItem_selected_idx = 0; // Here we store our selection data as an index.
 
-		//// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
-		//const char* combo_preview_value = items[lightItem_selected_idx];
+		Vector4 DirectionalLightColor = LightManager::GetInstance()->GetDirectionalLight()->color;
+		ImGui::ColorEdit4("DirectionalLight.Color", &DirectionalLightColor.x);
 
-		//if (ImGui::BeginCombo("Now Light", combo_preview_value, lightFlags))
-		//{
-		//	for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-		//	{
-		//		const bool is_selected = (lightItem_selected_idx == n);
-		//		if (ImGui::Selectable(items[n], is_selected)) {
-		//			lightItem_selected_idx = n;
-		//			LightManager::GetInstance()->FindLight(items[n]);
-		//		}
+		Vector3 DirectionalLightDirection = LightManager::GetInstance()->GetDirectionalLight()->direction;
+		ImGui::DragFloat3("DirectionalLight.Direction", &DirectionalLightDirection.x, 0.01f);
+		DirectionalLightDirection = DirectionalLightDirection.Normalize();
 
-		//		// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-		//		if (is_selected) {
-		//			ImGui::SetItemDefaultFocus();
-		//		}
-		//	}
-		//	ImGui::EndCombo();
-		//}
+		float DirectionalLightIntensity = LightManager::GetInstance()->GetDirectionalLight()->intensity;
+		ImGui::DragFloat("DirectionalLight.Intensity", &DirectionalLightIntensity, 0.01f);
 		
-		Vector4 lightColor = directionalLight_->GetColor();
-		ImGui::ColorEdit4("Light.Color", &lightColor.x);
-		directionalLight_->SetColor(lightColor);
-
-		Vector3 lightDirection = directionalLight_->GetDirection();
-		ImGui::DragFloat3("Light.Direction", &lightDirection.x, 0.01f);
-		lightDirection = lightDirection.Normalize();
-		directionalLight_->SetDirection(lightDirection);
-
-		float lightIntensity = directionalLight_->GetIntensity();
-		ImGui::DragFloat("Light.Intensity", &lightIntensity, 0.01f);
-		directionalLight_->SetIntensity(lightIntensity);
-
+		LightManager::GetInstance()->SetDirectionalLight({DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity });
 		ImGui::Text("\n");
 	}
 	if (ImGui::CollapsingHeader("Object3d"))
@@ -393,7 +360,7 @@ void GameScene::Update(){
 	ImGui::End();
 
 	// デバッグ用にワールドトランスフォームの更新
-	collisionManager_->UpdateWorldTransform();
+	//collisionManager_->UpdateWorldTransform();
 #endif //_DEBUG
 
 	for (Object3d* object3d : object3ds) {
@@ -434,7 +401,7 @@ void GameScene::Draw(){
 	}
 
 	//当たり判定の表示
-	collisionManager_->Draw();
+	//collisionManager_->Draw();
 	//Particleの描画準備Modelの描画に共通グラフィックコマンドを積む
 	ParticleManager::GetInstance()->Draw();
 
@@ -447,12 +414,12 @@ void GameScene::Draw(){
 
 void GameScene::CheckAllCollisions(){
 	//衝突マネージャのリストクリアする
-	collisionManager_->Reset();
+	//collisionManager_->Reset();
 	//全てのコライダーを衝突マネージャのリストに登録する
 
 	/*for (const std::unique_ptr<Enemy>& enemy : enemies_) {
 		collisionManager_->AddCollider(enemy.get());
 	}*/
 	//リスト内の総当たり判定
-	collisionManager_->CheckAllCollisions();
+	//collisionManager_->CheckAllCollisions();
 }

@@ -227,50 +227,51 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 	}
 }
 
-bool GlobalVariables::GetBoolValue(const std::string& groupName, const std::string& key) const {
+template<typename T>
+void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, T value) {
+	//グループの参照を取得
+	Group& group = datas_[groupName];
+	
+	// 設定した項目を追加
+	group[key] = value;
+}
+// 明示的インスタンス化
+template void GlobalVariables::SetValue<bool>(const std::string&, const std::string&, bool);
+template void GlobalVariables::SetValue<int>(const std::string&, const std::string&, int);
+template void GlobalVariables::SetValue<float>(const std::string&, const std::string&, float);
+template void GlobalVariables::SetValue<Vector3>(const std::string&, const std::string&, Vector3);
+
+template<typename T>
+void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, T value) {
+	// グループを検索
+	std::map<std::string, Group>::iterator itGroup = datas_.find(groupName);
+
+	// 未登録チェック
+	assert(itGroup != datas_.end());
+	
+	std::map<std::string, Item>::iterator itItem = itGroup->second.begin();
+
+	if (!itGroup->second.contains(key)) {
+		SetValue(groupName, key, value);
+	}
+}
+// 明示的インスタンス化
+template void GlobalVariables::AddItem<bool>(const std::string&, const std::string&, bool);
+template void GlobalVariables::AddItem<int>(const std::string&, const std::string&, int);
+template void GlobalVariables::AddItem<float>(const std::string&, const std::string&, float);
+template void GlobalVariables::AddItem<Vector3>(const std::string&, const std::string&, Vector3);
+
+template<typename T>
+T GlobalVariables::GetValue(const std::string& groupName, const std::string& key) const{
 	assert(datas_.contains(groupName));
 
 	// グループの参照を取得
 	const Group& group = datas_.at(groupName);
 
-	assert(group.contains(key));
-
-	//
-	return std::get<bool>(group.at(key));
+	return std::get<T>(group.at(key));
 }
-
-int32_t GlobalVariables::GetIntValue(const std::string& groupName, const std::string& key) const {
-	assert(datas_.contains(groupName));
-
-	// グループの参照を取得
-	const Group& group = datas_.at(groupName);
-
-	assert(group.contains(key));
-
-	// 
-	return std::get<int32_t>(group.at(key));
-}
-
-float GlobalVariables::GetFloatValue(const std::string& groupName, const std::string& key) const {
-	assert(datas_.contains(groupName));
-
-	// グループの参照を取得
-	const Group& group = datas_.at(groupName);
-
-	assert(group.contains(key));
-
-	//
-	return std::get<float>(group.at(key));
-}
-
-Vector3 GlobalVariables::GetVector3Value(const std::string& groupName, const std::string& key) const {
-	assert(datas_.contains(groupName));
-
-	// グループの参照を取得
-	const Group& group = datas_.at(groupName);
-
-	assert(group.contains(key));
-
-	//
-	return std::get<Vector3>(group.at(key));
-}
+// 明示的インスタンス化
+template bool GlobalVariables::GetValue<bool>(const std::string&, const std::string&) const;
+template int GlobalVariables::GetValue<int>(const std::string&, const std::string&) const;
+template float GlobalVariables::GetValue<float>(const std::string&, const std::string&) const;
+template Vector3 GlobalVariables::GetValue<Vector3>(const std::string&, const std::string&) const;

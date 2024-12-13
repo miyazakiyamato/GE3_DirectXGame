@@ -243,7 +243,7 @@
     <ClCompile Include="engine\debug\StringUtility.cpp">
       <Filter>ソース ファイル\engine\debug</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
+    <ClCompile Include="LightManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -371,7 +371,7 @@
     <ClInclude Include="engine\debug\ImGuiManager.h">
       <Filter>ヘッダー ファイル\engine\debug</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
+    <ClInclude Include="LightManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

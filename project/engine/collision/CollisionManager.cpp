@@ -69,5 +69,5 @@ void CollisionManager::AddCollider(Collider* collider) { colliders_.push_back(co
 void CollisionManager::ApplyGlobalVariables() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "CollisionManager";
-	isColliderModel_ = globalVariables->GetBoolValue(groupName, "IsColliderModel");
+	isColliderModel_ = globalVariables->GetValue<bool>(groupName, "IsColliderModel");
 }

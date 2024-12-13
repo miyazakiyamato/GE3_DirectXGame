@@ -19,22 +19,22 @@ void CameraManager::Finalize(){
 }
 
 void CameraManager::SetCamera(const std::string& filePath){
-	//読み込み済みモデルを検索
+	//読み込み済みカメラを検索
 	if (cameras.contains(filePath)) {
 		//読み込み済みなら早期return
 		return;
 	}
-	//モデルの生成とファイル読み込み、初期化
+	//カメラの生成とファイル読み込み、初期化
 	std::unique_ptr<Camera> SettingCamera = std::make_unique<Camera>();
 
-	//モデルをmapコンテナに格納する
+	//カメラをmapコンテナに格納する
 	cameras.insert(std::make_pair(filePath, std::move(SettingCamera)));
 }
 
 void CameraManager::FindCamera(const std::string& filePath){
-	//読み込み済みモデルを検索
+	//読み込み済みカメラを検索
 	if (cameras.contains(filePath)) {
-		//読み込みモデルを戻り値としてreturn
+		//読み込みカメラを戻り値としてreturn
 		camera_ =  cameras.at(filePath).get();
 	}
 }

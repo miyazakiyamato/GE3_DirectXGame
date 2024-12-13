@@ -2,7 +2,7 @@
 #include "ModelCommon.h"
 #include "Model.h"
 #include "Camera.h"
-#include "Light.h"
+#include "LightManager.h"
 
 class Object3d{
 public:
@@ -20,11 +20,6 @@ private:
 		float padding[3];
 		Matrix4x4 uvTransform;
 		float shininess;
-	};
-	struct DirectionalLight {
-		Vector4 color;//!<ライトの色
-		Vector3 direction; //!< ライトの向き
-		float intensity;//!< 輝度
 	};
 	struct CameraForGpu {
 		Vector3 worldPosition;
@@ -48,7 +43,7 @@ private://メンバ変数
 	TransformationMatrix* wvpData = nullptr;
 	Material* materialData = nullptr;
 	CameraForGpu* cameraData = nullptr;
-	Light * directionalLight_ = nullptr;
+	LightManager* lightManager_ = nullptr;
 
 	//Transform変数を作る。
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
@@ -62,7 +57,6 @@ public://ゲッターセッター
 	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
 	void SetColor(const Vector4& color) { materialData->color = color; }
 	void SetParent(Object3d* parent) { parent_ = parent; }
-	void SetLight(Light* light) { directionalLight_ = light; }
 
 	const Vector3& GetScale() const { return transform.scale; }
 	const Vector3& GetRotate() const { return transform.rotate; }

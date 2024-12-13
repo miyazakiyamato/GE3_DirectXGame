@@ -4,7 +4,7 @@
 
 void Object3d::Initialize(){
 	modelCommon_ = ModelManager::GetInstance()->GetModelCommon();
-
+	lightManager_ = LightManager::GetInstance();
 	//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	wvpResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
 	//データを書き込む
@@ -64,10 +64,8 @@ void Object3d::Draw(){
 		commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 		//カメラCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
-		if (directionalLight_) {
-			//Lighting
-			directionalLight_->Draw();
-		}
+		
+		lightManager_->Draw();
 
 		model_->Draw();
 	}
