@@ -27,8 +27,8 @@ void GameScene::Initialize(){
 	//AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
 
 	//衝突マネージャの生成
-	/*collisionManager_ = std::make_unique<CollisionManager>();
-	collisionManager_->Initialize();*/
+	collisionManager_ = std::make_unique<CollisionManager>();
+	collisionManager_->Initialize();
 
 	for (uint32_t i = 0; i < 3; ++i) {
 		Object3d* object3d = new Object3d;
@@ -321,46 +321,42 @@ void GameScene::Update(){
 			ImGui::EndCombo();
 		}
 
-		size_t spriteCount = 0;
+		uint32_t objectIDIndex = 0;
 		for (Sprite* sprite : sprites) {
+			ImGui::PushID(objectIDIndex);
+
 			Vector2 position = sprite->GetPosition();
-			ImGui::DragFloat2(("Sprite " + std::to_string(spriteCount) + ".Translate").c_str(), &position.x, 1.0f, 0.0f, 1180.0f, "%.1f");
+			ImGui::DragFloat2("Sprite.Translate", &position.x, 1.0f, 0.0f, 1180.0f, "%.1f");
 			/*if (position.y > 640.0f) {
 				position.y = 640.0f;
 			}*/
 			sprite->SetPosition(position);
 
 			float rotation = sprite->GetRotation();
-			ImGui::SliderAngle(("Sprite " + std::to_string(spriteCount) + ".Rotate").c_str(), &rotation);
+			ImGui::SliderAngle("Sprite.Rotate", &rotation);
 			sprite->SetRotation(rotation);
 
 			Vector2 size = sprite->GetSize();
-			ImGui::DragFloat2(("Sprite " + std::to_string(spriteCount) + ".Scale").c_str(), &size.x, 1.0f, 0.0f, 640.0f, "%.1f");
+			ImGui::DragFloat2("Sprite.Scale", &size.x, 1.0f, 0.0f, 640.0f, "%.1f");
 			if (size.y > 360.0f) {
 				size.y = 360.0f;
 			}
 			sprite->SetSize(size);
 
 			Vector4 color = sprite->GetColor();
-			ImGui::ColorEdit4(("Sprite " + std::to_string(spriteCount) + ".Color").c_str(), &color.x);
+			ImGui::ColorEdit4("Sprite.Color", &color.x);
 			sprite->SetColor(color);
 
 			ImGui::Text("\n");
-			spriteCount++;
+			ImGui::PopID();
+			++objectIDIndex;
 		}
 	}
-	//ImGui::Checkbox("useMonsterBall", &useMonsterBall);
-	//ImGui::ColorEdit4("DirectionalLightData.Color", &directionalLightData->color.x);
-	//ImGui::DragFloat3("DirectionalLightData.Direction", &directionalLightData->direction.x, 0.01f, -1.0f, 1.0f);
-	//directionalLightData->direction = Vector3::Normalize(directionalLightData->direction);
-	//ImGui::DragFloat("DirectionalLightData.Intensity", &directionalLightData->intensity, 0.01f, 0.0f, 1.0f);
-	/*ImGui::DragFloat2("UVTranslate", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
-	ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);*/
+	
 	ImGui::End();
 
 	// デバッグ用にワールドトランスフォームの更新
-	//collisionManager_->UpdateWorldTransform();
+	collisionManager_->UpdateWorldTransform();
 #endif //_DEBUG
 
 	for (Object3d* object3d : object3ds) {
@@ -401,7 +397,7 @@ void GameScene::Draw(){
 	}
 
 	//当たり判定の表示
-	//collisionManager_->Draw();
+	collisionManager_->Draw();
 	//Particleの描画準備Modelの描画に共通グラフィックコマンドを積む
 	ParticleManager::GetInstance()->Draw();
 
@@ -414,12 +410,12 @@ void GameScene::Draw(){
 
 void GameScene::CheckAllCollisions(){
 	//衝突マネージャのリストクリアする
-	//collisionManager_->Reset();
+	collisionManager_->Reset();
 	//全てのコライダーを衝突マネージャのリストに登録する
 
 	/*for (const std::unique_ptr<Enemy>& enemy : enemies_) {
 		collisionManager_->AddCollider(enemy.get());
 	}*/
 	//リスト内の総当たり判定
-	//collisionManager_->CheckAllCollisions();
+	collisionManager_->CheckAllCollisions();
 }

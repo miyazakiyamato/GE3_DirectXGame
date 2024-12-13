@@ -24,7 +24,9 @@ void Framework::Initialize(){
 	imGuiManager = new ImGuiManager();
 	imGuiManager->Initialize(winApp, dxCommon, srvManager);
 
+	// グローバル変数の読み込み
 	globalVariables_ = GlobalVariables::GetInstance();
+	globalVariables_->LoadFiles();
 
 	//テクスチャマネージャの初期化
 	textureManager_ = TextureManager::GetInstance();
@@ -86,6 +88,8 @@ void Framework::Update(){
 	Input::GetInstance()->Update();
 
 	imGuiManager->Begin();
+
+	globalVariables_->Update();
 
 	sceneManager_->Update();
 

@@ -171,9 +171,6 @@
     <ClCompile Include="engine\manager\SrvManager.cpp">
       <Filter>ソース ファイル\engine\manager</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="application\scene\MyGame.cpp">
       <Filter>ソース ファイル\application\scene</Filter>
     </ClCompile>
@@ -243,7 +240,10 @@
     <ClCompile Include="engine\debug\StringUtility.cpp">
       <Filter>ソース ファイル\engine\debug</Filter>
     </ClCompile>
-    <ClCompile Include="LightManager.cpp">
+    <ClCompile Include="engine\manager\LightManager.cpp">
+      <Filter>ソース ファイル\engine\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -371,8 +371,8 @@
     <ClInclude Include="engine\debug\ImGuiManager.h">
       <Filter>ヘッダー ファイル\engine\debug</Filter>
     </ClInclude>
-    <ClInclude Include="LightManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\manager\LightManager.h">
+      <Filter>ヘッダー ファイル\engine\manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

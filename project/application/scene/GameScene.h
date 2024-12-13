@@ -4,7 +4,7 @@
 #include "Sprite.h"
 #include "Object3d.h"
 #include "ParticleEmitter.h"
-//#include "CollisionManager.h"
+#include "CollisionManager.h"
 #include "AccelerationField.h"
 
 class GameScene : public BaseScene {
@@ -22,7 +22,7 @@ private:
 	void CheckAllCollisions();
 private://メンバ変数
 	//衝突マネージャ
-	//std::unique_ptr<CollisionManager> collisionManager_;
+	std::unique_ptr<CollisionManager> collisionManager_;
 
 	std::vector<Object3d*> object3ds;
 	std::vector<Sprite*> sprites;
