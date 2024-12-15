@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <json.hpp>
-#include "Vector3.h"
+#include "Matrix4x4.h"
 
 
 class GlobalVariables {
@@ -20,6 +20,9 @@ public:
 	/// 毎フレーム処理
 	/// </summary>
 	void Update();
+
+	void ShowCombo(const std::string& label, const std::vector<std::string>& items, int& selectedIndex, std::function<void(const std::string&)> onSelect);
+	void ShowCombo(const std::string& label, const std::vector<std::string>& items, int& selectedIndex, std::function<void(const int&)> onSelect);
 
 	/// <summary>
 	/// ファイルに書き出し
@@ -43,7 +46,7 @@ private:
 	GlobalVariables& operator=(const GlobalVariables& obj) = delete;
 	
 	using json = nlohmann::json;
-	using Item = std::variant<bool,int32_t, float, Vector3>;
+	using Item = std::variant<bool, int32_t, float, Vector2, Vector3, Vector4, std::string>;
 	using Group = std::map<std::string, Item>;
 	// 全データ
 	std::map<std::string, Group> datas_;

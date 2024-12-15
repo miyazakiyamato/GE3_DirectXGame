@@ -6,13 +6,14 @@
 #include "TextureManager.h"
 #include "AudioManager.h"
 #include "ParticleManager.h"
+#include "GlobalVariables.h"
 
 void GameScene::Initialize(){
 	BaseScene::Initialize();
 
 	//開発用のUIの処理。
 	// ウインドウのサイズを固定する
-	ImGui::SetNextWindowSize(ImVec2(500, 300));
+	ImGui::SetNextWindowSize(ImVec2(1280, 40));
 	// ウインドウの位置を設定する
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 
@@ -101,260 +102,181 @@ void GameScene::Update(){
 #ifdef _DEBUG
 	//// ウインドウフラグに NoResize を指定
 	//ImGui::Begin("Settings", NULL, ImGuiWindowFlags_NoResize);
-	ImGui::Begin("Settings");
-	//ImGui::ShowDemoWindow();
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	globalVariables->Update();
+	std::string groupName = "";
+	if (ImGui::Begin("Global Variables", nullptr, ImGuiWindowFlags_MenuBar)) {
+		if (ImGui::BeginMenuBar()) {
+			groupName = "Camera";
+			if (ImGui::BeginMenu(groupName.c_str())) {
+				static int cameraItem_selected_idx = 0;
+				globalVariables->ShowCombo(
+					"Now Camera",
+					{ "default", "Camera2" },
+					cameraItem_selected_idx,
+					[](const std::string& ItemName) { CameraManager::GetInstance()->FindCamera(ItemName); }
+				);
+				Vector3 cameraRotate = CameraManager::GetInstance()->GetCamera()->GetRotate();
+				ImGui::DragFloat3("Camera.Rotate", &cameraRotate.x, 0.001f);
 
-	if (ImGui::CollapsingHeader("Camera"))
-	{
-		static ImGuiComboFlags cameraFlags = 0;
-		const char* items[] = { "default","Camera2" };
-		static int cameraItem_selected_idx = 0; // Here we store our selection data as an index.
-
-		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
-		const char* combo_preview_value = items[cameraItem_selected_idx];
-
-		if (ImGui::BeginCombo("Now Camera", combo_preview_value, cameraFlags))
-		{
-			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-			{
-				const bool is_selected = (cameraItem_selected_idx == n);
-				if (ImGui::Selectable(items[n], is_selected)) {
-					cameraItem_selected_idx = n;
-					CameraManager::GetInstance()->FindCamera(items[n]);
-				}
-
-				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-				if (is_selected) {
-					ImGui::SetItemDefaultFocus();
-				}
+				Vector3 cameraPosition = CameraManager::GetInstance()->GetCamera()->GetTranslate();
+				ImGui::DragFloat3("Camera.Translate", &cameraPosition.x, 0.01f);
+				
+				CameraManager::GetInstance()->GetCamera()->SetRotate(cameraRotate);
+				CameraManager::GetInstance()->GetCamera()->SetTranslate(cameraPosition);
+				ImGui::EndMenu();
 			}
-			ImGui::EndCombo();
+			groupName = "Light";
+			if (ImGui::BeginMenu(groupName.c_str())) {
+				Vector4 DirectionalLightColor = LightManager::GetInstance()->GetDirectionalLight()->color;
+				ImGui::ColorEdit4("DirectionalLight.Color", &DirectionalLightColor.x);
+
+				Vector3 DirectionalLightDirection = LightManager::GetInstance()->GetDirectionalLight()->direction;
+				ImGui::DragFloat3("DirectionalLight.Direction", &DirectionalLightDirection.x, 0.01f);
+				DirectionalLightDirection = DirectionalLightDirection.Normalize();
+
+				float DirectionalLightIntensity = LightManager::GetInstance()->GetDirectionalLight()->intensity;
+				ImGui::DragFloat("DirectionalLight.Intensity", &DirectionalLightIntensity, 0.01f);
+
+				LightManager::GetInstance()->SetDirectionalLight({ DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity });
+				ImGui::EndMenu();
+			}
+			std::string blendName = "Now Blend";
+			std::vector<std::string> blendState{
+				"None",      //!< ブレンドなし
+				"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
+				"Add",       //!< 加算。Src * SrcA + Dest * 1
+				"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
+				"Multiply",  //!< 乗算。Src * 0 + Dest * Src
+				"Screen", };
+			groupName = "Object3d";
+			if (ImGui::BeginMenu(groupName.c_str())) {
+				static int Object3dItem_selected_idx = 1;
+				globalVariables->ShowCombo(
+					blendName,
+					blendState,
+					Object3dItem_selected_idx,
+					[](const int& ItemIndex) { ModelManager::GetInstance()->ChangeBlendMode(static_cast<ModelCommon::BlendMode>(ItemIndex)); }
+				);
+				size_t object3dCount = 0;
+				for (Object3d* object3d : object3ds) {
+					Vector3 translate = object3d->GetTranslate();
+					ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Translate").c_str(), &translate.x, 0.1f);
+
+					Vector3 rotate = object3d->GetRotate();
+					ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.x").c_str(), &rotate.x);
+					ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.y").c_str(), &rotate.y);
+					ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.z").c_str(), &rotate.z);
+
+					Vector3 scale = object3d->GetScale();
+					ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Scale").c_str(), &scale.x, 0.1f);
+
+					Vector4 color = object3d->GetColor();
+					ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".Color").c_str(), &color.x);
+
+					object3d->SetTranslate(translate);
+					object3d->SetRotate(rotate);
+					object3d->SetScale(scale);
+					object3d->SetColor(color);
+					
+					ImGui::Text("\n");
+					object3dCount++;
+				}
+				ImGui::EndMenu();
+			}
+			groupName = "Particle";
+			if (ImGui::BeginMenu(groupName.c_str())) {
+				static int Object3dItem_selected_idx = 1;
+				globalVariables->ShowCombo(
+					blendName,
+					blendState,
+					Object3dItem_selected_idx,
+					[](const int& ItemIndex) { ParticleManager::GetInstance()->ChangeBlendMode(static_cast<ParticleCommon::BlendMode>(ItemIndex));  }
+				);
+				Vector3 position = particleEmitter_->GetPosition();
+				ImGui::DragFloat2("particleEmitter_.Translate", &position.x, 0.1f);
+				/*if (position.y > 640.0f) {
+					position.y = 640.0f;
+				}*/
+
+				//Vector3 rotation = particleEmitter_->GetRotation();
+				//ImGui::SliderAngle("particleEmitter_.Rotate", &rotation.x);
+
+				//Vector3 size = particleEmitter_->GetSize();
+				//ImGui::DragFloat2("particleEmitter_.Scale", &size.x, 0.1f);
+				//if (size.y > 360.0f) {
+				//	size.y = 360.0f;
+				//}
+
+				int count = particleEmitter_->GetCount();
+				ImGui::DragInt("particleEmitter_.count", &count, 1, 0, 1000);
+
+				float frequency = particleEmitter_->GetFrequency();
+				ImGui::DragFloat("particleEmitter_.frequency", &frequency, 0.1f);
+
+				if (ImGui::Button("ParticleEmit", { 100,50 })) {
+					particleEmitter_->Emit();
+				}
+
+				bool isEmitUpdate = particleEmitter_->GetIsEmitUpdate();
+				ImGui::Checkbox("IsEmitUpdate", &isEmitUpdate);
+
+				particleEmitter_->SetPosition(position);
+				//particleEmitter_->SetRotation(rotation);
+				//particleEmitter_->SetSize(size);
+				particleEmitter_->SetCount(count);
+				particleEmitter_->SetFrequency(frequency);
+				particleEmitter_->SetIsEmitUpdate(isEmitUpdate);
+				
+				ImGui::Checkbox("IsAccelerationField", &isAccelerationField);
+				ImGui::EndMenu();
+			}
+			groupName = "Sprite";
+			if (ImGui::BeginMenu(groupName.c_str())) {
+				static int Object3dItem_selected_idx = 1;
+				globalVariables->ShowCombo(
+					blendName,
+					blendState,
+					Object3dItem_selected_idx,
+					[](const int& ItemIndex) {  TextureManager::GetInstance()->ChangeBlendMode(static_cast<SpriteCommon::BlendMode>(ItemIndex)); }
+				);
+				uint32_t objectIDIndex = 0;
+				for (Sprite* sprite : sprites) {
+					ImGui::PushID(objectIDIndex);
+
+					Vector2 position = sprite->GetPosition();
+					ImGui::DragFloat2("Sprite.Translate", &position.x, 1.0f, 0.0f, 1180.0f, "%.1f");
+					/*if (position.y > 640.0f) {
+						position.y = 640.0f;
+					}*/
+
+					float rotation = sprite->GetRotation();
+					ImGui::SliderAngle("Sprite.Rotate", &rotation);
+
+					Vector2 size = sprite->GetSize();
+					ImGui::DragFloat2("Sprite.Scale", &size.x, 1.0f, 0.0f, 640.0f, "%.1f");
+					if (size.y > 360.0f) {
+						size.y = 360.0f;
+					}
+
+					Vector4 color = sprite->GetColor();
+					ImGui::ColorEdit4("Sprite.Color", &color.x);
+
+					sprite->SetPosition(position);
+					sprite->SetRotation(rotation);
+					sprite->SetSize(size);
+					sprite->SetColor(color);
+					
+					ImGui::Text("\n");
+					ImGui::PopID();
+					++objectIDIndex;
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
 		}
-
-		Vector3 cameraRotate = CameraManager::GetInstance()->GetCamera()->GetRotate();
-		ImGui::DragFloat3("Camera.Rotate", &cameraRotate.x, 0.001f);
-		CameraManager::GetInstance()->GetCamera()->SetRotate(cameraRotate);
-
-		Vector3 cameraPosition = CameraManager::GetInstance()->GetCamera()->GetTranslate();
-		ImGui::DragFloat3("Camera.Translate", &cameraPosition.x, 0.01f);
-		CameraManager::GetInstance()->GetCamera()->SetTranslate(cameraPosition);
-
-		ImGui::Text("\n");
+		ImGui::End();
 	}
-	if (ImGui::CollapsingHeader("Light"))
-	{
-
-		Vector4 DirectionalLightColor = LightManager::GetInstance()->GetDirectionalLight()->color;
-		ImGui::ColorEdit4("DirectionalLight.Color", &DirectionalLightColor.x);
-
-		Vector3 DirectionalLightDirection = LightManager::GetInstance()->GetDirectionalLight()->direction;
-		ImGui::DragFloat3("DirectionalLight.Direction", &DirectionalLightDirection.x, 0.01f);
-		DirectionalLightDirection = DirectionalLightDirection.Normalize();
-
-		float DirectionalLightIntensity = LightManager::GetInstance()->GetDirectionalLight()->intensity;
-		ImGui::DragFloat("DirectionalLight.Intensity", &DirectionalLightIntensity, 0.01f);
-		
-		LightManager::GetInstance()->SetDirectionalLight({DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity });
-		ImGui::Text("\n");
-	}
-	if (ImGui::CollapsingHeader("Object3d"))
-	{
-		static ImGuiComboFlags Object3dFlags = 0;
-		const char* items[] = {
-		"None",      //!< ブレンドなし
-		"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
-		"Add",       //!< 加算。Src * SrcA + Dest * 1
-		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
-		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
-		"Screen",};
-		static int Object3dItem_selected_idx = 1; // Here we store our selection data as an index.
-
-		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
-		const char* combo_preview_value = items[Object3dItem_selected_idx];
-
-		if (ImGui::BeginCombo("Now Blend", combo_preview_value, Object3dFlags))
-		{
-			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-			{
-				const bool is_selected = (Object3dItem_selected_idx == n);
-				if (ImGui::Selectable(items[n], is_selected)) {
-					Object3dItem_selected_idx = n;
-					ModelManager::GetInstance()->ChangeBlendMode(static_cast<ModelCommon::BlendMode>(n));
-				}
-
-				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-				if (is_selected) {
-					ImGui::SetItemDefaultFocus();
-				}
-			}
-			ImGui::EndCombo();
-		}
-
-		size_t object3dCount = 0;
-		for (Object3d* object3d : object3ds) {
-			Vector3 translate = object3d->GetTranslate();
-			ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Translate").c_str(), &translate.x, 0.1f);
-			object3d->SetTranslate(translate);
-
-			Vector3 rotate = object3d->GetRotate();
-			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.x").c_str(), &rotate.x);
-			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.y").c_str(), &rotate.y);
-			ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.z").c_str(), &rotate.z);
-			object3d->SetRotate(rotate);
-
-			Vector3 scale = object3d->GetScale();
-			ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Scale").c_str(), &scale.x, 0.1f);
-			object3d->SetScale(scale);
-
-			Vector4 color = object3d->GetColor();
-			ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".Color").c_str(), &color.x);
-			object3d->SetColor(color);
-
-			ImGui::Text("\n");
-
-			object3dCount++;
-		}
-	}
-	if (ImGui::CollapsingHeader("particle")) {
-		static ImGuiComboFlags particleFlags = 0;
-		const char* items[] = {
-		"None",      //!< ブレンドなし
-		"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
-		"Add",       //!< 加算。Src * SrcA + Dest * 1
-		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
-		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
-		"Screen", };
-		static int particleItem_selected_idx = 2; // Here we store our selection data as an index.
-
-		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
-		const char* combo_preview_value = items[particleItem_selected_idx];
-
-		if (ImGui::BeginCombo("Now Blend", combo_preview_value, particleFlags))
-		{
-			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-			{
-				const bool is_selected = (particleItem_selected_idx == n);
-				if (ImGui::Selectable(items[n], is_selected)) {
-					particleItem_selected_idx = n;
-					ParticleManager::GetInstance()->ChangeBlendMode(static_cast<ParticleCommon::BlendMode>(n));
-				}
-
-				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-				if (is_selected) {
-					ImGui::SetItemDefaultFocus();
-				}
-			}
-			ImGui::EndCombo();
-		}
-
-		/*size_t spriteCount = 0;
-		for (ParticleEmitter* particle : sprites) {*/
-			Vector3 position = particleEmitter_->GetPosition();
-			ImGui::DragFloat2("particleEmitter_.Translate", &position.x, 0.1f);
-			/*if (position.y > 640.0f) {
-				position.y = 640.0f;
-			}*/
-			particleEmitter_->SetPosition(position);
-
-			/*Vector3 rotation = particleEmitter_->GetRotation();
-			ImGui::SliderAngle("particleEmitter_.Rotate", &rotation.x);
-			particleEmitter_->SetRotation(rotation);
-
-			Vector3 size = particleEmitter_->GetSize();
-			ImGui::DragFloat2("particleEmitter_.Scale", &size.x, 0.1f);
-			if (size.y > 360.0f) {
-				size.y = 360.0f;
-			}
-			particleEmitter_->SetSize(size);*/
-
-			int count = particleEmitter_->GetCount();
-			ImGui::DragInt("particleEmitter_.count", &count,1,0,1000);
-			particleEmitter_->SetCount(count);
-
-			float frequency = particleEmitter_->GetFrequency();
-			ImGui::DragFloat("particleEmitter_.frequency", &frequency, 0.1f);
-			particleEmitter_->SetFrequency(frequency);
-
-			if (ImGui::Button("ParticleEmit", { 100,50 })) {
-				particleEmitter_->Emit();
-			}
-
-			bool isEmitUpdate = particleEmitter_->GetIsEmitUpdate();
-			ImGui::Checkbox("IsEmitUpdate", &isEmitUpdate);
-			particleEmitter_->SetIsEmitUpdate(isEmitUpdate);
-			
-			ImGui::Checkbox("IsAccelerationField", &isAccelerationField);
-
-			ImGui::Text("\n");
-			
-		//}
-	}
-	if (ImGui::CollapsingHeader("Sprite")) {
-		static ImGuiComboFlags spriteFlags = 0;
-		const char* items[] = {
-		"None",      //!< ブレンドなし
-		"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
-		"Add",       //!< 加算。Src * SrcA + Dest * 1
-		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
-		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
-		"Screen", };
-		static int spriteItem_selected_idx = 1; // Here we store our selection data as an index.
-
-		// Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
-		const char* combo_preview_value = items[spriteItem_selected_idx];
-
-		if (ImGui::BeginCombo("Now Blend", combo_preview_value, spriteFlags))
-		{
-			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-			{
-				const bool is_selected = (spriteItem_selected_idx == n);
-				if (ImGui::Selectable(items[n], is_selected)) {
-					spriteItem_selected_idx = n;
-					TextureManager::GetInstance()->ChangeBlendMode(static_cast<SpriteCommon::BlendMode>(n));
-				}
-
-				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-				if (is_selected) {
-					ImGui::SetItemDefaultFocus();
-				}
-			}
-			ImGui::EndCombo();
-		}
-
-		uint32_t objectIDIndex = 0;
-		for (Sprite* sprite : sprites) {
-			ImGui::PushID(objectIDIndex);
-
-			Vector2 position = sprite->GetPosition();
-			ImGui::DragFloat2("Sprite.Translate", &position.x, 1.0f, 0.0f, 1180.0f, "%.1f");
-			/*if (position.y > 640.0f) {
-				position.y = 640.0f;
-			}*/
-			sprite->SetPosition(position);
-
-			float rotation = sprite->GetRotation();
-			ImGui::SliderAngle("Sprite.Rotate", &rotation);
-			sprite->SetRotation(rotation);
-
-			Vector2 size = sprite->GetSize();
-			ImGui::DragFloat2("Sprite.Scale", &size.x, 1.0f, 0.0f, 640.0f, "%.1f");
-			if (size.y > 360.0f) {
-				size.y = 360.0f;
-			}
-			sprite->SetSize(size);
-
-			Vector4 color = sprite->GetColor();
-			ImGui::ColorEdit4("Sprite.Color", &color.x);
-			sprite->SetColor(color);
-
-			ImGui::Text("\n");
-			ImGui::PopID();
-			++objectIDIndex;
-		}
-	}
-	
-	ImGui::End();
-
 	// デバッグ用にワールドトランスフォームの更新
 	collisionManager_->UpdateWorldTransform();
 #endif //_DEBUG

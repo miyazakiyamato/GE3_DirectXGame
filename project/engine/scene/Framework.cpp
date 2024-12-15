@@ -89,8 +89,6 @@ void Framework::Update(){
 
 	imGuiManager->Begin();
 
-	globalVariables_->Update();
-
 	sceneManager_->Update();
 
 	imGuiManager->End();

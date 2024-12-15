@@ -18,9 +18,9 @@ void CameraManager::Finalize(){
 	instance = nullptr;
 }
 
-void CameraManager::SetCamera(const std::string& filePath){
+void CameraManager::SetCamera(const std::string& cameraName){
 	//読み込み済みカメラを検索
-	if (cameras.contains(filePath)) {
+	if (cameras.contains(cameraName)) {
 		//読み込み済みなら早期return
 		return;
 	}
@@ -28,13 +28,15 @@ void CameraManager::SetCamera(const std::string& filePath){
 	std::unique_ptr<Camera> SettingCamera = std::make_unique<Camera>();
 
 	//カメラをmapコンテナに格納する
-	cameras.insert(std::make_pair(filePath, std::move(SettingCamera)));
+	cameras.insert(std::make_pair(cameraName, std::move(SettingCamera)));
 }
 
-void CameraManager::FindCamera(const std::string& filePath){
+void CameraManager::FindCamera(const std::string& cameraName){
+	if (nowCameraName_ == cameraName) { return; }
 	//読み込み済みカメラを検索
-	if (cameras.contains(filePath)) {
+	if (cameras.contains(cameraName)) {
 		//読み込みカメラを戻り値としてreturn
-		camera_ =  cameras.at(filePath).get();
+		camera_ =  cameras.at(cameraName).get();
+		nowCameraName_ = cameraName;
 	}
 }
