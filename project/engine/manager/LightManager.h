@@ -15,6 +15,14 @@ public:
 		Vector3 direction; //!< ライトの向き
 		float intensity;//!< 輝度
 	};
+	struct PointLight{
+		Vector4 color;//!<ライトの色
+		Vector3 position; //!< ライトの場所
+		float intensity;//!< 輝度
+		float radius;//!<ライトの届く最大距離
+		float decay;//!< 減衰率
+		float padding[2];
+	};
 public://メンバ関数
 	//シングルトンインスタンスの取得
 	static LightManager* GetInstance();
@@ -39,9 +47,14 @@ private://メンバ変数
 	//DirectionalLight
 	ComPtr<ID3D12Resource> directionalLightResource_;
 	DirectionalLight* directionalLightData_ = nullptr;
+	//PointLight
+	ComPtr<ID3D12Resource> pointLightResource_;
+	PointLight* pointLightData_ = nullptr;
 
 public://ゲッターセッター
 	DirectionalLight* GetDirectionalLight() const { return directionalLightData_; }
+	PointLight* GetPointLight() const { return pointLightData_; }
 
 	void SetDirectionalLight(const DirectionalLight& directionalLight);
+	void SetPointLight(const PointLight& pointLight);
 };

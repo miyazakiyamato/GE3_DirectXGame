@@ -41,6 +41,7 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("fence");
 	ModelManager::GetInstance()->LoadModel("axis");
 	ModelManager::GetInstance()->LoadModel("sphere");
+	ModelManager::GetInstance()->LoadModel("terrain");
 
 	object3ds[0]->SetModel("sphere");
 	object3ds[0]->SetTranslate({ -1,0,0 });
@@ -48,8 +49,8 @@ void GameScene::Initialize(){
 	object3ds[1]->SetModel("axis");
 	object3ds[1]->SetTranslate({ 1,0,0 });
 	object3ds[1]->SetRotate({ 0,3.14f,0 });
-	object3ds[2]->SetModel("sphere");
-	object3ds[2]->SetTranslate({ -2,0,0 });
+	object3ds[2]->SetModel("terrain");
+	object3ds[2]->SetTranslate({ 0,0,0 });
 	object3ds[2]->SetRotate({ 0,3.14f,0 });
 	
 	//
@@ -138,7 +139,23 @@ void GameScene::Update(){
 				float DirectionalLightIntensity = LightManager::GetInstance()->GetDirectionalLight()->intensity;
 				ImGui::DragFloat("DirectionalLight.Intensity", &DirectionalLightIntensity, 0.01f);
 
+				Vector4 PointLightColor = LightManager::GetInstance()->GetPointLight()->color;
+				ImGui::ColorEdit4("PointLight.Color", &PointLightColor.x);
+
+				Vector3 PointLightPosition = LightManager::GetInstance()->GetPointLight()->position;
+				ImGui::DragFloat3("PointLight.Position", &PointLightPosition.x, 0.01f);
+
+				float PointLightIntensity = LightManager::GetInstance()->GetPointLight()->intensity;
+				ImGui::DragFloat("PointLight.Intensity", &PointLightIntensity, 0.01f);
+
+				float PointLightRadius = LightManager::GetInstance()->GetPointLight()->radius;
+				ImGui::DragFloat("PointLight.Radius", &PointLightRadius, 0.01f);
+
+				float PointLightDecay = LightManager::GetInstance()->GetPointLight()->decay;
+				ImGui::DragFloat("PointLight.Decay", &PointLightDecay, 0.01f);
+
 				LightManager::GetInstance()->SetDirectionalLight({ DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity });
+				LightManager::GetInstance()->SetPointLight({ PointLightColor,PointLightPosition,PointLightIntensity,PointLightRadius,PointLightDecay });
 				ImGui::EndMenu();
 			}
 			std::string blendName = "Now Blend";
