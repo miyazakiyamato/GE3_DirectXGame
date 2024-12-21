@@ -131,31 +131,44 @@ void GameScene::Update(){
 			if (ImGui::BeginMenu(groupName.c_str())) {
 				Vector4 DirectionalLightColor = LightManager::GetInstance()->GetDirectionalLight()->color;
 				ImGui::ColorEdit4("DirectionalLight.Color", &DirectionalLightColor.x);
-
 				Vector3 DirectionalLightDirection = LightManager::GetInstance()->GetDirectionalLight()->direction;
 				ImGui::DragFloat3("DirectionalLight.Direction", &DirectionalLightDirection.x, 0.01f);
 				DirectionalLightDirection = DirectionalLightDirection.Normalize();
-
 				float DirectionalLightIntensity = LightManager::GetInstance()->GetDirectionalLight()->intensity;
 				ImGui::DragFloat("DirectionalLight.Intensity", &DirectionalLightIntensity, 0.01f);
 
 				Vector4 PointLightColor = LightManager::GetInstance()->GetPointLight()->color;
 				ImGui::ColorEdit4("PointLight.Color", &PointLightColor.x);
-
 				Vector3 PointLightPosition = LightManager::GetInstance()->GetPointLight()->position;
 				ImGui::DragFloat3("PointLight.Position", &PointLightPosition.x, 0.01f);
-
 				float PointLightIntensity = LightManager::GetInstance()->GetPointLight()->intensity;
 				ImGui::DragFloat("PointLight.Intensity", &PointLightIntensity, 0.01f);
-
 				float PointLightRadius = LightManager::GetInstance()->GetPointLight()->radius;
 				ImGui::DragFloat("PointLight.Radius", &PointLightRadius, 0.01f);
-
 				float PointLightDecay = LightManager::GetInstance()->GetPointLight()->decay;
 				ImGui::DragFloat("PointLight.Decay", &PointLightDecay, 0.01f);
 
+				Vector4 SpotLightColor = LightManager::GetInstance()->GetSpotLight()->color;
+				ImGui::ColorEdit4("SpotLight.Color", &SpotLightColor.x);
+				Vector3 SpotLightPosition = LightManager::GetInstance()->GetSpotLight()->position;
+				ImGui::DragFloat3("SpotLight.Position", &SpotLightPosition.x, 0.01f);
+				float SpotLightIntensity = LightManager::GetInstance()->GetSpotLight()->intensity;
+				ImGui::DragFloat("SpotLight.Intensity", &SpotLightIntensity, 0.01f);
+				Vector3 SpotLightDirection = LightManager::GetInstance()->GetSpotLight()->direction;
+				ImGui::DragFloat3("SpotLight.Direction", &SpotLightDirection.x, 0.01f);
+				SpotLightDirection = SpotLightDirection.Normalize();
+				float SpotLightDistance = LightManager::GetInstance()->GetSpotLight()->distance;
+				ImGui::DragFloat("SpotLight.Distance", &SpotLightDistance, 0.01f);
+				float SpotLightDecay = LightManager::GetInstance()->GetSpotLight()->decay;
+				ImGui::DragFloat("SpotLight.Decay", &SpotLightDecay, 0.01f);
+				float SpotLightCosAngle = LightManager::GetInstance()->GetSpotLight()->cosAngle;
+				ImGui::DragFloat("SpotLight.CosAngle", &SpotLightCosAngle, 0.01f);
+				float SpotLightCosFalloffStart = LightManager::GetInstance()->GetSpotLight()->cosFalloffStart;
+				ImGui::DragFloat("SpotLight.CosFalloff", &SpotLightCosFalloffStart, 0.01f);
+
 				LightManager::GetInstance()->SetDirectionalLight({ DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity });
 				LightManager::GetInstance()->SetPointLight({ PointLightColor,PointLightPosition,PointLightIntensity,PointLightRadius,PointLightDecay });
+				LightManager::GetInstance()->SetSpotLight({ SpotLightColor,SpotLightPosition,SpotLightIntensity,SpotLightDirection,SpotLightDistance,SpotLightDecay,SpotLightCosAngle,SpotLightCosFalloffStart });
 				ImGui::EndMenu();
 			}
 			std::string blendName = "Now Blend";
