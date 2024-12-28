@@ -41,6 +41,7 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("axis");
 	ModelManager::GetInstance()->LoadModel("ground");
 	ModelManager::GetInstance()->LoadModel("skydome");
+	ModelManager::GetInstance()->LoadModel("sphereCollider");
 
 	object3ds[0]->SetModel("plane");
 	object3ds[0]->SetTranslate({ -1,0,0 });
@@ -57,6 +58,9 @@ void GameScene::Initialize(){
 
 	ground_ = new Ground();
 	ground_->Initialize();
+
+	player_ = new Player;
+	player_->Initialize();
 	//
 	isAccelerationField = false;
 	accelerationField_ = new AccelerationField;
@@ -88,6 +92,7 @@ void GameScene::Finalize(){
 	for (Sprite* sprite : sprites) {
 		delete sprite;
 	}
+	delete player_;
 	delete ground_;
 	delete skydome_;
 	for (Object3d* object3d : object3ds) {
@@ -402,6 +407,8 @@ void GameScene::Update(){
 	}
 	skydome_->Update();
 	ground_->Update();
+
+	player_->Update();
 	if (isAccelerationField) {
 		for (std::pair<const std::string, std::unique_ptr<ParticleManager::ParticleGroup>>& pair : ParticleManager::GetInstance()->GetParticleGroups()) {
 			ParticleManager::ParticleGroup& group = *pair.second;
@@ -436,6 +443,7 @@ void GameScene::Draw(){
 	for (Object3d* object3d : object3ds) {
 		object3d->Draw();
 	}
+	player_->Draw();
 	//当たり判定の表示
 	collisionManager_->Draw();
 	//Particleの描画準備Modelの描画に共通グラフィックコマンドを積む
@@ -443,9 +451,9 @@ void GameScene::Draw(){
 
 	//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
 	TextureManager::GetInstance()->DrawCommonSetting();
-	for (Sprite* sprite : sprites) {
+	/*for (Sprite* sprite : sprites) {
 		sprite->Draw();
-	}
+	}*/
 }
 
 void GameScene::CheckAllCollisions(){

@@ -8,6 +8,7 @@
 #include "AccelerationField.h"
 #include "Skydome.h"
 #include "Ground.h"
+#include "Player.h"
 
 class GameScene : public BaseScene {
 public://メンバ関数
@@ -37,6 +38,7 @@ private://メンバ変数
 	Skydome* skydome_ = nullptr;
 	Ground* ground_ = nullptr;
 
+	Player* player_ = nullptr;
 	//デルタタイム
 	const float kDeltaTime_ = 1.0f / 60.0f;
 

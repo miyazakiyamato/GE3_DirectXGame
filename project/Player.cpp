@@ -10,7 +10,7 @@ void Player::Initialize() {
 	Collider::SetRadius(4.0f);
 	input_ = Input::GetInstance();
 	camera_ = CameraManager::GetInstance()->GetCamera();
-	baseObject3D_->SetTranslate({ -1.0f, 1.0f, -30.0f });
+	baseObject3D_->SetTranslate({ -1.0f, 2.0f, -30.0f });
 	model_ = std::make_unique<Object3d>();
 	model_->Initialize();
 	model_->SetParent(baseObject3D_.get());
@@ -123,7 +123,7 @@ void Player::CameraMove() {
 	rotate.y = rotate.y + 0.1f * (destinationAngleY_ - rotate.y);
 	camera_->SetRotate(rotate);
 	//追従対象からのオフセット
-	Vector3 offset = { 0.0f, 0.0f, -10.0f };
+	Vector3 offset = { 0.0f, 0.0f, 0.0f };
 	//回転行列の合成
 	Matrix4x4 rotateMatrix = Matrix4x4::MakeAffineMatrix({ 1, 1, 1 }, camera_->GetRotate(), {});
 	//オフセットをカメラの回転に合わせて回転させる
