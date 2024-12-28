@@ -39,8 +39,10 @@ public://メンバ関数
 	void LoadWave(const std::string& filePath); // WAVE読み込み用関数
 	void LoadMP3(const std::string& filePath);  // MP3読み込み用関数
 	//音声再生
-	void PlayWave(const std::string& filePath); // WAVE再生用関数
-	void PlayMP3(const std::string& filePath);  // MP3再生用関数
+	void PlayWave(const std::string& filePath, float volume = 1.0f, bool loop = false);	// WAVE再生用関数
+	void PlayMP3(const std::string& filePath);				// MP3再生用関数
+	//音声停止
+	void StopWave(const std::string& filePath);	// WAVE停止用関数
 private://メンバ変数
 	static AudioManager* instance;
 
@@ -56,5 +58,6 @@ private://メンバ変数
 
 	// 音声格納
 	std::unordered_map<std::string, SoundData> soundDatas;
+	std::unordered_map<std::string, IXAudio2SourceVoice*> playSoundDatas;
 };
 

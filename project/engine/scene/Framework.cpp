@@ -24,6 +24,10 @@ void Framework::Initialize(){
 	imGuiManager = new ImGuiManager();
 	imGuiManager->Initialize(winApp, dxCommon, srvManager);
 
+	// グローバル変数の読み込み
+	globalVariables_ = GlobalVariables::GetInstance();
+	globalVariables_->LoadFiles();
+
 	//テクスチャマネージャの初期化
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize(dxCommon, srvManager);
@@ -36,6 +40,10 @@ void Framework::Initialize(){
 	modelManager_ = ModelManager::GetInstance();
 	modelManager_->Initialize(dxCommon);
 	
+	//ライトマネージャの初期化
+	lightManager_ = LightManager::GetInstance();
+	lightManager_->Initialize(dxCommon);
+
 	//カメラマネージャの初期化
 	cameraManager_ = CameraManager::GetInstance();
 	cameraManager_->Initialize();
@@ -59,6 +67,7 @@ void Framework::Finalize(){
 	sceneManager_->Finalize();
 	audioManager_->Finalize();
 	cameraManager_->Finalize();
+	lightManager_->Finalize();
 	modelManager_->Finalize();
 	particleManager_->Finalize();
 	textureManager_->Finalize();

@@ -13,9 +13,9 @@ public:
 	void Finalize();
 
 	//カメラの生成
-	void SetCamera(const std::string& filePath);
+	void SetCamera(const std::string& cameraName);
 	//カメラの検索
-	void FindCamera(const std::string& filePath);
+	void FindCamera(const std::string& cameraName);
 private:
 	static CameraManager* instance;
 
@@ -27,6 +27,7 @@ private:
 	//カメラデータ
 	std::map<std::string, std::unique_ptr<Camera>> cameras;
 
+	std::string nowCameraName_ = "";
 	Camera* camera_ = nullptr;
 public:
 	Camera* GetCamera() const { return camera_; }

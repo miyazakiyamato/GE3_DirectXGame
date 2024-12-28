@@ -42,17 +42,32 @@ void GlobalVariables::Update() {
 			//int32_t型の値を保持していれば
 			if (std::holds_alternative<int32_t>(item)) {
 				int32_t* ptr = std::get_if<int32_t>(&item);
-				ImGui::SliderInt(itemName.c_str(), ptr, 0, 100);
+				ImGui::DragInt(itemName.c_str(), ptr, 1.0f);
 			}
 			// float型の値を保持していれば
 			else if (std::holds_alternative<float>(item)) {
 				float* ptr = std::get_if<float>(&item);
-				ImGui::SliderFloat(itemName.c_str(), ptr, 0, 100);
+				ImGui::DragFloat(itemName.c_str(), ptr,0.01f);
+			}
+			//Vector2型の値を保持していれば
+			else if (std::holds_alternative<Vector2>(item)) {
+				Vector2* ptr = std::get_if<Vector2>(&item);
+				ImGui::DragFloat2(itemName.c_str(), reinterpret_cast<float*>(ptr),0.01f);
 			}
 			//Vector3型の値を保持していれば
 			else if (std::holds_alternative<Vector3>(item)) {
 				Vector3* ptr = std::get_if<Vector3>(&item);
-				ImGui::SliderFloat3(itemName.c_str(), reinterpret_cast<float*>(ptr), -10.0f, 10.0f);
+				ImGui::DragFloat3(itemName.c_str(), reinterpret_cast<float*>(ptr),0.01f);
+			}
+			//Vector4型の値を保持していれば
+			else if (std::holds_alternative<Vector4>(item)) {
+				Vector4* ptr = std::get_if<Vector4>(&item);
+				ImGui::ColorEdit4(itemName.c_str(), reinterpret_cast<float*>(ptr));
+			}
+			//std::string型の値を保持していれば
+			else if (std::holds_alternative<std::string>(item)) {
+				std::string* ptr = std::get_if<std::string>(&item);
+				ImGui::Text((itemName + " " + *ptr).c_str());
 			}
 		}
 
@@ -70,7 +85,42 @@ void GlobalVariables::Update() {
 	ImGui::EndMenuBar();
 	ImGui::End();
 }
-
+void GlobalVariables::ShowCombo(const std::string& label, const std::vector<std::string>& items,
+	int& selectedIndex, std::function<void(const std::string&)> onSelect) {
+	if (items.empty()) return;
+	const char* currentItem = items[selectedIndex].c_str();
+	if (ImGui::BeginCombo(label.c_str(), currentItem)) {
+		for (int i = 0; i < items.size(); ++i) {
+			bool isSelected = (selectedIndex == i);
+			if (ImGui::Selectable(items[i].c_str(), isSelected)) {
+				selectedIndex = i;
+				onSelect(items[i]); // 選択時にコールバックを呼び出す
+			}
+			if (isSelected) {
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+}
+void GlobalVariables::ShowCombo(const std::string& label, const std::vector<std::string>& items,
+	int& selectedIndex, std::function<void(const int&)> onSelect) {
+	if (items.empty()) return;
+	const char* currentItem = items[selectedIndex].c_str();
+	if (ImGui::BeginCombo(label.c_str(), currentItem)) {
+		for (int i = 0; i < items.size(); ++i) {
+			bool isSelected = (selectedIndex == i);
+			if (ImGui::Selectable(items[i].c_str(), isSelected)) {
+				selectedIndex = i;
+				onSelect(i); // 選択時にコールバックを呼び出す
+			}
+			if (isSelected) {
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+}
 void GlobalVariables::SaveFile(const std::string& groupName) {
 	//グループを検索
 	std::map<std::string, Group>::iterator itGroup = datas_.find(groupName);
@@ -107,11 +157,28 @@ void GlobalVariables::SaveFile(const std::string& groupName) {
 			// float型の値を登録
 			root[groupName][itemName] = std::get<float>(item);
 		}
+		// Vector2型の値を保持していれば
+		else if (std::holds_alternative<Vector2>(item)) {
+			// Vector2型の値を登録
+			Vector2 value = std::get<Vector2>(item);
+			root[groupName][itemName] = json::array({value.x, value.y});
+		}
 		// Vector3型の値を保持していれば
 		else if (std::holds_alternative<Vector3>(item)) {
 			// Vector3型の値を登録
 			Vector3 value = std::get<Vector3>(item);
 			root[groupName][itemName] = json::array({value.x, value.y, value.z});
+		}
+		// Vector4型の値を保持していれば
+		else if (std::holds_alternative<Vector4>(item)) {
+			// Vector4型の値を登録
+			Vector4 value = std::get<Vector4>(item);
+			root[groupName][itemName] = json::array({value.x, value.y, value.z,value.w});
+		}
+		// std::string型の値を保持していれば
+		else if (std::holds_alternative<std::string>(item)) {
+			// std::string型の値を登録
+			root[groupName][itemName] = std::get<std::string>(item);
 		}
 	}
 	
@@ -201,7 +268,7 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 
 		// bool型の値を保持していれば
 		if (itItem->is_boolean()) {
-			// int型の値を登録
+			// bool型の値を登録
 			bool value = itItem->get<bool>();
 			SetValue(groupName, itemName, value);
 		}
@@ -213,64 +280,91 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 		}
 		// float型の値を保持していれば
 		else if (itItem->is_number_float()) {
-			// int型の値を登録
+			// float型の値を登録
 			double value = itItem->get<double>();
 			SetValue(groupName, itemName,static_cast<float>(value));
 		} 
+		//要素数2の配列であれば
+		else if (itItem->is_array() && itItem->size() == 2) {
+			//float型のjson配列登録
+			Vector2 value = {itItem->at(0), itItem->at(1)};
+			SetValue(groupName, itemName, value);
+		}
 		//要素数3の配列であれば
 		else if (itItem->is_array() && itItem->size() == 3) {
 			//float型のjson配列登録
-			Vector3 value = {itItem->at(0), itItem->at(1), itItem->at(2)};
+			Vector3 value = { itItem->at(0), itItem->at(1), itItem->at(2) };
 			SetValue(groupName, itemName, value);
 		}
-		
+		//要素数4の配列であれば
+		else if (itItem->is_array() && itItem->size() == 4) {
+			//float型のjson配列登録
+			Vector4 value = { itItem->at(0), itItem->at(1), itItem->at(2),itItem->at(3) };
+			SetValue(groupName, itemName, value);
+		}
+		// std::string型の値を保持していれば
+		else if (itItem->is_number_float()) {
+			// std::string型の値を登録
+			std::string value = itItem->get<std::string>();
+			SetValue(groupName, itemName, static_cast<std::string>(value));
+		}
 	}
 }
 
-bool GlobalVariables::GetBoolValue(const std::string& groupName, const std::string& key) const {
+template<typename T>
+void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, T value) {
+	//グループの参照を取得
+	Group& group = datas_[groupName];
+	
+	// 設定した項目を追加
+	group[key] = value;
+}
+// 明示的インスタンス化
+template void GlobalVariables::SetValue<bool>(const std::string&, const std::string&, bool);
+template void GlobalVariables::SetValue<int>(const std::string&, const std::string&, int);
+template void GlobalVariables::SetValue<float>(const std::string&, const std::string&, float);
+template void GlobalVariables::SetValue<Vector2>(const std::string&, const std::string&, Vector2);
+template void GlobalVariables::SetValue<Vector3>(const std::string&, const std::string&, Vector3);
+template void GlobalVariables::SetValue<Vector4>(const std::string&, const std::string&, Vector4);
+template void GlobalVariables::SetValue<std::string>(const std::string&, const std::string&, std::string);
+
+template<typename T>
+void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, T value) {
+	// グループを検索
+	std::map<std::string, Group>::iterator itGroup = datas_.find(groupName);
+
+	// 未登録チェック
+	assert(itGroup != datas_.end());
+	
+	std::map<std::string, Item>::iterator itItem = itGroup->second.begin();
+
+	if (!itGroup->second.contains(key)) {
+		SetValue(groupName, key, value);
+	}
+}
+// 明示的インスタンス化
+template void GlobalVariables::AddItem<bool>(const std::string&, const std::string&, bool);
+template void GlobalVariables::AddItem<int>(const std::string&, const std::string&, int);
+template void GlobalVariables::AddItem<float>(const std::string&, const std::string&, float);
+template void GlobalVariables::AddItem<Vector2>(const std::string&, const std::string&, Vector2);
+template void GlobalVariables::AddItem<Vector3>(const std::string&, const std::string&, Vector3);
+template void GlobalVariables::AddItem<Vector4>(const std::string&, const std::string&, Vector4);
+template void GlobalVariables::AddItem<std::string>(const std::string&, const std::string&, std::string);
+
+template<typename T>
+T GlobalVariables::GetValue(const std::string& groupName, const std::string& key) const{
 	assert(datas_.contains(groupName));
 
 	// グループの参照を取得
 	const Group& group = datas_.at(groupName);
 
-	assert(group.contains(key));
-
-	//
-	return std::get<bool>(group.at(key));
+	return std::get<T>(group.at(key));
 }
-
-int32_t GlobalVariables::GetIntValue(const std::string& groupName, const std::string& key) const {
-	assert(datas_.contains(groupName));
-
-	// グループの参照を取得
-	const Group& group = datas_.at(groupName);
-
-	assert(group.contains(key));
-
-	// 
-	return std::get<int32_t>(group.at(key));
-}
-
-float GlobalVariables::GetFloatValue(const std::string& groupName, const std::string& key) const {
-	assert(datas_.contains(groupName));
-
-	// グループの参照を取得
-	const Group& group = datas_.at(groupName);
-
-	assert(group.contains(key));
-
-	//
-	return std::get<float>(group.at(key));
-}
-
-Vector3 GlobalVariables::GetVector3Value(const std::string& groupName, const std::string& key) const {
-	assert(datas_.contains(groupName));
-
-	// グループの参照を取得
-	const Group& group = datas_.at(groupName);
-
-	assert(group.contains(key));
-
-	//
-	return std::get<Vector3>(group.at(key));
-}
+// 明示的インスタンス化
+template bool GlobalVariables::GetValue<bool>(const std::string&, const std::string&) const;
+template int GlobalVariables::GetValue<int>(const std::string&, const std::string&) const;
+template float GlobalVariables::GetValue<float>(const std::string&, const std::string&) const;
+template Vector2 GlobalVariables::GetValue<Vector2>(const std::string&, const std::string&) const;
+template Vector3 GlobalVariables::GetValue<Vector3>(const std::string&, const std::string&) const;
+template Vector4 GlobalVariables::GetValue<Vector4>(const std::string&, const std::string&) const;
+template std::string GlobalVariables::GetValue<std::string>(const std::string&, const std::string&) const;

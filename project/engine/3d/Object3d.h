@@ -2,6 +2,7 @@
 #include "ModelCommon.h"
 #include "Model.h"
 #include "Camera.h"
+#include "LightManager.h"
 
 class Object3d{
 public:
@@ -11,17 +12,17 @@ private:
 	struct TransformationMatrix {
 		Matrix4x4 WVP;
 		Matrix4x4 World;
+		Matrix4x4 WorldInverseTranspose;
 	};
 	struct Material {
 		Vector4 color{1,1,1,1};
 		int enableLighting;
 		float padding[3];
 		Matrix4x4 uvTransform;
+		float shininess;
 	};
-	struct DirectionalLight {
-		Vector4 color;//!<ライトの色
-		Vector3 direction; //!< ライトの向き
-		float intensity;//!< 輝度
+	struct CameraForGpu {
+		Vector3 worldPosition;
 	};
 public://メンバ関数
 	//初期化
@@ -37,11 +38,12 @@ private://メンバ変数
 	//バッファリソース
 	ComPtr<ID3D12Resource> wvpResource;
 	ComPtr<ID3D12Resource> materialResource;
-	ComPtr<ID3D12Resource> directionalLightResource;
+	ComPtr<ID3D12Resource> cameraResource;
 	//バッファリソース内のデータを指すポインタ
 	TransformationMatrix* wvpData = nullptr;
 	Material* materialData = nullptr;
-	DirectionalLight* directionalLightData = nullptr;
+	CameraForGpu* cameraData = nullptr;
+	LightManager* lightManager_ = nullptr;
 
 	//Transform変数を作る。
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
