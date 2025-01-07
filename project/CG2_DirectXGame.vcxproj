@@ -110,6 +110,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application\3d\AccelerationField.cpp" />
+    <ClCompile Include="BlendMode.cpp" />
     <ClCompile Include="engine\collision\Collider.cpp" />
     <ClCompile Include="engine\collision\Collision.cpp" />
     <ClCompile Include="engine\collision\CollisionManager.cpp" />
@@ -151,9 +152,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\particle\ParticleCommon.cpp" />
     <ClCompile Include="engine\particle\ParticleEmitter.cpp" />
     <ClCompile Include="engine\particle\ParticleManager.cpp" />
+    <ClCompile Include="PipelineManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\3d\AccelerationField.h" />
+    <ClInclude Include="BlendMode.h" />
     <ClInclude Include="engine\collision\Collider.h" />
     <ClInclude Include="engine\collision\Collision.h" />
     <ClInclude Include="engine\collision\CollisionManager.h" />
@@ -195,6 +198,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\particle\ParticleEmitter.h" />
     <ClInclude Include="engine\particle\ParticleManager.h" />
     <ClInclude Include="engine\manager\LightManager.h" />
+    <ClInclude Include="PipelineManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

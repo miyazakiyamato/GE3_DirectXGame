@@ -3,10 +3,10 @@
 #include "CameraManager.h"
 
 void Object3d::Initialize(){
-	modelCommon_ = ModelManager::GetInstance()->GetModelCommon();
+	dxCommon_ = ModelManager::GetInstance()->GetDirectXCommon();
 	lightManager_ = LightManager::GetInstance();
 	//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-	wvpResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
+	wvpResource = dxCommon_->CreateBufferResource(sizeof(TransformationMatrix));
 	//データを書き込む
 	//書き込むためのアドレスを取得
 	wvpResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
@@ -16,13 +16,13 @@ void Object3d::Initialize(){
 	wvpData->WorldInverseTranspose = Matrix4x4::MakeIdentity4x4();
 
 	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	materialResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(Material));
+	materialResource = dxCommon_->CreateBufferResource(sizeof(Material));
 	//マテリアルにデータを書き込む
 	//書き込むためのアドレスを取得
 	materialResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 
 	//カメラ用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	cameraResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(CameraForGpu));
+	cameraResource = dxCommon_->CreateBufferResource(sizeof(CameraForGpu));
 	//カメラのデータを書き込む
 	//書き込むためのアドレスを取得
 	cameraResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
@@ -56,8 +56,10 @@ void Object3d::Draw(){
 
 	if (model_) {
 		// コマンドリストの取得
-		ID3D12GraphicsCommandList* commandList = modelCommon_->GetDxCommon()->GetCommandList();
+		ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
+		//パイプラインを設定
+		ModelManager::GetInstance()->GetPipelineManager()->DrawSetting(blendMode_);
 		//wvp用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 		//マテリアルCBufferの場所を設定

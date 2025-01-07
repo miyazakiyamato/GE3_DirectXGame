@@ -181,15 +181,25 @@ void GameScene::Update(){
 				"Screen", };
 			groupName = "Object3d";
 			if (ImGui::BeginMenu(groupName.c_str())) {
-				static int Object3dItem_selected_idx = 1;
-				globalVariables->ShowCombo(
-					blendName,
-					blendState,
-					Object3dItem_selected_idx,
-					[](const int& ItemIndex) { ModelManager::GetInstance()->ChangeBlendMode(static_cast<ModelCommon::BlendMode>(ItemIndex)); }
-				);
+				
 				size_t object3dCount = 0;
 				for (Object3d* object3d : object3ds) {
+					int Object3dItem_selected_idx = static_cast<int>(object3d->GetBlendMode());
+					const char* currentItem = blendState[Object3dItem_selected_idx].c_str();
+					if (ImGui::BeginCombo((blendName + std::to_string(object3dCount)).c_str(), currentItem)) {
+						for (int i = 0; i < blendState.size(); ++i) {
+							bool isSelected = (Object3dItem_selected_idx == i);
+							if (ImGui::Selectable(blendState[i].c_str(), isSelected)) {
+								Object3dItem_selected_idx = i;
+								object3d->SetBlendMode(static_cast<BlendMode>(i));
+							}
+							if (isSelected) {
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+						ImGui::EndCombo();
+					}
+
 					Vector3 translate = object3d->GetTranslate();
 					ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Translate").c_str(), &translate.x, 0.1f);
 
@@ -342,8 +352,6 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
-	//Modelの描画準備Modelの描画に共通グラフィックコマンドを積む
-	ModelManager::GetInstance()->DrawCommonSetting();
 	for (Object3d* object3d : object3ds) {
 		object3d->Draw();
 	}

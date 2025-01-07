@@ -28,6 +28,10 @@ void Framework::Initialize(){
 	globalVariables_ = GlobalVariables::GetInstance();
 	globalVariables_->LoadFiles();
 
+	//パイプラインマネージャ
+	pipelineManager = new PipelineManager();
+	pipelineManager->Initialize(dxCommon);
+
 	//テクスチャマネージャの初期化
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize(dxCommon, srvManager);
@@ -38,7 +42,7 @@ void Framework::Initialize(){
 
 	//モデルマネージャの初期化
 	modelManager_ = ModelManager::GetInstance();
-	modelManager_->Initialize(dxCommon);
+	modelManager_->Initialize(dxCommon, pipelineManager);
 	
 	//ライトマネージャの初期化
 	lightManager_ = LightManager::GetInstance();
@@ -77,6 +81,7 @@ void Framework::Finalize(){
 
 	//解放
 	delete sceneFactory_;
+	delete pipelineManager;
 	delete imGuiManager;
 	delete srvManager;
 	delete dxCommon;

@@ -5,13 +5,13 @@
 #include "ModelCommon.h"
 #include "TextureManager.h"
 
-void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPath, const std::string& filename){
-	modelCommon_ = modelCommon;
+void Model::Initialize(DirectXCommon* dxCommon, const std::string& directoryPath, const std::string& filename){
+	dxCommon_ = dxCommon;
 
 	//モデルの読み込み
 	LoadObjFile(directoryPath + "/" + filename,filename + ".obj");
 	//頂点リソースを作る
-	vertexResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * modelData.vertices.size());
+	vertexResource = dxCommon_->CreateBufferResource(sizeof(VertexData) * modelData.vertices.size());
 	//頂点バッファビューを作成する
 	//リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource.Get()->GetGPUVirtualAddress();
@@ -30,7 +30,7 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 
 void Model::Draw(){
 	// コマンドリストの取得
-	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDxCommon()->GetCommandList();
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView); //VBVを設定
 	//commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
@@ -149,4 +149,3 @@ Vector4 Model::LoadColor()
 	}
 	return color;
 }
-
