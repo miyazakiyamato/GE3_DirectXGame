@@ -47,7 +47,7 @@ void WinApp::Initialize(){
 	//ウィンドウの生成
 	hwnd = CreateWindow(
 		wc.lpszClassName,        //利用するクラス名
-		L"LE2B_21_ミヤザキ_ヤマト",                  //タイトルバーの文字
+		L"LE2B_21_ミヤザキ_ヤマト_けしけし",                  //タイトルバーの文字
 		WS_OVERLAPPEDWINDOW,      //よく見るウィンドウスタイル
 		CW_USEDEFAULT,           //表示x座標
 		CW_USEDEFAULT,           //表示y座標

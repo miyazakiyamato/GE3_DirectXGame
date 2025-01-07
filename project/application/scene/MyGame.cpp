@@ -5,7 +5,10 @@ void MyGame::Initialize(){
 	Framework::Initialize();
 
 	//最初のシーンセット
-	sceneManager_->ChangeScene("GAME");
+	// BGM
+	AudioManager::GetInstance()->LoadWave("titleBGM.wav");
+	AudioManager::GetInstance()->PlayWave("titleBGM.wav", 0.1f, true);
+	sceneManager_->ChangeScene("TITLE");
 }
 
 void MyGame::Finalize(){

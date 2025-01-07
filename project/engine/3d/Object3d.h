@@ -35,6 +35,7 @@ private://メンバ変数
 	ModelCommon* modelCommon_ = nullptr;
 
 	Model* model_ = nullptr;
+	std::string textureFilePath_ = "";
 	//バッファリソース
 	ComPtr<ID3D12Resource> wvpResource;
 	ComPtr<ID3D12Resource> materialResource;
@@ -58,6 +59,7 @@ public://ゲッターセッター
 	void SetColor(const Vector4& color) { materialData->color = color; }
 	void SetParent(Object3d* parent) { parent_ = parent; }
 	void SetIsLighting(bool isLighting) { materialData->enableLighting = isLighting; }
+	void SetTexture(std::string textureFilePath) { textureFilePath_ = textureFilePath; }
 
 	const Vector3& GetScale() const { return transform.scale; }
 	const Vector3& GetRotate() const { return transform.rotate; }

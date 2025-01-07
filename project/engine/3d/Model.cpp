@@ -34,8 +34,7 @@ void Model::Draw(){
 
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView); //VBVを設定
 	//commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
-	//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
-	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData.material.textureFilePath));
+	
 	//描画！(DrawCall/ドローコール)3頂点で1つのインスタンス。インスタンスについては
 	commandList->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 	//commandList->DrawIndexedInstanced(kIndexNum, 1, 0, 0, 0);

@@ -51,5 +51,6 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	//D3D12_INDEX_BUFFER_VIEW indexBufferView;
 public://ゲッターセッター
+	MaterialData GetMaterialData() { return modelData.material; }
 };
 

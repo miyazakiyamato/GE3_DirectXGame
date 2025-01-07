@@ -28,7 +28,7 @@ void LightManager::Initialize(DirectXCommon* dxCommon) {
 	pointLightResource_.Get()->Map(0, nullptr, reinterpret_cast<void**>(&pointLightData_));
 	pointLightData_->color = { 1.0f,1.0f,1.0f,1.0f };
 	pointLightData_->position = { 0.0f,0.0f,0.0f };
-	pointLightData_->intensity = 1.0f;
+	pointLightData_->intensity = 0.0f;
 	pointLightData_->radius = 1.0f;
 	pointLightData_->decay = 1.0f;
 	//SpotLightのリソースを作る。

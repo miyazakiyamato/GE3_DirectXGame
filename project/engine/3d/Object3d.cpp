@@ -1,6 +1,7 @@
 #include "Object3d.h"
 #include "ModelManager.h"
 #include "CameraManager.h"
+#include "TextureManager.h"
 
 void Object3d::Initialize(){
 	modelCommon_ = ModelManager::GetInstance()->GetModelCommon();
@@ -60,6 +61,8 @@ void Object3d::Draw(){
 
 		//wvp用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
+		//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
+		commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureFilePath_));
 		//マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 		//カメラCBufferの場所を設定
@@ -75,6 +78,8 @@ void Object3d::Draw(){
 void Object3d::SetModel(const std::string& filePath){
 	//モデルを検索してセット
 	model_ = ModelManager::GetInstance()->FindModel(filePath);
+	textureFilePath_ = model_->GetMaterialData().textureFilePath;
+
 	//マテリアルデータの初期値を書き込む
 	materialData->color = model_->LoadColor();//色を書き込む
 	materialData->enableLighting = true;//Lightingを有効にする

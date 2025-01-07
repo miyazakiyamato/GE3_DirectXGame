@@ -2,20 +2,24 @@
 #include "Input.h"
 #include "CameraManager.h"
 #include <algorithm>
+#include "Enemy.h"
 
 void Player::Initialize() {
 	BaseCharacter::Initialize();
 	Collider::Initialize();
-	//Collider::SetTypeID(static_cast<uint32_t>());
-	Collider::SetRadius(4.0f);
+	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
+	Collider::SetRadius(5.0f);
 	input_ = Input::GetInstance();
 	camera_ = CameraManager::GetInstance()->GetCamera();
 	baseObject3D_->SetTranslate({ -1.0f, 2.0f, -30.0f });
 	model_ = std::make_unique<Object3d>();
 	model_->Initialize();
 	model_->SetParent(baseObject3D_.get());
-	//model_->SetModel("shere");
+	model_->SetTranslate({ 0.3f, -0.15f, 1.0f });
+	model_->SetScale({ 0.1f,0.1f,0.1f });
+	model_->SetModel("sphere");
 	model_->SetRotate({ 0,3.14f,0 });
+	model_->SetParent(baseObject3D_.get());
 	reticle3D_ = std::make_unique<Object3d>();
 	reticle3D_->Initialize();
 	//reticle3D_->SetModel("shere");
@@ -41,6 +45,11 @@ void Player::Update() {
 	baseObject3D_->SetTranslate(Vector3::Clamp(baseObject3D_->GetTranslate(), { -100,0,-100 }, { 100,50,100 }));
 	reticle3D_->Update();
 	model_->Update();
+	
+	LightManager::SpotLight spotLight = *LightManager::GetInstance()->GetSpotLight();
+	spotLight.position = baseObject3D_->GetCenterPosition();
+	spotLight.direction = Vector3::Normalize(reticle3D_->GetCenterPosition() - baseObject3D_->GetCenterPosition());
+	LightManager::GetInstance()->SetSpotLight(spotLight);
 	//isCollision = false;
 }
 
@@ -55,7 +64,13 @@ void Player::OnCollision([[maybe_unused]] Collider* other) {
 	// 衝突相手の種別IDを取得
 	uint32_t typeID = other->GetTypeID();
 	//衝突相手
-	
+	if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::kEnemy)) {
+		Enemy* enemy = static_cast<Enemy*>(other);
+
+		if (input_->PushKey(DIK_SPACE)) {
+			enemy->SetHp(enemy->GetHp() - 2);
+		}
+	}
 }
 
 void Player::Move() {// 移動量

@@ -1,5 +1,7 @@
 #pragma once
 #include "BaseScene.h"
+#include <vector>
+#include "Sprite.h"
 
 class TitleScene : public BaseScene {
 public://メンバ関数
@@ -12,6 +14,6 @@ public://メンバ関数
 	//描画
 	void Draw() override;
 private://メンバ変数
-	
+	std::vector<Sprite*> sprites;
 };
 

@@ -1,8 +1,10 @@
 #include "Collider.h"
+#include "ModelManager.h"
 
 void Collider::Initialize() { 
 	colliderModel_ = std::make_unique<Object3d>();
 	colliderModel_->Initialize();
+	ModelManager::GetInstance()->LoadModel("sphereCollider");
 	colliderModel_->SetModel("sphereCollider");
 	colliderModel_->SetRotate({ 0,3.14f,0 });
 }
@@ -10,7 +12,7 @@ void Collider::Initialize() {
 void Collider::UpdateWorldTransform() {
 	//ワールド座標をワールドトランスフォームに適用
 	colliderModel_->SetTranslate(GetCenterPosition());
-	colliderModel_->SetScale({ GetRadius() * 2,GetRadius() * 2,GetRadius() * 2 });
+	colliderModel_->SetScale({ GetRadius(),GetRadius(),GetRadius()});
 	colliderModel_->Update();
 }
 

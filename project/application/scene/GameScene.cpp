@@ -7,6 +7,7 @@
 #include "AudioManager.h"
 #include "ParticleManager.h"
 #include "GlobalVariables.h"
+#include "SceneManager.h"
 
 void GameScene::Initialize(){
 	BaseScene::Initialize();
@@ -31,6 +32,8 @@ void GameScene::Initialize(){
 	collisionManager_ = std::make_unique<CollisionManager>();
 	collisionManager_->Initialize();
 
+	TextureManager::GetInstance()->LoadTexture("resources/dirt.png");
+
 	for (uint32_t i = 0; i < 3; ++i) {
 		Object3d* object3d = new Object3d;
 		object3d->Initialize();
@@ -44,7 +47,6 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("terrain");
 	ModelManager::GetInstance()->LoadModel("ground");
 	ModelManager::GetInstance()->LoadModel("skydome");
-	ModelManager::GetInstance()->LoadModel("sphereCollider");
 
 	object3ds[0]->SetModel("sphere");
 	object3ds[0]->SetTranslate({ -1,0,0 });
@@ -64,6 +66,9 @@ void GameScene::Initialize(){
 
 	player_ = new Player;
 	player_->Initialize();
+
+	enemy_ = new Enemy();
+	enemy_->Initialize();
 	//
 	isAccelerationField = false;
 	accelerationField_ = new AccelerationField;
@@ -75,17 +80,18 @@ void GameScene::Initialize(){
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* sprite = new Sprite;
-		sprite->Initialize("resources/uvChecker.png");
-		sprite->SetPosition({ 100 + 200.0f * float(i), 100 });
-		sprite->SetSize({ 100.0f,100.0f });
+		sprite->Initialize("resources/dirt.png");
+		/*sprite->SetPosition({ 100 + 200.0f * float(i), 100 });
+		sprite->SetSize({ 100.0f,100.0f });*/
 		sprites.push_back(sprite);
 	}
 	sprites[0]->SetTextureSize({ 64.0f,64.0f });
-	sprites[1]->SetTexture("resources/monsterBall.png");
-	sprites[1]->SetIsFlipX(true);
+	sprites[1]->SetTexture("resources/clear.png");
+	sprites[1]->SetSize({ 1280.0f,720.0f });
+	/*sprites[1]->SetIsFlipX(true);
 	sprites[2]->SetIsFlipY(true);
 	sprites[3]->SetIsFlipX(true);
-	sprites[3]->SetIsFlipY(true);
+	sprites[3]->SetIsFlipY(true);*/
 }
 
 void GameScene::Finalize(){
@@ -95,6 +101,7 @@ void GameScene::Finalize(){
 	for (Sprite* sprite : sprites) {
 		delete sprite;
 	}
+	delete enemy_;
 	delete player_;
 	delete ground_;
 	delete skydome_;
@@ -108,7 +115,7 @@ void GameScene::Update(){
 	BaseScene::Update();
 
 	if (input_->TriggerKey(DIK_SPACE)) {
-		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
+		//AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
 		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
 		//ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
 		particleEmitter_->Emit();
@@ -324,7 +331,12 @@ void GameScene::Update(){
 	// デバッグ用にワールドトランスフォームの更新
 	collisionManager_->UpdateWorldTransform();
 #endif //_DEBUG
-
+	if (isClear) {
+		if (input_->TriggerKey(DIK_SPACE)) {
+			sceneManager_->ChangeScene("TITLE");
+		}
+		return;
+	}
 	for (Object3d* object3d : object3ds) {
 		object3d->Update();
 	}
@@ -332,6 +344,7 @@ void GameScene::Update(){
 	ground_->Update();
 
 	player_->Update();
+	enemy_->Update();
 	if (isAccelerationField) {
 		for (std::pair<const std::string, std::unique_ptr<ParticleManager::ParticleGroup>>& pair : ParticleManager::GetInstance()->GetParticleGroups()) {
 			ParticleManager::ParticleGroup& group = *pair.second;
@@ -355,6 +368,11 @@ void GameScene::Update(){
 	for (Sprite* sprite : sprites) {
 		sprite->Update();
 	}
+	CheckAllCollisions();
+
+	if (enemy_->GetHp() <= 0) {
+		isClear = true;
+	}
 }
 
 void GameScene::Draw(){
@@ -363,10 +381,11 @@ void GameScene::Draw(){
 	skydome_->Draw();
 	ground_->Draw();
 	
-	for (Object3d* object3d : object3ds) {
+	/*for (Object3d* object3d : object3ds) {
 		object3d->Draw();
-	}
+	}*/
 	player_->Draw();
+	enemy_->Draw();
 	//当たり判定の表示
 	collisionManager_->Draw();
 	//Particleの描画準備Modelの描画に共通グラフィックコマンドを積む
@@ -377,13 +396,17 @@ void GameScene::Draw(){
 	/*for (Sprite* sprite : sprites) {
 		sprite->Draw();
 	}*/
+	if (isClear) {
+		sprites[1]->Draw();
+	}
 }
 
 void GameScene::CheckAllCollisions(){
 	//衝突マネージャのリストクリアする
 	collisionManager_->Reset();
 	//全てのコライダーを衝突マネージャのリストに登録する
-
+	collisionManager_->AddCollider(player_);
+	collisionManager_->AddCollider(enemy_);
 	/*for (const std::unique_ptr<Enemy>& enemy : enemies_) {
 		collisionManager_->AddCollider(enemy.get());
 	}*/

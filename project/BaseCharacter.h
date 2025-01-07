@@ -17,7 +17,7 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	virtual void Draw() = 0;
+	virtual void Draw();
 
 protected:
 	//ワールドデータ

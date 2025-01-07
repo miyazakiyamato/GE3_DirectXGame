@@ -9,6 +9,7 @@
 #include "Skydome.h"
 #include "Ground.h"
 #include "Player.h"
+#include "Enemy.h"
 
 class GameScene : public BaseScene {
 public://メンバ関数
@@ -39,6 +40,10 @@ private://メンバ変数
 	Ground* ground_ = nullptr;
 
 	Player* player_ = nullptr;
+
+	Enemy* enemy_ = nullptr;
+
+	bool isClear = false;
 	//デルタタイム
 	const float kDeltaTime_ = 1.0f / 60.0f;
 

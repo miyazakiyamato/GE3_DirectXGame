@@ -1,6 +1,7 @@
 #pragma once
 #include "Vector3.h"
 #include <Object3d.h>
+#include "CollisionTypeIdDef.h"
 
 class Collider {
 public:
