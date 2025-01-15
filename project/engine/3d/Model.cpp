@@ -2,7 +2,6 @@
 #include <cassert>
 #include <fstream>
 #include <sstream>
-#include "ModelCommon.h"
 #include "TextureManager.h"
 
 void Model::Initialize(DirectXCommon* dxCommon, const std::string& directoryPath, const std::string& filename){

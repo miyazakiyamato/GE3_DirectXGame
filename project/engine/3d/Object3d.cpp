@@ -59,7 +59,7 @@ void Object3d::Draw(){
 		ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 		//パイプラインを設定
-		ModelManager::GetInstance()->GetPipelineManager()->DrawSetting(blendMode_);
+		ModelManager::GetInstance()->GetPipelineManager()->DrawSetting(PipelineState::kModel,blendMode_);
 		//wvp用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 		//マテリアルCBufferの場所を設定

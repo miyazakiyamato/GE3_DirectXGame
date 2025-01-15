@@ -110,7 +110,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application\3d\AccelerationField.cpp" />
-    <ClCompile Include="BlendMode.cpp" />
+    <ClCompile Include="engine\base\BasePipeline.cpp" />
+    <ClCompile Include="engine\base\BlendMode.cpp" />
     <ClCompile Include="engine\collision\Collider.cpp" />
     <ClCompile Include="engine\collision\Collision.cpp" />
     <ClCompile Include="engine\collision\CollisionManager.cpp" />
@@ -124,7 +125,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\2d\Sprite.cpp" />
     <ClCompile Include="engine\2d\SpriteCommon.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
-    <ClCompile Include="engine\3d\ModelCommon.cpp" />
     <ClCompile Include="engine\3d\Object3d.cpp" />
     <ClCompile Include="engine\debug\D3DResourceLeakChecker.cpp" />
     <ClCompile Include="engine\base\DirectXCommon.cpp" />
@@ -132,7 +132,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\debug\StringUtility.cpp" />
     <ClCompile Include="engine\base\WinApp.cpp" />
     <ClCompile Include="engine\io\Input.cpp" />
-    <ClCompile Include="engine\manager\ModelManager.cpp" />
+    <ClCompile Include="engine\3d\ModelManager.cpp" />
     <ClCompile Include="engine\manager\TextureManager.cpp" />
     <ClCompile Include="engine\math\Matrix4x4.cpp" />
     <ClCompile Include="engine\math\Vector2.cpp" />
@@ -152,11 +152,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\particle\ParticleCommon.cpp" />
     <ClCompile Include="engine\particle\ParticleEmitter.cpp" />
     <ClCompile Include="engine\particle\ParticleManager.cpp" />
-    <ClCompile Include="PipelineManager.cpp" />
+    <ClCompile Include="engine\3d\ModelPipeline.cpp" />
+    <ClCompile Include="engine\base\PipelineManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\3d\AccelerationField.h" />
-    <ClInclude Include="BlendMode.h" />
+    <ClInclude Include="engine\base\BasePipeline.h" />
+    <ClInclude Include="engine\base\BlendMode.h" />
     <ClInclude Include="engine\collision\Collider.h" />
     <ClInclude Include="engine\collision\Collision.h" />
     <ClInclude Include="engine\collision\CollisionManager.h" />
@@ -171,7 +173,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\2d\Sprite.h" />
     <ClInclude Include="engine\2d\SpriteCommon.h" />
     <ClInclude Include="engine\3d\Model.h" />
-    <ClInclude Include="engine\3d\ModelCommon.h" />
     <ClInclude Include="engine\3d\Object3d.h" />
     <ClInclude Include="engine\debug\D3DResourceLeakChecker.h" />
     <ClInclude Include="engine\base\DirectXCommon.h" />
@@ -179,7 +180,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\debug\StringUtility.h" />
     <ClInclude Include="engine\base\WinApp.h" />
     <ClInclude Include="engine\io\Input.h" />
-    <ClInclude Include="engine\manager\ModelManager.h" />
+    <ClInclude Include="engine\3d\ModelManager.h" />
     <ClInclude Include="engine\manager\TextureManager.h" />
     <ClInclude Include="engine\math\Matrix4x4.h" />
     <ClInclude Include="engine\math\Vector2.h" />
@@ -198,7 +199,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\particle\ParticleEmitter.h" />
     <ClInclude Include="engine\particle\ParticleManager.h" />
     <ClInclude Include="engine\manager\LightManager.h" />
-    <ClInclude Include="PipelineManager.h" />
+    <ClInclude Include="engine\3d\ModelPipeline.h" />
+    <ClInclude Include="engine\base\PipelineManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

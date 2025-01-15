@@ -1,7 +1,14 @@
 #pragma once
 #include "DirectXCommon.h"
 #include "BlendMode.h"
+#include "BasePipeline.h"
 #include <map>
+
+enum class PipelineState {
+	kModel,
+	kParticle,
+	kSprite,
+};
 
 class PipelineManager {
 public:
@@ -11,19 +18,13 @@ public://メンバ関数
 	//初期化
 	void Initialize(DirectXCommon* dxCommon);
 	//描画設定
-	void DrawSetting(BlendMode blendMode);
-	//ルートシグネチャの作成
-	void CreateRootSignature();
+	void DrawSetting(PipelineState pipelineState, BlendMode blendMode);
 	//グラフィックスパイプラインの生成
-	void CreateGraphicsPipeline(BlendMode blendMode);
+	void CreateGraphicsPipeline(PipelineState pipelineState,BlendMode blendMode);
 private:
 	DirectXCommon* dxCommon_ = nullptr;
-
-	ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 	//ブレンドモード
-	std::map<BlendMode, ComPtr<ID3D12PipelineState>> graphicsPipelineState_;
-
-	BlendMode nowPipelineState_ = BlendMode::kNormal;
+	std::map<PipelineState, std::unique_ptr<BasePipeline>> graphicsPipelineState_;
 public:
 	DirectXCommon* GetDxCommon() { return dxCommon_; }
 };

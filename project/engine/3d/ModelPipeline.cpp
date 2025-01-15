@@ -1,10 +1,10 @@
-#include "PipelineManager.h"
+#include "ModelPipeline.h"
 #include "Logger.h"
 
 using namespace Microsoft::WRL;
 using namespace Logger;
 
-void PipelineManager::Initialize(DirectXCommon* dxCommon) {
+void ModelPipeline::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 
 	CreateGraphicsPipeline(BlendMode::kNone);
@@ -15,7 +15,7 @@ void PipelineManager::Initialize(DirectXCommon* dxCommon) {
 	CreateGraphicsPipeline(BlendMode::kScreen);
 }
 
-void PipelineManager::DrawSetting(BlendMode blendMode){
+void ModelPipeline::DrawSetting(BlendMode blendMode) {
 	//読み込み済みブレンドモードを検索
 	assert(graphicsPipelineState_.contains(blendMode));
 
@@ -29,7 +29,7 @@ void PipelineManager::DrawSetting(BlendMode blendMode){
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void PipelineManager::CreateRootSignature() {
+void ModelPipeline::CreateRootSignature() {
 	HRESULT hr;
 
 	//RootSignature作成
@@ -106,7 +106,7 @@ void PipelineManager::CreateRootSignature() {
 	assert(SUCCEEDED(hr));
 }
 
-void PipelineManager::CreateGraphicsPipeline(BlendMode blendMode) {
+void ModelPipeline::CreateGraphicsPipeline(BlendMode blendMode) {
 	//読み込み済みブレンドモードを検索
 	if (graphicsPipelineState_.contains(blendMode)) {
 		//読み込み済みなら早期return
