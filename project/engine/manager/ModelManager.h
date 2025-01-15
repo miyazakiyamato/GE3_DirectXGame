@@ -36,4 +36,3 @@ private://メンバ変数
 public://ゲッターセッター
 	ModelCommon* GetModelCommon() const { return modelCommon.get(); }
 };
-
