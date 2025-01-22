@@ -1,6 +1,5 @@
 #pragma once
 #include <map>
-#include "PipelineManager.h"
 #include "Model.h"
 
 class ModelManager{
@@ -8,7 +7,7 @@ public://メンバ関数
 	//シングルトンインスタンスの取得
 	static ModelManager* GetInstance();
 	//初期化
-	void Initialize(DirectXCommon* dxCommon,PipelineManager* pipelineManager);
+	void Initialize(DirectXCommon* dxCommon);
 	//終了
 	void Finalize();
 
@@ -28,9 +27,7 @@ private://メンバ変数
 	std::map<std::string, std::unique_ptr<Model>> models;
 	
 	DirectXCommon* dxCommon_ = nullptr;
-	PipelineManager* pipelineManager_ = nullptr;
 public://ゲッターセッター
 	DirectXCommon* GetDirectXCommon() { return dxCommon_; }
-	PipelineManager* GetPipelineManager() { return pipelineManager_; }
 };
 

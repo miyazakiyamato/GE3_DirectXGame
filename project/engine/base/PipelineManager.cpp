@@ -5,11 +5,25 @@
 using namespace Microsoft::WRL;
 using namespace Logger;
 
+PipelineManager* PipelineManager::instance = nullptr;
+
+PipelineManager* PipelineManager::GetInstance(){
+	if (instance == nullptr) {
+		instance = new PipelineManager;
+	}
+	return instance;
+}
+
 void PipelineManager::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 
 	graphicsPipelineState_[PipelineState::kModel] = std::make_unique<ModelPipeline>();
 	graphicsPipelineState_[PipelineState::kModel].get()->Initialize(dxCommon_);
+}
+
+void PipelineManager::Finalize(){
+	delete instance;
+	instance = nullptr;
 }
 
 void PipelineManager::DrawSetting(PipelineState pipelineState, BlendMode blendMode){

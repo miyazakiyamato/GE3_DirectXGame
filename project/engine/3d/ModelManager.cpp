@@ -10,9 +10,8 @@ ModelManager* ModelManager::GetInstance()
 	return instance;
 }
 
-void ModelManager::Initialize(DirectXCommon* dxCommon, PipelineManager* pipelineManager){
+void ModelManager::Initialize(DirectXCommon* dxCommon){
 	dxCommon_ = dxCommon;
-	pipelineManager_ = pipelineManager;
 }
 
 void ModelManager::Finalize(){

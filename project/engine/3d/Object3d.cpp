@@ -1,6 +1,7 @@
 #include "Object3d.h"
 #include "ModelManager.h"
 #include "CameraManager.h"
+#include "PipelineManager.h"
 
 void Object3d::Initialize(){
 	dxCommon_ = ModelManager::GetInstance()->GetDirectXCommon();
@@ -59,7 +60,7 @@ void Object3d::Draw(){
 		ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 		//パイプラインを設定
-		ModelManager::GetInstance()->GetPipelineManager()->DrawSetting(PipelineState::kModel,blendMode_);
+		PipelineManager::GetInstance()->DrawSetting(PipelineState::kModel,blendMode_);
 		//wvp用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 		//マテリアルCBufferの場所を設定
