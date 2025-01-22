@@ -15,7 +15,6 @@
 #include "DirectXCommon.h"
 #include "PipelineManager.h"
 #include "TextureManager.h"
-#include "SpriteCommon.h"
 #include "ModelManager.h"
 #include "Logger.h"
 #include "D3DResourceLeakChecker.h"

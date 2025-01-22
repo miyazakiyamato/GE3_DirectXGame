@@ -52,14 +52,6 @@ private://メンバ変数
 	Object3d* parent_ = nullptr;
 
 public://ゲッターセッター
-	void SetModel(const std::string& filePath);
-	void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
-	void SetScale(const Vector3& scale) { transform.scale = scale; }
-	void SetRotate(const Vector3& rotate) { transform.rotate = rotate; }
-	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
-	void SetColor(const Vector4& color) { materialData->color = color; }
-	void SetParent(Object3d* parent) { parent_ = parent; }
-
 	const BlendMode& GetBlendMode() { return blendMode_; }
 	const Vector3& GetScale() const { return transform.scale; }
 	const Vector3& GetRotate() const { return transform.rotate; }
@@ -67,5 +59,13 @@ public://ゲッターセッター
 	const Vector4& GetColor() const { return materialData->color; }
 	Vector3 GetCenterPosition() const;
 	const Matrix4x4& GetWorldMatrix() const { return wvpData->World; }
+
+	void SetModel(const std::string& filePath);
+	void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
+	void SetScale(const Vector3& scale) { transform.scale = scale; }
+	void SetRotate(const Vector3& rotate) { transform.rotate = rotate; }
+	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
+	void SetColor(const Vector4& color) { materialData->color = color; }
+	void SetParent(Object3d* parent) { parent_ = parent; }
 };
 

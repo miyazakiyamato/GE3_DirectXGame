@@ -1,5 +1,6 @@
 #include "PipelineManager.h"
 #include "ModelPipeline.h"
+#include "SpritePipeline.h"
 #include "Logger.h"
 
 using namespace Microsoft::WRL;
@@ -19,6 +20,8 @@ void PipelineManager::Initialize(DirectXCommon* dxCommon) {
 
 	graphicsPipelineState_[PipelineState::kModel] = std::make_unique<ModelPipeline>();
 	graphicsPipelineState_[PipelineState::kModel].get()->Initialize(dxCommon_);
+	graphicsPipelineState_[PipelineState::kSprite] = std::make_unique<SpritePipeline>();
+	graphicsPipelineState_[PipelineState::kSprite].get()->Initialize(dxCommon_);
 }
 
 void PipelineManager::Finalize(){

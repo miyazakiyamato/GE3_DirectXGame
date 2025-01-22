@@ -273,15 +273,24 @@ void GameScene::Update(){
 			}
 			groupName = "Sprite";
 			if (ImGui::BeginMenu(groupName.c_str())) {
-				static int Object3dItem_selected_idx = 1;
-				globalVariables->ShowCombo(
-					blendName,
-					blendState,
-					Object3dItem_selected_idx,
-					[](const int& ItemIndex) {  TextureManager::GetInstance()->ChangeBlendMode(static_cast<SpriteCommon::BlendMode>(ItemIndex)); }
-				);
 				uint32_t objectIDIndex = 0;
 				for (Sprite* sprite : sprites) {
+					int SpriteItem_selected_idx = static_cast<int>(sprite->GetBlendMode());
+					const char* currentItem = blendState[SpriteItem_selected_idx].c_str();
+					if (ImGui::BeginCombo((blendName + std::to_string(objectIDIndex)).c_str(), currentItem)) {
+						for (int i = 0; i < blendState.size(); ++i) {
+							bool isSelected = (SpriteItem_selected_idx == i);
+							if (ImGui::Selectable(blendState[i].c_str(), isSelected)) {
+								SpriteItem_selected_idx = i;
+								sprite->SetBlendMode(static_cast<BlendMode>(i));
+							}
+							if (isSelected) {
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+						ImGui::EndCombo();
+					}
+
 					ImGui::PushID(objectIDIndex);
 
 					Vector2 position = sprite->GetPosition();
@@ -361,8 +370,7 @@ void GameScene::Draw(){
 	//Particleの描画準備Modelの描画に共通グラフィックコマンドを積む
 	ParticleManager::GetInstance()->Draw();
 
-	//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
-	TextureManager::GetInstance()->DrawCommonSetting();
+	//Spriteの描画
 	for (Sprite* sprite : sprites) {
 		sprite->Draw();
 	}
