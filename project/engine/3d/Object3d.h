@@ -1,5 +1,5 @@
 #pragma once
-#include "ModelCommon.h"
+#include "DirectXCommon.h"
 #include "Model.h"
 #include "Camera.h"
 #include "LightManager.h"
@@ -32,9 +32,10 @@ public://メンバ関数
 	//描画
 	void Draw();
 private://メンバ変数
-	ModelCommon* modelCommon_ = nullptr;
+	DirectXCommon* dxCommon_ = nullptr;
 
 	Model* model_ = nullptr;
+	BlendMode blendMode_ = BlendMode::kNormal;
 	std::string textureFilePath_ = "";
 	//バッファリソース
 	ComPtr<ID3D12Resource> wvpResource;
@@ -52,20 +53,18 @@ private://メンバ変数
 	Object3d* parent_ = nullptr;
 
 public://ゲッターセッター
-	void SetModel(const std::string& filePath);
-	void SetScale(const Vector3& scale) { transform.scale = scale; }
-	void SetRotate(const Vector3& rotate) { transform.rotate = rotate; }
-	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
-	void SetColor(const Vector4& color) { materialData->color = color; }
-	void SetParent(Object3d* parent) { parent_ = parent; }
-	void SetIsLighting(bool isLighting) { materialData->enableLighting = isLighting; }
-	void SetTexture(std::string textureFilePath) { textureFilePath_ = textureFilePath; }
-
+	const BlendMode& GetBlendMode() { return blendMode_; }
 	const Vector3& GetScale() const { return transform.scale; }
 	const Vector3& GetRotate() const { return transform.rotate; }
 	const Vector3& GetTranslate() const { return transform.translate; }
 	const Vector4& GetColor() const { return materialData->color; }
 	Vector3 GetCenterPosition() const;
 	const Matrix4x4& GetWorldMatrix() const { return wvpData->World; }
+
+	void SetModel(const std::string& filePath);
+	void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
+	void SetIsLighting(bool isLighting) { materialData->enableLighting = isLighting; }
+	void SetTexture(std::string textureFilePath) { textureFilePath_ = textureFilePath; }
+
 };
 

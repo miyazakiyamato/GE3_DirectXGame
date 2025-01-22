@@ -1,12 +1,8 @@
 #pragma once
-#include <string>
-#include "d3dx12.h"
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
+#include "DirectXCommon.h"
+#include "BlendMode.h"
 #include "Matrix4x4.h"
 
-class ModelCommon;
 class Model{
 private:
 	//namespace省略
@@ -27,7 +23,7 @@ private:
 	};
 public://メンバ関数
 	//初期化
-	void Initialize(ModelCommon* modelCommon, const std::string& directoryPath, const std::string& filename);
+	void Initialize(DirectXCommon* dxCommon, const std::string& directoryPath, const std::string& filename);
 	//描画
 	void Draw();
 	//.mtlファイルの読み取り
@@ -37,7 +33,7 @@ public://メンバ関数
 	//カラー
 	Vector4 LoadColor();
 private:
-	ModelCommon* modelCommon_ = nullptr;
+	DirectXCommon* dxCommon_ = nullptr;
 	//Objファイルのデータ
 	ModelData modelData;
 	//バッファリソース

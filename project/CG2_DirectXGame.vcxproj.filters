@@ -123,9 +123,6 @@
     <ClCompile Include="engine\2d\Sprite.cpp">
       <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\2d\SpriteCommon.cpp">
-      <Filter>ソース ファイル\engine\2d</Filter>
-    </ClCompile>
     <ClCompile Include="engine\3d\Model.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
@@ -153,16 +150,13 @@
     <ClCompile Include="engine\math\Vector4.cpp">
       <Filter>ソース ファイル\engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="engine\manager\ModelManager.cpp">
+    <ClCompile Include="engine\3d\ModelManager.cpp">
       <Filter>ソース ファイル\engine\manager</Filter>
     </ClCompile>
     <ClCompile Include="engine\manager\TextureManager.cpp">
       <Filter>ソース ファイル\engine\manager</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Camera.cpp">
-      <Filter>ソース ファイル\engine\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\3d\ModelCommon.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="engine\manager\CameraManager.cpp">
@@ -191,9 +185,6 @@
     </ClCompile>
     <ClCompile Include="engine\scene\SceneManager.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\particle\ParticleCommon.cpp">
-      <Filter>ソース ファイル\engine\particle</Filter>
     </ClCompile>
     <ClCompile Include="engine\particle\ParticleEmitter.cpp">
       <Filter>ソース ファイル\engine\particle</Filter>
@@ -246,6 +237,24 @@
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\3d\ModelPipeline.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\BasePipeline.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\BlendMode.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\PipelineManager.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\2d\SpritePipeline.cpp">
+      <Filter>ソース ファイル\engine\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\particle\ParticlePipeline.cpp">
+      <Filter>ソース ファイル\engine\particle</Filter>
+    </ClCompile>
     <ClCompile Include="Skydome.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -266,13 +275,7 @@
     <ClInclude Include="engine\2d\Sprite.h">
       <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\2d\SpriteCommon.h">
-      <Filter>ヘッダー ファイル\engine\2d</Filter>
-    </ClInclude>
     <ClInclude Include="engine\3d\Model.h">
-      <Filter>ヘッダー ファイル\engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\3d\ModelCommon.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Object3d.h">
@@ -299,7 +302,7 @@
     <ClInclude Include="engine\math\Vector4.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\manager\ModelManager.h">
+    <ClInclude Include="engine\3d\ModelManager.h">
       <Filter>ヘッダー ファイル\engine\manager</Filter>
     </ClInclude>
     <ClInclude Include="engine\manager\TextureManager.h">
@@ -334,9 +337,6 @@
     </ClInclude>
     <ClInclude Include="engine\scene\SceneManager.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\particle\ParticleCommon.h">
-      <Filter>ヘッダー ファイル\engine\particle</Filter>
     </ClInclude>
     <ClInclude Include="engine\particle\ParticleEmitter.h">
       <Filter>ヘッダー ファイル\engine\particle</Filter>
@@ -388,6 +388,24 @@
     </ClInclude>
     <ClInclude Include="engine\manager\LightManager.h">
       <Filter>ヘッダー ファイル\engine\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\ModelPipeline.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\BasePipeline.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\BlendMode.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\PipelineManager.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\2d\SpritePipeline.h">
+      <Filter>ヘッダー ファイル\engine\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\particle\ParticlePipeline.h">
+      <Filter>ヘッダー ファイル\engine\particle</Filter>
     </ClInclude>
     <ClInclude Include="Skydome.h">
       <Filter>ヘッダー ファイル</Filter>

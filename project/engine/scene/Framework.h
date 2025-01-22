@@ -13,8 +13,8 @@
 #include "WinApp.h"
 #include "Input.h"
 #include "DirectXCommon.h"
+#include "PipelineManager.h"
 #include "TextureManager.h"
-#include "SpriteCommon.h"
 #include "ModelManager.h"
 #include "Logger.h"
 #include "Camera.h"
@@ -56,6 +56,8 @@ protected://メンバ変数
 	ImGuiManager* imGuiManager = nullptr;
 	//
 	GlobalVariables* globalVariables_ = nullptr;
+	//パイプラインマネージャ
+	PipelineManager* pipelineManager = nullptr;
 	//テクスチャマネージャ
 	TextureManager* textureManager_ = nullptr;
 	//パーティクルマネージャ

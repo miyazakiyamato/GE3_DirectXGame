@@ -28,6 +28,10 @@ void Framework::Initialize(){
 	globalVariables_ = GlobalVariables::GetInstance();
 	globalVariables_->LoadFiles();
 
+	//パイプラインマネージャ
+	pipelineManager = PipelineManager::GetInstance();
+	pipelineManager->Initialize(dxCommon);
+
 	//テクスチャマネージャの初期化
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize(dxCommon, srvManager);
@@ -71,6 +75,7 @@ void Framework::Finalize(){
 	modelManager_->Finalize();
 	particleManager_->Finalize();
 	textureManager_->Finalize();
+	pipelineManager->Finalize();
 	imGuiManager->Finalize();
 	input_->Finalize();
 	winApp->Finalize();

@@ -4,6 +4,7 @@
 #include "TextureManager.h"
 #include "CameraManager.h"
 #include <numbers>
+#include "PipelineManager.h"
 
 
 ParticleManager* ParticleManager::instance = nullptr;
@@ -19,9 +20,6 @@ ParticleManager* ParticleManager::GetInstance()
 void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
-
-	particleCommon_ = std::make_unique<ParticleCommon>();
-	particleCommon_->Initialize(dxCommon_);
 
 	//ランダムエンジンの初期化
 	std::random_device seedGenerator;
@@ -88,11 +86,10 @@ void ParticleManager::Draw() {
     // コマンドリストの取得
     ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
-    // ルートシグネチャを設定
-    particleCommon_->DrawCommonSetting();
-
     // 全てのパーティクルグループについて処理
     for (auto& [name, group] : particleGroups) {
+        //パイプラインを設定
+        PipelineManager::GetInstance()->DrawSetting(PipelineState::kParticle, group->blendMode_);
         commandList->IASetVertexBuffers(0, 1, &group->vertexBufferView);// VBVを設定
         commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
         // インスタンシングデータのSRVのDescriptorTableを設定
@@ -102,15 +99,6 @@ void ParticleManager::Draw() {
         // DrawCall (インスタンシング描画)
         commandList->DrawIndexedInstanced(6, group->kNumInstance, 0, 0, 0);
     }
-}
-
-void ParticleManager::ChangeBlendMode(ParticleCommon::BlendMode blendMode){
-    if (particleCommon_->GetBlendMode() == blendMode) {
-        return;
-    }
-    
-    particleCommon_->SetBlendMode(blendMode);
-    particleCommon_->CreateGraphicsPipeline();
 }
 
 void ParticleManager::CreateParticleGroup(const std::string name, const std::string textureFilePath) {

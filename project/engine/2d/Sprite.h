@@ -4,8 +4,8 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix4x4.h"
+#include "BlendMode.h"
 
-class SpriteCommon;
 class Sprite{
 private:
 	//namespace省略
@@ -37,7 +37,6 @@ private://ローカル関数
 	//テクスチャサイズをイメージに合わせる
 	void AdjustTextureSize();
 private://メンバ変数
-	SpriteCommon* spriteCommon_ = nullptr;
 	//バッファリソース
 	ComPtr<ID3D12Resource> vertexResource;
 	ComPtr<ID3D12Resource> indexResource;
@@ -67,7 +66,11 @@ private://メンバ変数
 	//テクスチャサイズ
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };
 	Vector2 textureSize_ = { 100.0f,100.0f };
+
+	BlendMode blendMode_ = BlendMode::kNormal;
+
 public://ゲッターセッター
+	const BlendMode& GetBlendMode() { return blendMode_; }
 	const Vector2& GetPosition() { return position_; }
 	float GetRotation() { return rotation_; }
 	const Vector2& GetSize() { return size_; }
@@ -78,6 +81,7 @@ public://ゲッターセッター
 	const Vector2& GetTextureLeftTop() { return textureLeftTop_; }
 	const Vector2& GetTextureSize() { return textureSize_; }
 	
+	void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 	void SetPosition(const Vector2& position) { position_ = position; }
 	void SetRotation(float rotation) { rotation_ = rotation; }
 	void SetSize(const Vector2& size) { size_ = size; }
