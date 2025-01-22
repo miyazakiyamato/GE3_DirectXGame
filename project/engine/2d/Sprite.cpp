@@ -1,13 +1,12 @@
 #include "Sprite.h"
-#include "SpriteCommon.h"
+#include "PipelineManager.h"
 #include "TextureManager.h"
 
 void Sprite::Initialize(std::string textureFilePath){
-	spriteCommon_ = TextureManager::GetInstance()->GetSpriteCommon();
 	textureFilePath_ = textureFilePath;
 
 	//Sprite用の頂点リソースを作る
-	vertexResource = spriteCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * 6);
+	vertexResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * 6);
 	
 	//リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource.Get()->GetGPUVirtualAddress();
@@ -17,7 +16,7 @@ void Sprite::Initialize(std::string textureFilePath){
 	vertexBufferView.StrideInBytes = sizeof(VertexData);
 	
 	//IndexSprite用のインデックスリソースを作る
-	indexResource = spriteCommon_->GetDxCommon()->CreateBufferResource(sizeof(uint32_t) * 6);
+	indexResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(uint32_t) * 6);
 	
 	//リソースの先頭のアドレスから使う
 	indexBufferView.BufferLocation = indexResource.Get()->GetGPUVirtualAddress();
@@ -27,7 +26,7 @@ void Sprite::Initialize(std::string textureFilePath){
 	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 
 	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	materialResource = spriteCommon_->GetDxCommon()->CreateBufferResource(sizeof(Material));
+	materialResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(Material));
 	//マテリアルにデータを書き込む
 	materialData = nullptr;
 	//書き込むためのアドレスを取得
@@ -38,7 +37,7 @@ void Sprite::Initialize(std::string textureFilePath){
 	materialData->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
 
 	//Sprite用のTransformationMatirx用のリソースを作る。Marix4x4 1つ分のサイズを用意する
-	wvpResource = spriteCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
+	wvpResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
 	
 	//書き込むためのアドレスを取得
 	wvpResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
@@ -112,8 +111,10 @@ void Sprite::Update(){
 
 void Sprite::Draw(){
 	// コマンドリストの取得
-	ID3D12GraphicsCommandList* commandList = spriteCommon_->GetDxCommon()->GetCommandList();
+	ID3D12GraphicsCommandList* commandList = PipelineManager::GetInstance()->GetDxCommon()->GetCommandList();
 
+	//パイプラインを設定
+	PipelineManager::GetInstance()->DrawSetting(PipelineState::kSprite, blendMode_);
 	//Spriteの描画。変更が必要なものだけ変更する
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);//VBVを設定
 	commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定

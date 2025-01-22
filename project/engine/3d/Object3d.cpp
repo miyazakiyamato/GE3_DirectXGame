@@ -1,32 +1,33 @@
 #include "Object3d.h"
 #include "ModelManager.h"
 #include "CameraManager.h"
+#include "PipelineManager.h"
 
 void Object3d::Initialize(){
-	modelCommon_ = ModelManager::GetInstance()->GetModelCommon();
-
+	dxCommon_ = ModelManager::GetInstance()->GetDirectXCommon();
+	lightManager_ = LightManager::GetInstance();
 	//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-	wvpResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
+	wvpResource = dxCommon_->CreateBufferResource(sizeof(TransformationMatrix));
 	//データを書き込む
 	//書き込むためのアドレスを取得
 	wvpResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	//単位行列を書き込んでおく
 	wvpData->WVP = Matrix4x4::MakeIdentity4x4();
 	wvpData->World = Matrix4x4::MakeIdentity4x4();
+	wvpData->WorldInverseTranspose = Matrix4x4::MakeIdentity4x4();
 
 	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	materialResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(Material));
+	materialResource = dxCommon_->CreateBufferResource(sizeof(Material));
 	//マテリアルにデータを書き込む
 	//書き込むためのアドレスを取得
 	materialResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 
-	//DirectionalLightのリソースを作る。
-	directionalLightResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(DirectionalLight));
-	//デフォルト値を書き込んでおく
-	directionalLightResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
-	directionalLightData->color = { 1.0f,1.0f,1.0f,1.0f };
-	directionalLightData->direction = { 0.0f,-1.0f,0.0f };
-	directionalLightData->intensity = 1.0f;
+	//カメラ用のリソースを作る。今回はcolor1つ分のサイズを用意する
+	cameraResource = dxCommon_->CreateBufferResource(sizeof(CameraForGpu));
+	//カメラのデータを書き込む
+	//書き込むためのアドレスを取得
+	cameraResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
+	cameraData->worldPosition = { 0.0f,0.0f,0.0f };
 }
 
 void Object3d::Update(){
@@ -39,26 +40,36 @@ void Object3d::Update(){
 	if (CameraManager::GetInstance()->GetCamera()) {
 		const Matrix4x4& viewProjectionMatrix = CameraManager::GetInstance()->GetCamera()->GetViewProjectionMatrix();
 		worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;
+
+		Matrix4x4 cameraWorldMatrix = CameraManager::GetInstance()->GetCamera()->GetWorldMatrix();
+
+		cameraData->worldPosition = {cameraWorldMatrix.m[3][0],cameraWorldMatrix.m[3][1],cameraWorldMatrix.m[3][2]};
 	}
 	else {
 		worldViewProjectionMatrix = worldMatrix;
 	}
 	wvpData->WVP = worldViewProjectionMatrix;
 	wvpData->World = worldMatrix;
+	wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(worldMatrix));
 }
 
 void Object3d::Draw(){
 
 	if (model_) {
 		// コマンドリストの取得
-		ID3D12GraphicsCommandList* commandList = modelCommon_->GetDxCommon()->GetCommandList();
+		ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
+		//パイプラインを設定
+		PipelineManager::GetInstance()->DrawSetting(PipelineState::kModel,blendMode_);
 		//wvp用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 		//マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
-		//Lighting
-		commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource.Get()->GetGPUVirtualAddress());
+		//カメラCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
+		
+		lightManager_->Draw();
+
 		model_->Draw();
 	}
 
@@ -71,6 +82,7 @@ void Object3d::SetModel(const std::string& filePath){
 	materialData->color = model_->LoadColor();//色を書き込む
 	materialData->enableLighting = true;//Lightingを有効にする
 	materialData->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
+	materialData->shininess = 10.0f;
 }
 
 Vector3 Object3d::GetCenterPosition() const

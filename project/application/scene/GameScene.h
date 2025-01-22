@@ -31,7 +31,7 @@ private://メンバ変数
 	AccelerationField* accelerationField_;
 
 	ParticleEmitter* particleEmitter_;
-
+	
 	//デルタタイム
 	const float kDeltaTime_ = 1.0f / 60.0f;
 

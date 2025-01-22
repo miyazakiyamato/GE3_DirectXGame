@@ -1,7 +1,12 @@
 #pragma once
 #include <map>
-#include "ParticleCommon.h"
+#include "BlendMode.h"
 #include "random"
+#include "DirectXCommon.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
+#include "Matrix4x4.h"
 
 class DirectXCommon;
 class SrvManager;
@@ -45,6 +50,7 @@ public:
 		//バッファリソース内のデータを指すポインタ
 		VertexData* vertexData = nullptr;
 		ParticleForGPU* instancingData = nullptr;
+		BlendMode blendMode_ = BlendMode::kAdd;
 	};
 public://メンバ関数
 	//シングルトンインスタンスの取得
@@ -57,8 +63,6 @@ public://メンバ関数
 	void Update();
 	//描画
 	void Draw();
-	//ブレンドモード変更
-	void ChangeBlendMode(ParticleCommon::BlendMode blendMode);
 	//パーティクルグループの生成
 	void CreateParticleGroup(const std::string name, const std::string textureFilePath);
 	//パーティクルの発生
@@ -77,7 +81,6 @@ private://メンバ変数
 	//ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
-	std::unique_ptr<ParticleCommon> particleCommon_;
 	//
 	const uint32_t kParticleVertexNum = 4;
 	const uint32_t kParticleIndexNum = 6;
@@ -97,8 +100,12 @@ private://メンバ変数
 
 	//デルタタイム
 	const float kDeltaTime_ = 1.0f / 60.0f;
+
 	//パーティクルデータ
 	std::map<std::string, std::unique_ptr<ParticleGroup>> particleGroups;
 public://ゲッターセッター
 	std::map<std::string, std::unique_ptr<ParticleGroup>>& GetParticleGroups() { return particleGroups; }
+	const BlendMode& GetBlendMode(std::string name) { return particleGroups[name]->blendMode_; }
+
+	void SetBlendMode(std::string name,BlendMode blendMode) { particleGroups[name]->blendMode_ = blendMode; }
 };

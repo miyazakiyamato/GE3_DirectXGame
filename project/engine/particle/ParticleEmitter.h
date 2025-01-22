@@ -32,6 +32,7 @@ private:
 	const float kDeltaTime_ = 1.0f / 60.0f;
 
 public:
+	const std::string& GetName() { return name_; }
 	const Vector3& GetPosition() { return transform_.translate; }
 	const Vector3& GetRotation() { return transform_.rotate; }
 	const Vector3& GetSize() { return transform_.scale; }

@@ -13,8 +13,8 @@
 #include "WinApp.h"
 #include "Input.h"
 #include "DirectXCommon.h"
+#include "PipelineManager.h"
 #include "TextureManager.h"
-#include "SpriteCommon.h"
 #include "ModelManager.h"
 #include "Logger.h"
 #include "D3DResourceLeakChecker.h"
@@ -22,10 +22,12 @@
 #include "CameraManager.h"
 #include "SrvManager.h"
 #include "ImGuiManager.h"
+#include "GlobalVariables.h"
 #include "AudioManager.h"
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
 #include "ParticleManager.h"
+#include "LightManager.h"
 
 class Framework{
 public://メンバ関数
@@ -53,14 +55,20 @@ protected://メンバ変数
 	Input* input_ = nullptr;
 	//SRV
 	SrvManager* srvManager = nullptr;
-	//ImGui
+	//ImGuiマネージャ
 	ImGuiManager* imGuiManager = nullptr;
+	//
+	GlobalVariables* globalVariables_ = nullptr;
+	//パイプラインマネージャ
+	PipelineManager* pipelineManager = nullptr;
 	//テクスチャマネージャ
 	TextureManager* textureManager_ = nullptr;
 	//パーティクルマネージャ
 	ParticleManager* particleManager_ = nullptr;
 	//モデルマネージャ
 	ModelManager* modelManager_ = nullptr;
+	//ライトマネージャ
+	LightManager* lightManager_ = nullptr;
 	//カメラマネージャ
 	CameraManager* cameraManager_ = nullptr;
 	//オーディオマネージャの初期化

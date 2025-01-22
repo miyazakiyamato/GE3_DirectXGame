@@ -293,7 +293,7 @@ void AudioManager::LoadMP3(const std::string& filePath){
 	pAudioType->Release();
 }
 
-void AudioManager::PlayWave(const std::string& filePath){
+void AudioManager::PlayWave(const std::string& filePath, float volume, bool loop){
 	//音声データの参照を取得
 	SoundData& soundData = soundDatas[filePath];
 
@@ -310,9 +310,21 @@ void AudioManager::PlayWave(const std::string& filePath){
 	buf.AudioBytes = soundData.bufferSize;
 	buf.Flags = XAUDIO2_END_OF_STREAM;
 
+	// ループの設定
+	buf.LoopCount = loop ? XAUDIO2_LOOP_INFINITE : 0;
+
 	//波型データの生成
 	result = pSourceVoice->SubmitSourceBuffer(&buf);
 	result = pSourceVoice->Start();
+	result = pSourceVoice->SetVolume(volume);
+
+	if (loop)
+	{
+		if (playSoundDatas.contains(filePath)) {
+			return;
+		}
+		playSoundDatas[filePath] = pSourceVoice;
+	}
 }
 
 void AudioManager::PlayMP3(const std::string& filePath){
@@ -331,4 +343,14 @@ void AudioManager::PlayMP3(const std::string& filePath){
 	assert(SUCCEEDED(result));
 
 	sourceVoice->Start();
+}
+
+void AudioManager::StopWave(const std::string& filePath)
+{
+	IXAudio2SourceVoice* pSourceVoice = playSoundDatas[filePath];
+
+	//波型データの生成
+	pSourceVoice->Stop();
+
+	playSoundDatas.erase(filePath);
 }

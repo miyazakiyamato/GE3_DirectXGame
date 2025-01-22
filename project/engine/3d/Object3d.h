@@ -1,7 +1,8 @@
 #pragma once
-#include "ModelCommon.h"
+#include "DirectXCommon.h"
 #include "Model.h"
 #include "Camera.h"
+#include "LightManager.h"
 
 class Object3d{
 public:
@@ -11,17 +12,17 @@ private:
 	struct TransformationMatrix {
 		Matrix4x4 WVP;
 		Matrix4x4 World;
+		Matrix4x4 WorldInverseTranspose;
 	};
 	struct Material {
 		Vector4 color{1,1,1,1};
 		int enableLighting;
 		float padding[3];
 		Matrix4x4 uvTransform;
+		float shininess;
 	};
-	struct DirectionalLight {
-		Vector4 color;//!<ライトの色
-		Vector3 direction; //!< ライトの向き
-		float intensity;//!< 輝度
+	struct CameraForGpu {
+		Vector3 worldPosition;
 	};
 public://メンバ関数
 	//初期化
@@ -31,17 +32,19 @@ public://メンバ関数
 	//描画
 	void Draw();
 private://メンバ変数
-	ModelCommon* modelCommon_ = nullptr;
+	DirectXCommon* dxCommon_ = nullptr;
 
 	Model* model_ = nullptr;
+	BlendMode blendMode_ = BlendMode::kNormal;
 	//バッファリソース
 	ComPtr<ID3D12Resource> wvpResource;
 	ComPtr<ID3D12Resource> materialResource;
-	ComPtr<ID3D12Resource> directionalLightResource;
+	ComPtr<ID3D12Resource> cameraResource;
 	//バッファリソース内のデータを指すポインタ
 	TransformationMatrix* wvpData = nullptr;
 	Material* materialData = nullptr;
-	DirectionalLight* directionalLightData = nullptr;
+	CameraForGpu* cameraData = nullptr;
+	LightManager* lightManager_ = nullptr;
 
 	//Transform変数を作る。
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
@@ -49,18 +52,20 @@ private://メンバ変数
 	Object3d* parent_ = nullptr;
 
 public://ゲッターセッター
-	void SetModel(const std::string& filePath);
-	void SetScale(const Vector3& scale) { transform.scale = scale; }
-	void SetRotate(const Vector3& rotate) { transform.rotate = rotate; }
-	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
-	void SetColor(const Vector4& color) { materialData->color = color; }
-	void SetParent(Object3d* parent) { parent_ = parent; }
-
+	const BlendMode& GetBlendMode() { return blendMode_; }
 	const Vector3& GetScale() const { return transform.scale; }
 	const Vector3& GetRotate() const { return transform.rotate; }
 	const Vector3& GetTranslate() const { return transform.translate; }
 	const Vector4& GetColor() const { return materialData->color; }
 	Vector3 GetCenterPosition() const;
 	const Matrix4x4& GetWorldMatrix() const { return wvpData->World; }
+
+	void SetModel(const std::string& filePath);
+	void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
+	void SetScale(const Vector3& scale) { transform.scale = scale; }
+	void SetRotate(const Vector3& rotate) { transform.rotate = rotate; }
+	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
+	void SetColor(const Vector4& color) { materialData->color = color; }
+	void SetParent(Object3d* parent) { parent_ = parent; }
 };
 

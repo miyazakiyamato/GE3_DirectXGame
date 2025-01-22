@@ -11,26 +11,12 @@ ModelManager* ModelManager::GetInstance()
 }
 
 void ModelManager::Initialize(DirectXCommon* dxCommon){
-	modelCommon = std::make_unique<ModelCommon>();
-	modelCommon->Initialize(dxCommon);
+	dxCommon_ = dxCommon;
 }
 
 void ModelManager::Finalize(){
 	delete instance;
 	instance = nullptr;
-}
-
-void ModelManager::DrawCommonSetting(){
-	modelCommon->DrawCommonSetting();
-}
-
-void ModelManager::ChangeBlendMode(ModelCommon::BlendMode blendMode){
-	if (modelCommon->GetBlendMode() == blendMode) {
-		return;
-	}
-	
-	modelCommon->SetBlendMode(blendMode);
-	modelCommon->CreateGraphicsPipeline();
 }
 
 void ModelManager::LoadModel(const std::string& filePath){
@@ -41,7 +27,7 @@ void ModelManager::LoadModel(const std::string& filePath){
 	}
 	//モデルの生成とファイル読み込み、初期化
 	std::unique_ptr<Model> model = std::make_unique<Model>();
-	model->Initialize(modelCommon.get(), "resources", filePath);
+	model->Initialize(dxCommon_, "resources", filePath);
 
 	//モデルをmapコンテナに格納する
 	models.insert(std::make_pair(filePath, std::move(model)));

@@ -2,16 +2,15 @@
 #include <cassert>
 #include <fstream>
 #include <sstream>
-#include "ModelCommon.h"
 #include "TextureManager.h"
 
-void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPath, const std::string& filename){
-	modelCommon_ = modelCommon;
+void Model::Initialize(DirectXCommon* dxCommon, const std::string& directoryPath, const std::string& filename){
+	dxCommon_ = dxCommon;
 
 	//モデルの読み込み
 	LoadObjFile(directoryPath + "/" + filename,filename + ".obj");
 	//頂点リソースを作る
-	vertexResource = modelCommon_->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * modelData.vertices.size());
+	vertexResource = dxCommon_->CreateBufferResource(sizeof(VertexData) * modelData.vertices.size());
 	//頂点バッファビューを作成する
 	//リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource.Get()->GetGPUVirtualAddress();
@@ -30,7 +29,7 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directoryPat
 
 void Model::Draw(){
 	// コマンドリストの取得
-	ID3D12GraphicsCommandList* commandList = modelCommon_->GetDxCommon()->GetCommandList();
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView); //VBVを設定
 	//commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
@@ -133,7 +132,7 @@ void Model::LoadObjFile(const std::string& directoryPath, const std::string& fil
 
 Vector4 Model::LoadColor()
 {
-	Vector4 color = {};
+	Vector4 color = {1.0f,1.0f,1.0f,1.0f};
 	std::string line;//ファイルから読んだ1行を格納するもの
 	std::ifstream file(modelData.material.mtlFilePath);//ファイルを開く
 	assert(file.is_open());//開けなかったら止める
@@ -149,4 +148,3 @@ Vector4 Model::LoadColor()
 	}
 	return color;
 }
-

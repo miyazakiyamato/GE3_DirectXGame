@@ -15,18 +15,11 @@ TextureManager* TextureManager::GetInstance()
 void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager){
 	dxCommon_ = dxCommon;
 	srvManager_ = srvManager;
-	//スプライト共通部の初期化
-	spriteCommon = std::make_unique<SpriteCommon>();
-	spriteCommon->Initialize(dxCommon);
 }
 
 void TextureManager::Finalize(){
 	delete instance;
 	instance = nullptr;
-}
-
-void TextureManager::DrawCommonSetting() {
-	spriteCommon->DrawCommonSetting();
 }
 
 void TextureManager::LoadTexture(const std::string& filePath){
@@ -54,11 +47,6 @@ void TextureManager::LoadTexture(const std::string& filePath){
 	textureData.srvHandleGPU = srvManager_->GetGPUDescriptorHandle(textureData.srvIndex);
 
 	srvManager_->CreateSRVforTexture2D(textureData.srvIndex, textureData.resource.Get(), textureData.metadata.format, UINT(textureData.metadata.mipLevels));
-}
-
-void TextureManager::ChangeBlendMode(SpriteCommon::BlendMode blendMode){
-	spriteCommon->SetBlendMode(blendMode);
-	spriteCommon->CreateGraphicsPipeline();
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(const std::string& filePath){

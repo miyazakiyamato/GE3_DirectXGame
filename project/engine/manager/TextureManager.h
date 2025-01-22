@@ -4,7 +4,6 @@
 #include <d3d12.h>
 #include <unordered_map>
 #include "DirectXTex.h"
-#include "SpriteCommon.h"
 
 class DirectXCommon;
 class SrvManager;
@@ -26,12 +25,8 @@ public://メンバ関数
 	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
 	//終了
 	void Finalize();
-	//共通描画設定
-	void DrawCommonSetting();
 	//テクスチャファイルの読み込み
 	void LoadTexture(const std::string& filePath);
-	//ブレンドモードの変更
-	void ChangeBlendMode(SpriteCommon::BlendMode blendMode);
 
 	//テクスチャ番号からGPUハンドルを取得
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGPU(const std::string& filePath);
@@ -49,11 +44,9 @@ private://シングルインスタンス
 private://メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
-	//スプライト共通部
-	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	//テクスチャデータ
 	std::unordered_map<std::string,TextureData> textureDatas;
 public:
-	SpriteCommon* GetSpriteCommon() const { return spriteCommon.get(); }
+
 };
 
