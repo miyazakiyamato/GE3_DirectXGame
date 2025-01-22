@@ -36,8 +36,7 @@ void TitleScene::Update(){
 }
 
 void TitleScene::Draw(){
-	//Spriteの描画準備Spriteの描画に共通のグラフィックコマンドを積む
-	TextureManager::GetInstance()->DrawCommonSetting();
+	//Spriteの描画
 	for (Sprite* sprite : sprites) {
 		sprite->Draw();
 	}

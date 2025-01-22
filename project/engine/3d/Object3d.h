@@ -63,8 +63,12 @@ public://ゲッターセッター
 
 	void SetModel(const std::string& filePath);
 	void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
+	void SetScale(const Vector3& scale) { transform.scale = scale; }
+	void SetRotate(const Vector3& rotate) { transform.rotate = rotate; }
+	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
+	void SetColor(const Vector4& color) { materialData->color = color; }
+	void SetParent(Object3d* parent) { parent_ = parent; }
 	void SetIsLighting(bool isLighting) { materialData->enableLighting = isLighting; }
 	void SetTexture(std::string textureFilePath) { textureFilePath_ = textureFilePath; }
-
 };
 
