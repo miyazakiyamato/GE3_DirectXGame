@@ -226,13 +226,22 @@ void GameScene::Update(){
 			}
 			groupName = "Particle";
 			if (ImGui::BeginMenu(groupName.c_str())) {
-				static int Object3dItem_selected_idx = 1;
-				globalVariables->ShowCombo(
-					blendName,
-					blendState,
-					Object3dItem_selected_idx,
-					[](const int& ItemIndex) { ParticleManager::GetInstance()->ChangeBlendMode(static_cast<ParticleCommon::BlendMode>(ItemIndex));  }
-				);
+				int particleItem_selected_idx = static_cast<int>(ParticleManager::GetInstance()->GetBlendMode(particleEmitter_->GetName()));
+				const char* currentItem = blendState[particleItem_selected_idx].c_str();
+				if (ImGui::BeginCombo((blendName + particleEmitter_->GetName()).c_str(), currentItem)) {
+					for (int i = 0; i < blendState.size(); ++i) {
+						bool isSelected = (particleItem_selected_idx == i);
+						if (ImGui::Selectable(blendState[i].c_str(), isSelected)) {
+							particleItem_selected_idx = i;
+							ParticleManager::GetInstance()->SetBlendMode(particleEmitter_->GetName(),static_cast<BlendMode>(i));
+						}
+						if (isSelected) {
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+					ImGui::EndCombo();
+				}
+
 				Vector3 position = particleEmitter_->GetPosition();
 				ImGui::DragFloat2("particleEmitter_.Translate", &position.x, 0.1f);
 				/*if (position.y > 640.0f) {
@@ -361,13 +370,14 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
+	//Object3dの描画
 	for (Object3d* object3d : object3ds) {
 		object3d->Draw();
 	}
 
 	//当たり判定の表示
 	collisionManager_->Draw();
-	//Particleの描画準備Modelの描画に共通グラフィックコマンドを積む
+	//Particleの描画
 	ParticleManager::GetInstance()->Draw();
 
 	//Spriteの描画
