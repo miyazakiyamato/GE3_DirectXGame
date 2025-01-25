@@ -136,6 +136,8 @@ void GameScene::Update(){
 				DirectionalLightDirection = DirectionalLightDirection.Normalize();
 				float DirectionalLightIntensity = LightManager::GetInstance()->GetDirectionalLight()->intensity;
 				ImGui::DragFloat("DirectionalLight.Intensity", &DirectionalLightIntensity, 0.01f);
+				bool DirectionalLightIsBlinnPhong = (bool)LightManager::GetInstance()->GetDirectionalLight()->isBlinnPhong;
+				ImGui::Checkbox("DirectionalLight.IsBlinnPhong", &DirectionalLightIsBlinnPhong);
 
 				Vector4 PointLightColor = LightManager::GetInstance()->GetPointLight()->color;
 				ImGui::ColorEdit4("PointLight.Color", &PointLightColor.x);
@@ -166,7 +168,7 @@ void GameScene::Update(){
 				float SpotLightCosFalloffStart = LightManager::GetInstance()->GetSpotLight()->cosFalloffStart;
 				ImGui::DragFloat("SpotLight.CosFalloff", &SpotLightCosFalloffStart, 0.01f);
 
-				LightManager::GetInstance()->SetDirectionalLight({ DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity });
+				LightManager::GetInstance()->SetDirectionalLight({ DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity,(int)DirectionalLightIsBlinnPhong });
 				LightManager::GetInstance()->SetPointLight({ PointLightColor,PointLightPosition,PointLightIntensity,PointLightRadius,PointLightDecay });
 				LightManager::GetInstance()->SetSpotLight({ SpotLightColor,SpotLightPosition,SpotLightIntensity,SpotLightDirection,SpotLightDistance,SpotLightDecay,SpotLightCosAngle,SpotLightCosFalloffStart });
 				ImGui::EndMenu();

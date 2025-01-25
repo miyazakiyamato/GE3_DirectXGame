@@ -22,6 +22,7 @@ void LightManager::Initialize(DirectXCommon* dxCommon) {
 	directionalLightData_->color = { 1.0f,1.0f,1.0f,1.0f };
 	directionalLightData_->direction = { 0.0f,-1.0f,0.0f };
 	directionalLightData_->intensity = 1.0f;
+	directionalLightData_->isBlinnPhong = 1;
 	//PointLightのリソースを作る。
 	pointLightResource_ = dxCommon_->CreateBufferResource(sizeof(PointLight));
 	//デフォルト値を書き込んでおく
@@ -66,6 +67,7 @@ void LightManager::SetDirectionalLight(const DirectionalLight& directionalLight)
 	 directionalLightData_->color = directionalLight.color;
 	 directionalLightData_->direction = directionalLight.direction;
 	 directionalLightData_->intensity = directionalLight.intensity;
+	 directionalLightData_->isBlinnPhong = directionalLight.isBlinnPhong;
 }
 
 void LightManager::SetPointLight(const PointLight& pointLight){
