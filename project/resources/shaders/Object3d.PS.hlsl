@@ -54,6 +54,7 @@ float32_t3 Specular(VertexShaderOutput input, float32_t3 lightDirection, float32
 {
     //Cameraへの方向
     float32_t3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
+    float32_t4 highLightColor = float32_t4(1.0f, 1.0f, 1.0f, 1.0f);
     
     if (gDirectionalLight.isBlinnPhong != 0)
     {
@@ -61,7 +62,7 @@ float32_t3 Specular(VertexShaderOutput input, float32_t3 lightDirection, float32
         float32_t3 halfVector = normalize(-lightDirection + toEye); //入射角の反射ベクトル
         float32_t NDotH = dot(normalize(input.normal), halfVector);
         float32_t specularPow = pow(saturate(NDotH), gMaterial.shininess); //反射強度
-        return lightColor * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
+        return lightColor * specularPow * highLightColor.rgb;
     }
     else
     {
@@ -69,7 +70,7 @@ float32_t3 Specular(VertexShaderOutput input, float32_t3 lightDirection, float32
         float32_t3 reflectLight = reflect(lightDirection, normalize(input.normal));
         float32_t RdotE = dot(reflectLight, toEye);
         float32_t specularPow = pow(saturate(RdotE), gMaterial.shininess); //反射強度
-        return lightColor * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
+        return lightColor * specularPow * highLightColor.rgb;
     }
 }
 
@@ -108,7 +109,7 @@ PixelShaderOutput main(VertexShaderOutput input){
         
         //SpotLight
         float32_t3 spotLightDirectionOnSurface = normalize(input.worldPosition - gSpotLight.position);
-        distance = length(gSpotLight.position - input.worldPosition); //ポイントライトへの距離
+        distance = length(gSpotLight.position - input.worldPosition); //スポットライトへの距離
         float32_t attenuationFactor = pow(saturate(-distance / gSpotLight.distance + 1.0f), gSpotLight.decay); //距離による減衰
         float32_t cosAngle = dot(spotLightDirectionOnSurface, gSpotLight.direction);
         //if (gSpotLight.cosFalloffStart - gSpotLight.cosAngle == 0)//ゼロ除算の時は赤くする
