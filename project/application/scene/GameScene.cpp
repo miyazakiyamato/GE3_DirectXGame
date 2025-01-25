@@ -216,10 +216,14 @@ void GameScene::Update(){
 					Vector4 color = object3d->GetColor();
 					ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".Color").c_str(), &color.x);
 
+					Vector4 highLightColor = object3d->GetHighLightColor();
+					ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".HighLightColor").c_str(), &highLightColor.x);
+
 					object3d->SetTranslate(translate);
 					object3d->SetRotate(rotate);
 					object3d->SetScale(scale);
 					object3d->SetColor(color);
+					object3d->SetHighLightColor(highLightColor);
 					
 					ImGui::Text("\n");
 					object3dCount++;

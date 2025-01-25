@@ -83,6 +83,7 @@ void Object3d::SetModel(const std::string& filePath){
 	materialData->enableLighting = true;//Lightingを有効にする
 	materialData->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
 	materialData->shininess = 40.0f;
+	materialData->highLightColor = { 1.0f,1.0f,1.0f,1.0f };
 }
 
 Vector3 Object3d::GetCenterPosition() const
