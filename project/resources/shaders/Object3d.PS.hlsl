@@ -13,7 +13,6 @@ struct DirectionalLight{
     float32_t3 direction;//!< ライトの向き
     float32_t intensity; //!< 輝度
     int32_t isBlinnPhong; //!<BlinnPhongかどうか
-    
 };
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 
@@ -51,6 +50,29 @@ struct PixelShaderOutput{
     float32_t4 color : SV_TARGET0;
 };
 
+float32_t3 Specular(VertexShaderOutput input, float32_t3 lightDirection, float32_t3 lightColor)
+{
+    //Cameraへの方向
+    float32_t3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
+    
+    if (gDirectionalLight.isBlinnPhong != 0)
+    {
+        //Blinn-Phong
+        float32_t3 halfVector = normalize(-lightDirection + toEye); //入射角の反射ベクトル
+        float32_t NDotH = dot(normalize(input.normal), halfVector);
+        float32_t specularPow = pow(saturate(NDotH), gMaterial.shininess); //反射強度
+        return lightColor * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
+    }
+    else
+    {
+        //Phong
+        float32_t3 reflectLight = reflect(lightDirection, normalize(input.normal));
+        float32_t RdotE = dot(reflectLight, toEye);
+        float32_t specularPow = pow(saturate(RdotE), gMaterial.shininess); //反射強度
+        return lightColor * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
+    }
+}
+
 PixelShaderOutput main(VertexShaderOutput input){
     PixelShaderOutput output;
     //テクスチャUV
@@ -59,8 +81,6 @@ PixelShaderOutput main(VertexShaderOutput input){
     float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
     if (textureColor.a == 0.0){ discard;}
     if (textureColor.a <= 0.5){ discard;}
-    //Cameraへの方向
-    float32_t3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
     
     //outputカラー
     if (gMaterial.enableLighting != 0){ //Lightingする場合
@@ -70,29 +90,7 @@ PixelShaderOutput main(VertexShaderOutput input){
         float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
         float32_t3 diffuse = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
         //鏡面反射
-        //入射角の反射ベクトル
-        
-        float32_t3 specular;
-        float32_t3 halfVector;
-        float NDotH;
-        float specularPow;
-        float32_t3 reflectLight;
-        float RdotE;
-        
-        if (gDirectionalLight.isBlinnPhong != 0){
-            //Blinn-Phong
-            halfVector = normalize(-gDirectionalLight.direction + toEye);
-            NDotH = dot(normalize(input.normal), halfVector);
-            specularPow = pow(saturate(NDotH), gMaterial.shininess); //反射強度
-            specular = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
-        }
-        else{
-            //Phong
-            reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
-            RdotE = dot(reflectLight, toEye);
-            specularPow = pow(saturate(RdotE), gMaterial.shininess); //反射強度
-            specular = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
-        }
+        float32_t3 specular = Specular(input,gDirectionalLight.direction,gDirectionalLight.color.rgb * gDirectionalLight.intensity);
         
         float32_t3 directionalLightCollor = diffuse + specular;
         
@@ -104,12 +102,7 @@ PixelShaderOutput main(VertexShaderOutput input){
         //拡散反射
             diffuse = gMaterial.color.rgb * textureColor.rgb * pointLightColor.rgb;
         //鏡面反射
-        //入射角の反射ベクトル
-        //Blinn-Phong
-        halfVector = normalize(-pointLightDirection + toEye);
-        NDotH = dot(normalize(input.normal), halfVector);
-        specularPow = pow(saturate(NDotH), gMaterial.shininess); //反射強度
-        specular = pointLightColor.rgb * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
+        specular = Specular(input, pointLightDirection, pointLightColor);
         
         pointLightColor = diffuse + specular;
         
@@ -118,7 +111,7 @@ PixelShaderOutput main(VertexShaderOutput input){
         distance = length(gSpotLight.position - input.worldPosition); //ポイントライトへの距離
         float32_t attenuationFactor = pow(saturate(-distance / gSpotLight.distance + 1.0f), gSpotLight.decay); //距離による減衰
         float32_t cosAngle = dot(spotLightDirectionOnSurface, gSpotLight.direction);
-        //if (gSpotLight.cosFalloffStart - gSpotLight.cosAngle == 0)
+        //if (gSpotLight.cosFalloffStart - gSpotLight.cosAngle == 0)//ゼロ除算の時は赤くする
         //{
         //    output.color = float32_t4(1.0f, 0.0f, 0.0f, 1.0f);
         //    return output;
@@ -128,12 +121,7 @@ PixelShaderOutput main(VertexShaderOutput input){
         //拡散反射
         diffuse = gMaterial.color.rgb * textureColor.rgb * spotLightColor.rgb;
         //鏡面反射
-        //入射角の反射ベクトル
-        //Blinn-Phong
-        halfVector = normalize(-spotLightDirectionOnSurface + toEye);
-        NDotH = dot(normalize(input.normal), halfVector);
-        specularPow = pow(saturate(NDotH), gMaterial.shininess); //反射強度
-        specular = spotLightColor.rgb * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
+        specular = Specular(input, spotLightDirectionOnSurface, spotLightColor);
         
         spotLightColor = diffuse + specular;
         
