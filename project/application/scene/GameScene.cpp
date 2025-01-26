@@ -139,6 +139,7 @@ void GameScene::Update(){
 				bool DirectionalLightIsBlinnPhong = (bool)LightManager::GetInstance()->GetDirectionalLight()->isBlinnPhong;
 				ImGui::Checkbox("IsBlinnPhong", &DirectionalLightIsBlinnPhong);
 
+				ImGui::Text("\n");
 				LightManager::GetInstance()->SetDirectionalLight({ DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity,(int)DirectionalLightIsBlinnPhong });
 				uint32_t idIndex = 0;
 				for (uint32_t index = 0; index < LightManager::GetInstance()->GetKMaxPointLight(); index++) {
@@ -155,30 +156,35 @@ void GameScene::Update(){
 					ImGui::DragFloat("PointLight.Decay", &PointLightDecay, 0.01f);
 
 					LightManager::GetInstance()->SetPointLight(index, { PointLightColor,PointLightPosition,PointLightIntensity,PointLightRadius,PointLightDecay });
-					ImGui::Text("\n");
 					ImGui::PopID();
 					++idIndex;
 				}
+				ImGui::Text("\n");
+				idIndex = 0;
+				for (uint32_t index = 0; index < LightManager::GetInstance()->GetKMaxSpotLight(); index++) {
+					ImGui::PushID(idIndex);
+					Vector4 SpotLightColor = LightManager::GetInstance()->GetSpotLight()[index].color;
+					ImGui::ColorEdit4("SpotLight.Color", &SpotLightColor.x);
+					Vector3 SpotLightPosition = LightManager::GetInstance()->GetSpotLight()[index].position;
+					ImGui::DragFloat3("SpotLight.Position", &SpotLightPosition.x, 0.01f);
+					float SpotLightIntensity = LightManager::GetInstance()->GetSpotLight()[index].intensity;
+					ImGui::DragFloat("SpotLight.Intensity", &SpotLightIntensity, 0.01f);
+					Vector3 SpotLightDirection = LightManager::GetInstance()->GetSpotLight()[index].direction;
+					ImGui::DragFloat3("SpotLight.Direction", &SpotLightDirection.x, 0.01f);
+					SpotLightDirection = SpotLightDirection.Normalize();
+					float SpotLightDistance = LightManager::GetInstance()->GetSpotLight()[index].distance;
+					ImGui::DragFloat("SpotLight.Distance", &SpotLightDistance, 0.01f);
+					float SpotLightDecay = LightManager::GetInstance()->GetSpotLight()[index].decay;
+					ImGui::DragFloat("SpotLight.Decay", &SpotLightDecay, 0.01f);
+					float SpotLightCosAngle = LightManager::GetInstance()->GetSpotLight()[index].cosAngle;
+					ImGui::DragFloat("SpotLight.CosAngle", &SpotLightCosAngle, 0.01f);
+					float SpotLightCosFalloffStart = LightManager::GetInstance()->GetSpotLight()[index].cosFalloffStart;
+					ImGui::DragFloat("SpotLight.CosFalloff", &SpotLightCosFalloffStart, 0.01f);
 
-				Vector4 SpotLightColor = LightManager::GetInstance()->GetSpotLight()->color;
-				ImGui::ColorEdit4("SpotLight.Color", &SpotLightColor.x);
-				Vector3 SpotLightPosition = LightManager::GetInstance()->GetSpotLight()->position;
-				ImGui::DragFloat3("SpotLight.Position", &SpotLightPosition.x, 0.01f);
-				float SpotLightIntensity = LightManager::GetInstance()->GetSpotLight()->intensity;
-				ImGui::DragFloat("SpotLight.Intensity", &SpotLightIntensity, 0.01f);
-				Vector3 SpotLightDirection = LightManager::GetInstance()->GetSpotLight()->direction;
-				ImGui::DragFloat3("SpotLight.Direction", &SpotLightDirection.x, 0.01f);
-				SpotLightDirection = SpotLightDirection.Normalize();
-				float SpotLightDistance = LightManager::GetInstance()->GetSpotLight()->distance;
-				ImGui::DragFloat("SpotLight.Distance", &SpotLightDistance, 0.01f);
-				float SpotLightDecay = LightManager::GetInstance()->GetSpotLight()->decay;
-				ImGui::DragFloat("SpotLight.Decay", &SpotLightDecay, 0.01f);
-				float SpotLightCosAngle = LightManager::GetInstance()->GetSpotLight()->cosAngle;
-				ImGui::DragFloat("SpotLight.CosAngle", &SpotLightCosAngle, 0.01f);
-				float SpotLightCosFalloffStart = LightManager::GetInstance()->GetSpotLight()->cosFalloffStart;
-				ImGui::DragFloat("SpotLight.CosFalloff", &SpotLightCosFalloffStart, 0.01f);
-
-				LightManager::GetInstance()->SetSpotLight({ SpotLightColor,SpotLightPosition,SpotLightIntensity,SpotLightDirection,SpotLightDistance,SpotLightDecay,SpotLightCosAngle,SpotLightCosFalloffStart });
+					LightManager::GetInstance()->SetSpotLight(index,{ SpotLightColor,SpotLightPosition,SpotLightIntensity,SpotLightDirection,SpotLightDistance,SpotLightDecay,SpotLightCosAngle,SpotLightCosFalloffStart });
+					ImGui::PopID();
+					++idIndex;
+				}
 				ImGui::EndMenu();
 			}
 			std::string blendName = "Now Blend";

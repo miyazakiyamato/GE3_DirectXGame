@@ -24,6 +24,7 @@ private:
 	};
 	struct CameraForGpu {
 		Vector3 worldPosition;
+		float padding;
 	};
 public://メンバ関数
 	//初期化

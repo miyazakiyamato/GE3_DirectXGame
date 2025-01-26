@@ -16,7 +16,7 @@ public:
 		Vector3 direction; //!< ライトの向き
 		float intensity;//!< 輝度
 		int isBlinnPhong; //!<BlinnPhongかどうか
-		float padding[2];
+		float padding[3];
 	};
 	struct PointLight{
 		Vector4 color;//!<ライトの色
@@ -24,6 +24,7 @@ public:
 		float intensity;//!< 輝度
 		float radius;//!<ライトの届く最大距離
 		float decay;//!< 減衰率
+		//float padding[2];
 	};
 	struct SpotLight {
 		Vector4 color;//!<ライトの色
@@ -34,7 +35,7 @@ public:
 		float decay;//!<減衰率
 		float cosAngle;//!<スポットライトの余弦
 		float cosFalloffStart;//!<Falloffの開始角度
-		float padding[2];
+		//float padding;
 	};
 public://メンバ関数
 	//シングルトンインスタンスの取得
@@ -69,13 +70,16 @@ private://メンバ変数
 	//SpotLight
 	ComPtr<ID3D12Resource> spotLightResource_;
 	SpotLight* spotLightData_;
+	uint32_t srvIndexForSpotLight = 0;
+	uint32_t kMaxSpotLight = 10;
 public://ゲッターセッター
 	DirectionalLight* GetDirectionalLight() const { return directionalLightData_; }
 	PointLight* GetPointLight() const { return pointLightData_; }
 	uint32_t GetKMaxPointLight() const { return kMaxPointLight; }
 	SpotLight* GetSpotLight() const { return spotLightData_; }
+	uint32_t GetKMaxSpotLight() const { return kMaxSpotLight; }
 
 	void SetDirectionalLight(const DirectionalLight& directionalLight);
 	void SetPointLight(uint32_t index, const PointLight& pointLight);
-	void SetSpotLight(const SpotLight& spotLight);
+	void SetSpotLight(uint32_t index, const SpotLight& spotLight);
 };
