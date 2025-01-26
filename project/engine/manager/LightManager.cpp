@@ -1,7 +1,8 @@
 #include "LightManager.h"
 #include <cassert>
-#include "DirectXCommon.h"
 #include <numbers>
+#include "DirectXCommon.h"
+#include "SrvManager.h"
 
 LightManager* LightManager::instance = nullptr;
 
@@ -12,8 +13,9 @@ LightManager* LightManager::GetInstance() {
 	return instance;
 }
 
-void LightManager::Initialize(DirectXCommon* dxCommon) {
+void LightManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 	dxCommon_ = dxCommon;
+	srvManager_ = srvManager;
 
 	//DirectionalLightのリソースを作る。
 	directionalLightResource_ = dxCommon_->CreateBufferResource(sizeof(DirectionalLight));
@@ -24,14 +26,22 @@ void LightManager::Initialize(DirectXCommon* dxCommon) {
 	directionalLightData_->intensity = 1.0f;
 	directionalLightData_->isBlinnPhong = 1;
 	//PointLightのリソースを作る。
-	pointLightResource_ = dxCommon_->CreateBufferResource(sizeof(PointLight));
-	//デフォルト値を書き込んでおく
+	pointLightResource_ = dxCommon_->CreateBufferResource(sizeof(PointLight) * kMaxPointLight);
+	//データを書き込む
+	//書き込むためのアドレスを取得
 	pointLightResource_.Get()->Map(0, nullptr, reinterpret_cast<void**>(&pointLightData_));
-	pointLightData_->color = { 1.0f,1.0f,1.0f,1.0f };
-	pointLightData_->position = { 0.0f,0.0f,0.0f };
-	pointLightData_->intensity = 1.0f;
-	pointLightData_->radius = 1.0f;
-	pointLightData_->decay = 1.0f;
+	//単位行列を書き込んでおく
+	for (uint32_t index = 0; index < kMaxPointLight; index++) {
+		pointLightData_[index].color = {1.0f,1.0f,1.0f,1.0f};
+		pointLightData_[index].position = { 0.0f,0.0f,0.0f };
+		pointLightData_[index].intensity = 0.0f;
+		pointLightData_[index].radius = 1.0f;
+		pointLightData_[index].decay = 1.0f;
+	}
+
+	srvIndexForPointLight = srvManager_->ALLocate();
+	srvManager_->CreateSRVforStructuredBuffer(srvIndexForPointLight, pointLightResource_.Get(), kMaxPointLight, sizeof(PointLight));
+	
 	//SpotLightのリソースを作る。
 	spotLightResource_ = dxCommon_->CreateBufferResource(sizeof(SpotLight));
 	//デフォルト値を書き込んでおく
@@ -53,7 +63,8 @@ void LightManager::Draw(){
 	//DirectionalLight
 	commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource_.Get()->GetGPUVirtualAddress());
 	//PointLight
-	commandList->SetGraphicsRootConstantBufferView(5, pointLightResource_.Get()->GetGPUVirtualAddress());
+	srvManager_->SetGraphicsRootDescriptorTable(5, srvIndexForPointLight);
+	//commandList->SetGraphicsRootConstantBufferView(5, pointLightResource_.Get()->GetGPUVirtualAddress());
 	//SpotLight
 	commandList->SetGraphicsRootConstantBufferView(6, spotLightResource_.Get()->GetGPUVirtualAddress());
 }
@@ -70,12 +81,12 @@ void LightManager::SetDirectionalLight(const DirectionalLight& directionalLight)
 	 directionalLightData_->isBlinnPhong = directionalLight.isBlinnPhong;
 }
 
-void LightManager::SetPointLight(const PointLight& pointLight){
-	pointLightData_->color = pointLight.color;
-	pointLightData_->position = pointLight.position;
-	pointLightData_->intensity = pointLight.intensity;
-	pointLightData_->radius = pointLight.radius;
-	pointLightData_->decay = pointLight.decay;
+void LightManager::SetPointLight(uint32_t index, const PointLight& pointLight){
+	pointLightData_[index].color = pointLight.color;
+	pointLightData_[index].position = pointLight.position;
+	pointLightData_[index].intensity = pointLight.intensity;
+	pointLightData_[index].radius = pointLight.radius;
+	pointLightData_[index].decay = pointLight.decay;
 }
 
 void LightManager::SetSpotLight(const SpotLight& spotLight){

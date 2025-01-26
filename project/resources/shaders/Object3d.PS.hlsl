@@ -32,7 +32,7 @@ struct SpotLight{
     float32_t cosAngle; //!<スポットライトの余弦
     float32_t cosFalloffStart;//!<Falloffの開始角度
 };
-ConstantBuffer<SpotLight> gSpotLight : register(b4);
+ConstantBuffer<SpotLight> gSpotLight : register(b3);
 
 Texture2D<float32_t4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
@@ -44,8 +44,7 @@ struct PointLight{
     float32_t radius; //!<ライトの届く最大距離
     float32_t decay; //!< 減衰率
 };
-ConstantBuffer<PointLight> gPointLight : register(b3);
-//StructuredBuffer<PointLight> gPointLight : register(t1);
+StructuredBuffer<PointLight> gPointLight : register(t1);
 
 struct PixelShaderOutput{
     float32_t4 color : SV_TARGET0;
@@ -133,7 +132,7 @@ PixelShaderOutput main(VertexShaderOutput input){
         float32_t3 pointLightColor = float32_t3(0.0f,0.0f,0.0f);
         for (int i = 0; i < 1; ++i)
         {
-            pointLightColor += MakePointLightColor(input, textureColor, gPointLight);
+            pointLightColor += MakePointLightColor(input, textureColor, gPointLight[i]);
         }
         
         //SpotLight

@@ -139,16 +139,26 @@ void GameScene::Update(){
 				bool DirectionalLightIsBlinnPhong = (bool)LightManager::GetInstance()->GetDirectionalLight()->isBlinnPhong;
 				ImGui::Checkbox("IsBlinnPhong", &DirectionalLightIsBlinnPhong);
 
-				Vector4 PointLightColor = LightManager::GetInstance()->GetPointLight()->color;
-				ImGui::ColorEdit4("PointLight.Color", &PointLightColor.x);
-				Vector3 PointLightPosition = LightManager::GetInstance()->GetPointLight()->position;
-				ImGui::DragFloat3("PointLight.Position", &PointLightPosition.x, 0.01f);
-				float PointLightIntensity = LightManager::GetInstance()->GetPointLight()->intensity;
-				ImGui::DragFloat("PointLight.Intensity", &PointLightIntensity, 0.01f);
-				float PointLightRadius = LightManager::GetInstance()->GetPointLight()->radius;
-				ImGui::DragFloat("PointLight.Radius", &PointLightRadius, 0.01f);
-				float PointLightDecay = LightManager::GetInstance()->GetPointLight()->decay;
-				ImGui::DragFloat("PointLight.Decay", &PointLightDecay, 0.01f);
+				LightManager::GetInstance()->SetDirectionalLight({ DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity,(int)DirectionalLightIsBlinnPhong });
+				uint32_t idIndex = 0;
+				for (uint32_t index = 0; index < LightManager::GetInstance()->GetKMaxPointLight(); index++) {
+					ImGui::PushID(idIndex);
+					Vector4 PointLightColor = LightManager::GetInstance()->GetPointLight()[index].color;
+					ImGui::ColorEdit4("PointLight.Color", &PointLightColor.x);
+					Vector3 PointLightPosition = LightManager::GetInstance()->GetPointLight()[index].position;
+					ImGui::DragFloat3("PointLight.Position", &PointLightPosition.x, 0.01f);
+					float PointLightIntensity = LightManager::GetInstance()->GetPointLight()[index].intensity;
+					ImGui::DragFloat("PointLight.Intensity", &PointLightIntensity, 0.01f);
+					float PointLightRadius = LightManager::GetInstance()->GetPointLight()[index].radius;
+					ImGui::DragFloat("PointLight.Radius", &PointLightRadius, 0.01f);
+					float PointLightDecay = LightManager::GetInstance()->GetPointLight()[index].decay;
+					ImGui::DragFloat("PointLight.Decay", &PointLightDecay, 0.01f);
+
+					LightManager::GetInstance()->SetPointLight(index, { PointLightColor,PointLightPosition,PointLightIntensity,PointLightRadius,PointLightDecay });
+					ImGui::Text("\n");
+					ImGui::PopID();
+					++idIndex;
+				}
 
 				Vector4 SpotLightColor = LightManager::GetInstance()->GetSpotLight()->color;
 				ImGui::ColorEdit4("SpotLight.Color", &SpotLightColor.x);
@@ -168,8 +178,6 @@ void GameScene::Update(){
 				float SpotLightCosFalloffStart = LightManager::GetInstance()->GetSpotLight()->cosFalloffStart;
 				ImGui::DragFloat("SpotLight.CosFalloff", &SpotLightCosFalloffStart, 0.01f);
 
-				LightManager::GetInstance()->SetDirectionalLight({ DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity,(int)DirectionalLightIsBlinnPhong });
-				LightManager::GetInstance()->SetPointLight({ PointLightColor,PointLightPosition,PointLightIntensity,PointLightRadius,PointLightDecay });
 				LightManager::GetInstance()->SetSpotLight({ SpotLightColor,SpotLightPosition,SpotLightIntensity,SpotLightDirection,SpotLightDistance,SpotLightDecay,SpotLightCosAngle,SpotLightCosFalloffStart });
 				ImGui::EndMenu();
 			}
@@ -290,6 +298,7 @@ void GameScene::Update(){
 			if (ImGui::BeginMenu(groupName.c_str())) {
 				uint32_t objectIDIndex = 0;
 				for (Sprite* sprite : sprites) {
+					ImGui::PushID(objectIDIndex);
 					int SpriteItem_selected_idx = static_cast<int>(sprite->GetBlendMode());
 					const char* currentItem = blendState[SpriteItem_selected_idx].c_str();
 					if (ImGui::BeginCombo((blendName + std::to_string(objectIDIndex)).c_str(), currentItem)) {
@@ -306,7 +315,6 @@ void GameScene::Update(){
 						ImGui::EndCombo();
 					}
 
-					ImGui::PushID(objectIDIndex);
 
 					Vector2 position = sprite->GetPosition();
 					ImGui::DragFloat2("Sprite.Translate", &position.x, 1.0f, 0.0f, 1180.0f, "%.1f");
