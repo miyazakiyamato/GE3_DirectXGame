@@ -107,6 +107,9 @@ float32_t3 MakeSpotLightColor(VertexShaderOutput input, float32_t4 textureColor,
     return diffuse + specular;
 }
 
+#define MAX_POINT_LIGHTS 10
+#define MAX_SPOT_LIGHTS 1
+
 PixelShaderOutput main(VertexShaderOutput input){
     PixelShaderOutput output;
     //テクスチャUV
@@ -130,14 +133,14 @@ PixelShaderOutput main(VertexShaderOutput input){
         
         //PointLight
         float32_t3 pointLightColor = float32_t3(0.0f,0.0f,0.0f);
-        for (int i = 0; i < 1; ++i)
+        for (uint32_t i = 0; i < MAX_POINT_LIGHTS; ++i)
         {
             pointLightColor += MakePointLightColor(input, textureColor, gPointLight[i]);
         }
         
         //SpotLight
         float32_t3 spotLightColor = float32_t3(0.0f, 0.0f, 0.0f);
-        for (int i = 0; i < 1; ++i)
+        for (uint32_t j = 0; j < MAX_SPOT_LIGHTS; ++j)
         {
             spotLightColor += MakeSpotLightColor(input, textureColor, gSpotLight);
         }
