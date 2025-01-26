@@ -137,7 +137,7 @@ void GameScene::Update(){
 				float DirectionalLightIntensity = LightManager::GetInstance()->GetDirectionalLight()->intensity;
 				ImGui::DragFloat("DirectionalLight.Intensity", &DirectionalLightIntensity, 0.01f);
 				bool DirectionalLightIsBlinnPhong = (bool)LightManager::GetInstance()->GetDirectionalLight()->isBlinnPhong;
-				ImGui::Checkbox("DirectionalLight.IsBlinnPhong", &DirectionalLightIsBlinnPhong);
+				ImGui::Checkbox("IsBlinnPhong", &DirectionalLightIsBlinnPhong);
 
 				Vector4 PointLightColor = LightManager::GetInstance()->GetPointLight()->color;
 				ImGui::ColorEdit4("PointLight.Color", &PointLightColor.x);
