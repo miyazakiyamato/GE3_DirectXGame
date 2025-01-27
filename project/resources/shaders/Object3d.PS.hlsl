@@ -14,6 +14,8 @@ struct DirectionalLight{
     float32_t3 direction;//!< ライトの向き
     float32_t intensity; //!< 輝度
     int32_t isBlinnPhong; //!<BlinnPhongかどうか
+    int32_t PointLightCount;
+    int32_t SpotLightCount;
 };
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 
@@ -21,19 +23,6 @@ struct Camera{
     float32_t3 worldPosition;
 };
 ConstantBuffer<Camera> gCamera : register(b2);
-
-struct SpotLight{
-    float32_t4 color; //!<ライトの色
-    float32_t3 position; //!< ライトの場所
-    float32_t intensity; //!< 輝度
-    float32_t3 direction; //!< ライトの向き
-    float32_t distance; //!<ライトの届く最大距離
-    float32_t decay; //!<減衰率
-    float32_t cosAngle; //!<スポットライトの余弦
-    float32_t cosFalloffStart;//!<Falloffの開始角度
-    float padding;
-};
-ConstantBuffer<SpotLight> gSpotLight : register(b3);
 
 Texture2D<float32_t4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
@@ -47,6 +36,19 @@ struct PointLight{
     float32_t padding[2];
 };
 StructuredBuffer<PointLight> gPointLight : register(t1);
+
+struct SpotLight{
+    float32_t4 color; //!<ライトの色
+    float32_t3 position; //!< ライトの場所
+    float32_t intensity; //!< 輝度
+    float32_t3 direction; //!< ライトの向き
+    float32_t distance; //!<ライトの届く最大距離
+    float32_t decay; //!<減衰率
+    float32_t cosAngle; //!<スポットライトの余弦
+    float32_t cosFalloffStart;//!<Falloffの開始角度
+    float32_t padding;
+};
+StructuredBuffer<SpotLight> gSpotLight : register(t2);
 
 struct PixelShaderOutput{
     float32_t4 color : SV_TARGET0;
@@ -109,9 +111,6 @@ float32_t3 MakeSpotLightColor(VertexShaderOutput input, float32_t4 textureColor,
     return diffuse + specular;
 }
 
-#define MAX_POINT_LIGHTS 10
-#define MAX_SPOT_LIGHTS 1
-
 PixelShaderOutput main(VertexShaderOutput input){
     PixelShaderOutput output;
     //テクスチャUV
@@ -135,16 +134,16 @@ PixelShaderOutput main(VertexShaderOutput input){
         
         //PointLight
         float32_t3 pointLightColor = float32_t3(0.0f,0.0f,0.0f);
-        for (uint32_t i = 0; i < MAX_POINT_LIGHTS; ++i)
+        for (uint32_t i = 0; i < gDirectionalLight.PointLightCount; ++i)
         {
             pointLightColor += MakePointLightColor(input, textureColor, gPointLight[i]);
         }
         
         //SpotLight
         float32_t3 spotLightColor = float32_t3(0.0f, 0.0f, 0.0f);
-        for (uint32_t j = 0; j < MAX_SPOT_LIGHTS; ++j)
+        for (uint32_t j = 0; j < gDirectionalLight.SpotLightCount; ++j)
         {
-            spotLightColor += MakeSpotLightColor(input, textureColor, gSpotLight);
+            spotLightColor += MakeSpotLightColor(input, textureColor, gSpotLight[j]);
         }
         
         //拡散反射・鏡面反射

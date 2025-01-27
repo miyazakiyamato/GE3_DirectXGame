@@ -16,7 +16,9 @@ public:
 		Vector3 direction; //!< ライトの向き
 		float intensity;//!< 輝度
 		int isBlinnPhong; //!<BlinnPhongかどうか
-		float padding[2];
+		int pointLightCount = 0;
+		int spotLightCount = 0;
+		float padding;
 	};
 	struct PointLight{
 		Vector4 color;//!<ライトの色
@@ -70,13 +72,16 @@ private://メンバ変数
 	//SpotLight
 	ComPtr<ID3D12Resource> spotLightResource_;
 	SpotLight* spotLightData_;
+	uint32_t srvIndexForSpotLight = 0;
+	uint32_t kMaxSpotLight = 10;
 public://ゲッターセッター
 	DirectionalLight* GetDirectionalLight() const { return directionalLightData_; }
 	PointLight* GetPointLight() const { return pointLightData_; }
-	uint32_t GetKMaxPointLight() const { return kMaxPointLight; }
+	uint32_t GetPointLightCount() const { return directionalLightData_->pointLightCount; }
 	SpotLight* GetSpotLight() const { return spotLightData_; }
+	uint32_t GetSpotLightCount() const { return directionalLightData_->spotLightCount; }
 
 	void SetDirectionalLight(const DirectionalLight& directionalLight);
 	void SetPointLight(uint32_t index, const PointLight& pointLight);
-	void SetSpotLight(const SpotLight& spotLight);
+	void SetSpotLight(uint32_t index, const SpotLight& spotLight);
 };
