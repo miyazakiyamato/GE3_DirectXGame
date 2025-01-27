@@ -47,7 +47,7 @@ void ModelPipeline::CreateRootSignature() {
 	descriptorRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;//SRVを使う
 	descriptorRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;//offsetを自動計算
 
-	descriptorRange[2].BaseShaderRegister = 2;//1から始まる
+	descriptorRange[2].BaseShaderRegister = 2;//2から始まる
 	descriptorRange[2].NumDescriptors = 1;//数は1つ
 	descriptorRange[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;//SRVを使う
 	descriptorRange[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;//offsetを自動計算

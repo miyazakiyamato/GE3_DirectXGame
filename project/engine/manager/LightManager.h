@@ -24,7 +24,7 @@ public:
 		float intensity;//!< 輝度
 		float radius;//!<ライトの届く最大距離
 		float decay;//!< 減衰率
-		//float padding[2];
+		float padding[2];
 	};
 	struct SpotLight {
 		Vector4 color;//!<ライトの色
@@ -35,7 +35,7 @@ public:
 		float decay;//!<減衰率
 		float cosAngle;//!<スポットライトの余弦
 		float cosFalloffStart;//!<Falloffの開始角度
-		//float padding;
+		float padding;
 	};
 public://メンバ関数
 	//シングルトンインスタンスの取得

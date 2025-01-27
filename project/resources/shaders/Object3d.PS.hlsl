@@ -31,6 +31,7 @@ struct PointLight{
     float32_t intensity; //!< 輝度
     float32_t radius; //!<ライトの届く最大距離
     float32_t decay; //!< 減衰率
+    float32_t padding[2];
 };
 StructuredBuffer<PointLight> gPointLight : register(t1);
 
@@ -43,6 +44,7 @@ struct SpotLight{
     float32_t decay; //!<減衰率
     float32_t cosAngle; //!<スポットライトの余弦
     float32_t cosFalloffStart;//!<Falloffの開始角度
+    float32_t padding;
 };
 StructuredBuffer<SpotLight> gSpotLight : register(t2);
 
@@ -142,7 +144,7 @@ PixelShaderOutput main(VertexShaderOutput input){
         float32_t3 spotLightColor = float32_t3(0.0f, 0.0f, 0.0f);
         for (uint32_t j = 0; j < MAX_SPOT_LIGHTS; ++j)
         {
-            spotLightColor += MakeSpotLightColor(input, textureColor, gSpotLight[i]);
+            spotLightColor += MakeSpotLightColor(input, textureColor, gSpotLight[j]);
         }
         
         //拡散反射・鏡面反射
