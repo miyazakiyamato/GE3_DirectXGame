@@ -84,6 +84,8 @@ void LightManager::SetDirectionalLight(const DirectionalLight& directionalLight)
 	 directionalLightData_->direction = directionalLight.direction;
 	 directionalLightData_->intensity = directionalLight.intensity;
 	 directionalLightData_->isBlinnPhong = directionalLight.isBlinnPhong;
+	 directionalLightData_->pointLightCount = directionalLight.pointLightCount < (int)kMaxPointLight ? directionalLight.pointLightCount : (int)kMaxPointLight;
+	 directionalLightData_->spotLightCount = directionalLight.spotLightCount < (int)kMaxSpotLight ? directionalLight.spotLightCount : (int)kMaxSpotLight;
 }
 
 void LightManager::SetPointLight(uint32_t index, const PointLight& pointLight){

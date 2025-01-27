@@ -16,7 +16,9 @@ public:
 		Vector3 direction; //!< ライトの向き
 		float intensity;//!< 輝度
 		int isBlinnPhong; //!<BlinnPhongかどうか
-		float padding[3];
+		int pointLightCount = 0;
+		int spotLightCount = 0;
+		float padding;
 	};
 	struct PointLight{
 		Vector4 color;//!<ライトの色
@@ -75,9 +77,9 @@ private://メンバ変数
 public://ゲッターセッター
 	DirectionalLight* GetDirectionalLight() const { return directionalLightData_; }
 	PointLight* GetPointLight() const { return pointLightData_; }
-	uint32_t GetKMaxPointLight() const { return kMaxPointLight; }
+	uint32_t GetPointLightCount() const { return directionalLightData_->pointLightCount; }
 	SpotLight* GetSpotLight() const { return spotLightData_; }
-	uint32_t GetKMaxSpotLight() const { return kMaxSpotLight; }
+	uint32_t GetSpotLightCount() const { return directionalLightData_->spotLightCount; }
 
 	void SetDirectionalLight(const DirectionalLight& directionalLight);
 	void SetPointLight(uint32_t index, const PointLight& pointLight);

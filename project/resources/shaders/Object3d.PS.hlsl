@@ -14,6 +14,8 @@ struct DirectionalLight{
     float32_t3 direction;//!< ライトの向き
     float32_t intensity; //!< 輝度
     int32_t isBlinnPhong; //!<BlinnPhongかどうか
+    int32_t PointLightCount;
+    int32_t SpotLightCount;
 };
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 
@@ -109,9 +111,6 @@ float32_t3 MakeSpotLightColor(VertexShaderOutput input, float32_t4 textureColor,
     return diffuse + specular;
 }
 
-#define MAX_POINT_LIGHTS 10
-#define MAX_SPOT_LIGHTS 10
-
 PixelShaderOutput main(VertexShaderOutput input){
     PixelShaderOutput output;
     //テクスチャUV
@@ -135,14 +134,14 @@ PixelShaderOutput main(VertexShaderOutput input){
         
         //PointLight
         float32_t3 pointLightColor = float32_t3(0.0f,0.0f,0.0f);
-        for (uint32_t i = 0; i < MAX_POINT_LIGHTS; ++i)
+        for (uint32_t i = 0; i < gDirectionalLight.PointLightCount; ++i)
         {
             pointLightColor += MakePointLightColor(input, textureColor, gPointLight[i]);
         }
         
         //SpotLight
         float32_t3 spotLightColor = float32_t3(0.0f, 0.0f, 0.0f);
-        for (uint32_t j = 0; j < MAX_SPOT_LIGHTS; ++j)
+        for (uint32_t j = 0; j < gDirectionalLight.SpotLightCount; ++j)
         {
             spotLightColor += MakeSpotLightColor(input, textureColor, gSpotLight[j]);
         }

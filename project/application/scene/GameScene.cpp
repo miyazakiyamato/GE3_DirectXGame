@@ -136,13 +136,18 @@ void GameScene::Update(){
 				DirectionalLightDirection = DirectionalLightDirection.Normalize();
 				float DirectionalLightIntensity = LightManager::GetInstance()->GetDirectionalLight()->intensity;
 				ImGui::DragFloat("DirectionalLight.Intensity", &DirectionalLightIntensity, 0.01f);
-				bool DirectionalLightIsBlinnPhong = (bool)LightManager::GetInstance()->GetDirectionalLight()->isBlinnPhong;
-				ImGui::Checkbox("IsBlinnPhong", &DirectionalLightIsBlinnPhong);
+				bool IsBlinnPhong = (bool)LightManager::GetInstance()->GetDirectionalLight()->isBlinnPhong;
+				ImGui::Checkbox("IsBlinnPhong", &IsBlinnPhong);
+
+				int pointLightCount = LightManager::GetInstance()->GetDirectionalLight()->pointLightCount;
+				ImGui::SliderInt("PointLightCount", &pointLightCount,0,10);
+				int spotLightCount = LightManager::GetInstance()->GetDirectionalLight()->spotLightCount;
+				ImGui::SliderInt("SpotLightCount", &spotLightCount,0,10);
 
 				ImGui::Text("\n");
-				LightManager::GetInstance()->SetDirectionalLight({ DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity,(int)DirectionalLightIsBlinnPhong });
+				LightManager::GetInstance()->SetDirectionalLight({ DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity,(int)IsBlinnPhong,pointLightCount,spotLightCount });
 				uint32_t idIndex = 0;
-				for (uint32_t index = 0; index < LightManager::GetInstance()->GetKMaxPointLight(); index++) {
+				for (uint32_t index = 0; index < LightManager::GetInstance()->GetPointLightCount(); index++) {
 					ImGui::PushID(idIndex);
 					Vector4 PointLightColor = LightManager::GetInstance()->GetPointLight()[index].color;
 					ImGui::ColorEdit4("PointLight.Color", &PointLightColor.x);
@@ -161,7 +166,7 @@ void GameScene::Update(){
 				}
 				ImGui::Text("\n");
 				idIndex = 0;
-				for (uint32_t index = 0; index < LightManager::GetInstance()->GetKMaxSpotLight(); index++) {
+				for (uint32_t index = 0; index < LightManager::GetInstance()->GetSpotLightCount(); index++) {
 					ImGui::PushID(idIndex);
 					Vector4 SpotLightColor = LightManager::GetInstance()->GetSpotLight()[index].color;
 					ImGui::ColorEdit4("SpotLight.Color", &SpotLightColor.x);
