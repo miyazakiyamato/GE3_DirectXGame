@@ -31,6 +31,7 @@ struct SpotLight{
     float32_t decay; //!<減衰率
     float32_t cosAngle; //!<スポットライトの余弦
     float32_t cosFalloffStart;//!<Falloffの開始角度
+    float padding;
 };
 ConstantBuffer<SpotLight> gSpotLight : register(b3);
 
@@ -43,6 +44,7 @@ struct PointLight{
     float32_t intensity; //!< 輝度
     float32_t radius; //!<ライトの届く最大距離
     float32_t decay; //!< 減衰率
+    float32_t padding[2];
 };
 StructuredBuffer<PointLight> gPointLight : register(t1);
 
