@@ -16,13 +16,15 @@ private:
 	};
 	struct Material {
 		Vector4 color{1,1,1,1};
-		int enableLighting;
-		float padding[3];
+		Vector4 highLightColor{ 1,1,1,1 };
 		Matrix4x4 uvTransform;
+		int enableLighting;
 		float shininess;
+		float padding[2];
 	};
 	struct CameraForGpu {
 		Vector3 worldPosition;
+		float padding;
 	};
 public://メンバ関数
 	//初期化
@@ -57,6 +59,7 @@ public://ゲッターセッター
 	const Vector3& GetRotate() const { return transform.rotate; }
 	const Vector3& GetTranslate() const { return transform.translate; }
 	const Vector4& GetColor() const { return materialData->color; }
+	const Vector4& GetHighLightColor() const { return materialData->highLightColor; }
 	Vector3 GetCenterPosition() const;
 	const Matrix4x4& GetWorldMatrix() const { return wvpData->World; }
 
@@ -66,6 +69,7 @@ public://ゲッターセッター
 	void SetRotate(const Vector3& rotate) { transform.rotate = rotate; }
 	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
 	void SetColor(const Vector4& color) { materialData->color = color; }
+	void SetHighLightColor(const Vector4& color) { materialData->highLightColor = color; }
 	void SetParent(Object3d* parent) { parent_ = parent; }
 };
 
