@@ -1,4 +1,7 @@
 #pragma once
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include "DirectXCommon.h"
 #include "BlendMode.h"
 #include "Matrix4x4.h"
@@ -26,8 +29,6 @@ public://メンバ関数
 	void Initialize(DirectXCommon* dxCommon, const std::string& directoryPath, const std::string& filename);
 	//描画
 	void Draw();
-	//.mtlファイルの読み取り
-	void LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 	//.objファイルの読み取り
 	void LoadObjFile(const std::string& directoryPath, const std::string& filename);
 	//カラー
