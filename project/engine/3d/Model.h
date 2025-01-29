@@ -16,6 +16,12 @@ private:
 		Vector2 texcoord;
 		Vector3 normal;
 	};
+	struct Node
+	{
+		Matrix4x4 localMatrix;
+		std::string name;
+		std::vector<Node> children;
+	};
 	struct MaterialData {
 		std::string mtlFilePath;
 		std::string textureFilePath;
@@ -23,6 +29,7 @@ private:
 	struct ModelData {
 		std::vector<VertexData> vertices;
 		MaterialData material;
+		Node rootNode;
 	};
 public://メンバ関数
 	//初期化
@@ -31,6 +38,8 @@ public://メンバ関数
 	void Draw();
 	//.objファイルの読み取り
 	void LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	//Node解析
+	Node ReadNode(aiNode* node);
 	//カラー
 	Vector4 LoadColor();
 private:
@@ -48,5 +57,6 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	//D3D12_INDEX_BUFFER_VIEW indexBufferView;
 public://ゲッターセッター
+	const ModelData& GetModelData() { return modelData; }
 };
 

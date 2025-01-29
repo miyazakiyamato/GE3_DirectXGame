@@ -37,19 +37,21 @@ void GameScene::Initialize(){
 		object3ds.push_back(object3d);
 	}
 
-	ModelManager::GetInstance()->LoadModel("plane");
-	ModelManager::GetInstance()->LoadModel("fence");
-	ModelManager::GetInstance()->LoadModel("axis");
-	ModelManager::GetInstance()->LoadModel("sphere");
-	ModelManager::GetInstance()->LoadModel("terrain");
+	ModelManager::GetInstance()->LoadModel("plane/plane.obj");
+	ModelManager::GetInstance()->LoadModel("fence/fence.obj");
+	ModelManager::GetInstance()->LoadModel("axis/axis.obj");
+	ModelManager::GetInstance()->LoadModel("sphere/sphere.obj");
+	ModelManager::GetInstance()->LoadModel("terrain/terrain.obj");
+	ModelManager::GetInstance()->LoadModel("plane/plane.gltf");
 
-	object3ds[0]->SetModel("sphere");
+	object3ds[0]->SetModel("sphere/sphere.obj");
 	object3ds[0]->SetTranslate({ -1,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
-	object3ds[1]->SetModel("axis");
+	object3ds[1]->SetModel("plane/plane.gltf");
+	//object3ds[1]->SetModel("axis/axis.obj");
 	object3ds[1]->SetTranslate({ 1,0,0 });
 	object3ds[1]->SetRotate({ 0,3.14f,0 });
-	object3ds[2]->SetModel("terrain");
+	object3ds[2]->SetModel("terrain/terrain.obj");
 	object3ds[2]->SetTranslate({ 0,0,0 });
 	object3ds[2]->SetRotate({ 0,3.14f,0 });
 	
@@ -59,18 +61,18 @@ void GameScene::Initialize(){
 
 	//ParticleManager::GetInstance()->CreateParticleGroup();
 	particleEmitter_ = new ParticleEmitter();
-	particleEmitter_->Initialize("circle", "resources/circle.png");
+	particleEmitter_->Initialize("circle", "resources/texture/circle.png");
 
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* sprite = new Sprite;
-		sprite->Initialize("resources/uvChecker.png");
+		sprite->Initialize("resources/texture/uvChecker.png");
 		sprite->SetPosition({ 100 + 200.0f * float(i), 100 });
 		sprite->SetSize({ 100.0f,100.0f });
 		sprites.push_back(sprite);
 	}
 	sprites[0]->SetTextureSize({ 64.0f,64.0f });
-	sprites[1]->SetTexture("resources/monsterBall.png");
+	sprites[1]->SetTexture("resources/texture/monsterBall.png");
 	sprites[1]->SetIsFlipX(true);
 	sprites[2]->SetIsFlipY(true);
 	sprites[3]->SetIsFlipX(true);

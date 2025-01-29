@@ -8,7 +8,7 @@ void Model::Initialize(DirectXCommon* dxCommon, const std::string& directoryPath
 	dxCommon_ = dxCommon;
 
 	//モデルの読み込み
-	LoadObjFile(directoryPath + "/" + filename,filename + ".obj");
+	LoadObjFile(directoryPath,"model/" + filename);
 	//頂点リソースを作る
 	vertexResource = dxCommon_->CreateBufferResource(sizeof(VertexData) * modelData.vertices.size());
 	//頂点バッファビューを作成する
@@ -72,14 +72,34 @@ void Model::LoadObjFile(const std::string& directoryPath, const std::string& fil
 		}
 	}
 
+	modelData.rootNode = ReadNode(scene->mRootNode);
+
 	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
 		aiMaterial* material = scene->mMaterials[materialIndex];
 		if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
 			aiString textureFilePath;
 			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-			modelData.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+			modelData.material.textureFilePath = directoryPath + "texture/" + textureFilePath.C_Str();
 		}
 	}
+}
+
+Model::Node Model::ReadNode(aiNode* node){
+	Node result;
+	aiMatrix4x4 aiLocalMatrix = node->mTransformation;//nodeのlocakMatrixを取得
+	aiLocalMatrix.Transpose();//列ベクトル形式を行ベクトル形式に転換
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j){
+			result.localMatrix.m[i][j] = aiLocalMatrix[i][j];
+		}
+	}
+	result.name = node->mName.C_Str();//Node名を格納
+	result.children.resize(node->mNumChildren);//子供の数だけ確保
+	for (uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {
+		//再帰的に読んで階層構造を作っていく
+		result.children[childIndex] = ReadNode(node->mChildren[childIndex]);
+	}
+	return result;
 }
 
 Vector4 Model::LoadColor()
