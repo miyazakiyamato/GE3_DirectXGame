@@ -46,7 +46,7 @@ void Framework::Initialize(){
 	
 	//ライトマネージャの初期化
 	lightManager_ = LightManager::GetInstance();
-	lightManager_->Initialize(dxCommon);
+	lightManager_->Initialize(dxCommon,srvManager);
 
 	//カメラマネージャの初期化
 	cameraManager_ = CameraManager::GetInstance();

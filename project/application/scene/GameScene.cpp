@@ -40,21 +40,21 @@ void GameScene::Initialize(){
 		object3ds.push_back(object3d);
 	}
 
-	ModelManager::GetInstance()->LoadModel("plane");
-	ModelManager::GetInstance()->LoadModel("fence");
-	ModelManager::GetInstance()->LoadModel("axis");
-	ModelManager::GetInstance()->LoadModel("sphere");
-	ModelManager::GetInstance()->LoadModel("terrain");
-	ModelManager::GetInstance()->LoadModel("ground");
-	ModelManager::GetInstance()->LoadModel("skydome");
+	ModelManager::GetInstance()->LoadModel("plane/plane.obj");
+	ModelManager::GetInstance()->LoadModel("fence/fence.obj");
+	ModelManager::GetInstance()->LoadModel("axis/axis.obj");
+	ModelManager::GetInstance()->LoadModel("sphere/sphere.obj");
+	ModelManager::GetInstance()->LoadModel("terrain/terrain.obj");
+	ModelManager::GetInstance()->LoadModel("plane/plane.gltf");
 
-	object3ds[0]->SetModel("sphere");
+	object3ds[0]->SetModel("sphere/sphere.obj");
 	object3ds[0]->SetTranslate({ -1,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
-	object3ds[1]->SetModel("axis");
+	object3ds[1]->SetModel("plane/plane.gltf");
+	//object3ds[1]->SetModel("axis/axis.obj");
 	object3ds[1]->SetTranslate({ 1,0,0 });
 	object3ds[1]->SetRotate({ 0,3.14f,0 });
-	object3ds[2]->SetModel("terrain");
+	object3ds[2]->SetModel("terrain/terrain.obj");
 	object3ds[2]->SetTranslate({ 0,0,0 });
 	object3ds[2]->SetRotate({ 0,3.14f,0 });
 	
@@ -75,18 +75,18 @@ void GameScene::Initialize(){
 
 	//ParticleManager::GetInstance()->CreateParticleGroup();
 	particleEmitter_ = new ParticleEmitter();
-	particleEmitter_->Initialize("circle", "resources/circle.png");
+	particleEmitter_->Initialize("circle", "resources/texture/circle.png");
 
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* sprite = new Sprite;
-		sprite->Initialize("resources/dirt.png");
+		sprite->Initialize("resources/texture/dirt.png");
 		/*sprite->SetPosition({ 100 + 200.0f * float(i), 100 });
 		sprite->SetSize({ 100.0f,100.0f });*/
 		sprites.push_back(sprite);
 	}
 	sprites[0]->SetTextureSize({ 64.0f,64.0f });
-	sprites[1]->SetTexture("resources/clear.png");
+	sprites[1]->SetTexture("resources/texture/clear.png");
 	sprites[1]->SetSize({ 1280.0f,720.0f });
 	/*sprites[1]->SetIsFlipX(true);
 	sprites[2]->SetIsFlipY(true);
@@ -157,39 +157,60 @@ void GameScene::Update(){
 				DirectionalLightDirection = DirectionalLightDirection.Normalize();
 				float DirectionalLightIntensity = LightManager::GetInstance()->GetDirectionalLight()->intensity;
 				ImGui::DragFloat("DirectionalLight.Intensity", &DirectionalLightIntensity, 0.01f);
+				bool IsBlinnPhong = (bool)LightManager::GetInstance()->GetDirectionalLight()->isBlinnPhong;
+				ImGui::Checkbox("IsBlinnPhong", &IsBlinnPhong);
 
-				Vector4 PointLightColor = LightManager::GetInstance()->GetPointLight()->color;
-				ImGui::ColorEdit4("PointLight.Color", &PointLightColor.x);
-				Vector3 PointLightPosition = LightManager::GetInstance()->GetPointLight()->position;
-				ImGui::DragFloat3("PointLight.Position", &PointLightPosition.x, 0.01f);
-				float PointLightIntensity = LightManager::GetInstance()->GetPointLight()->intensity;
-				ImGui::DragFloat("PointLight.Intensity", &PointLightIntensity, 0.01f);
-				float PointLightRadius = LightManager::GetInstance()->GetPointLight()->radius;
-				ImGui::DragFloat("PointLight.Radius", &PointLightRadius, 0.01f);
-				float PointLightDecay = LightManager::GetInstance()->GetPointLight()->decay;
-				ImGui::DragFloat("PointLight.Decay", &PointLightDecay, 0.01f);
+				int pointLightCount = LightManager::GetInstance()->GetDirectionalLight()->pointLightCount;
+				ImGui::SliderInt("PointLightCount", &pointLightCount,0,10);
+				int spotLightCount = LightManager::GetInstance()->GetDirectionalLight()->spotLightCount;
+				ImGui::SliderInt("SpotLightCount", &spotLightCount,0,10);
 
-				Vector4 SpotLightColor = LightManager::GetInstance()->GetSpotLight()->color;
-				ImGui::ColorEdit4("SpotLight.Color", &SpotLightColor.x);
-				Vector3 SpotLightPosition = LightManager::GetInstance()->GetSpotLight()->position;
-				ImGui::DragFloat3("SpotLight.Position", &SpotLightPosition.x, 0.01f);
-				float SpotLightIntensity = LightManager::GetInstance()->GetSpotLight()->intensity;
-				ImGui::DragFloat("SpotLight.Intensity", &SpotLightIntensity, 0.01f);
-				Vector3 SpotLightDirection = LightManager::GetInstance()->GetSpotLight()->direction;
-				ImGui::DragFloat3("SpotLight.Direction", &SpotLightDirection.x, 0.01f);
-				SpotLightDirection = SpotLightDirection.Normalize();
-				float SpotLightDistance = LightManager::GetInstance()->GetSpotLight()->distance;
-				ImGui::DragFloat("SpotLight.Distance", &SpotLightDistance, 0.01f);
-				float SpotLightDecay = LightManager::GetInstance()->GetSpotLight()->decay;
-				ImGui::DragFloat("SpotLight.Decay", &SpotLightDecay, 0.01f);
-				float SpotLightCosAngle = LightManager::GetInstance()->GetSpotLight()->cosAngle;
-				ImGui::DragFloat("SpotLight.CosAngle", &SpotLightCosAngle, 0.01f);
-				float SpotLightCosFalloffStart = LightManager::GetInstance()->GetSpotLight()->cosFalloffStart;
-				ImGui::DragFloat("SpotLight.CosFalloff", &SpotLightCosFalloffStart, 0.01f);
+				ImGui::Text("\n");
+				LightManager::GetInstance()->SetDirectionalLight({ DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity,(int)IsBlinnPhong,pointLightCount,spotLightCount });
+				uint32_t idIndex = 0;
+				for (uint32_t index = 0; index < LightManager::GetInstance()->GetPointLightCount(); index++) {
+					ImGui::PushID(idIndex);
+					Vector4 PointLightColor = LightManager::GetInstance()->GetPointLight()[index].color;
+					ImGui::ColorEdit4("PointLight.Color", &PointLightColor.x);
+					Vector3 PointLightPosition = LightManager::GetInstance()->GetPointLight()[index].position;
+					ImGui::DragFloat3("PointLight.Position", &PointLightPosition.x, 0.01f);
+					float PointLightIntensity = LightManager::GetInstance()->GetPointLight()[index].intensity;
+					ImGui::DragFloat("PointLight.Intensity", &PointLightIntensity, 0.01f);
+					float PointLightRadius = LightManager::GetInstance()->GetPointLight()[index].radius;
+					ImGui::DragFloat("PointLight.Radius", &PointLightRadius, 0.01f);
+					float PointLightDecay = LightManager::GetInstance()->GetPointLight()[index].decay;
+					ImGui::DragFloat("PointLight.Decay", &PointLightDecay, 0.01f);
 
-				LightManager::GetInstance()->SetDirectionalLight({ DirectionalLightColor,DirectionalLightDirection,DirectionalLightIntensity });
-				LightManager::GetInstance()->SetPointLight({ PointLightColor,PointLightPosition,PointLightIntensity,PointLightRadius,PointLightDecay });
-				LightManager::GetInstance()->SetSpotLight({ SpotLightColor,SpotLightPosition,SpotLightIntensity,SpotLightDirection,SpotLightDistance,SpotLightDecay,SpotLightCosAngle,SpotLightCosFalloffStart });
+					LightManager::GetInstance()->SetPointLight(index, { PointLightColor,PointLightPosition,PointLightIntensity,PointLightRadius,PointLightDecay });
+					ImGui::PopID();
+					++idIndex;
+				}
+				ImGui::Text("\n");
+				idIndex = 0;
+				for (uint32_t index = 0; index < LightManager::GetInstance()->GetSpotLightCount(); index++) {
+					ImGui::PushID(idIndex);
+					Vector4 SpotLightColor = LightManager::GetInstance()->GetSpotLight()[index].color;
+					ImGui::ColorEdit4("SpotLight.Color", &SpotLightColor.x);
+					Vector3 SpotLightPosition = LightManager::GetInstance()->GetSpotLight()[index].position;
+					ImGui::DragFloat3("SpotLight.Position", &SpotLightPosition.x, 0.01f);
+					float SpotLightIntensity = LightManager::GetInstance()->GetSpotLight()[index].intensity;
+					ImGui::DragFloat("SpotLight.Intensity", &SpotLightIntensity, 0.01f);
+					Vector3 SpotLightDirection = LightManager::GetInstance()->GetSpotLight()[index].direction;
+					ImGui::DragFloat3("SpotLight.Direction", &SpotLightDirection.x, 0.01f);
+					SpotLightDirection = SpotLightDirection.Normalize();
+					float SpotLightDistance = LightManager::GetInstance()->GetSpotLight()[index].distance;
+					ImGui::DragFloat("SpotLight.Distance", &SpotLightDistance, 0.01f);
+					float SpotLightDecay = LightManager::GetInstance()->GetSpotLight()[index].decay;
+					ImGui::DragFloat("SpotLight.Decay", &SpotLightDecay, 0.01f);
+					float SpotLightCosAngle = LightManager::GetInstance()->GetSpotLight()[index].cosAngle;
+					ImGui::DragFloat("SpotLight.CosAngle", &SpotLightCosAngle, 0.01f);
+					float SpotLightCosFalloffStart = LightManager::GetInstance()->GetSpotLight()[index].cosFalloffStart;
+					ImGui::DragFloat("SpotLight.CosFalloff", &SpotLightCosFalloffStart, 0.01f);
+
+					LightManager::GetInstance()->SetSpotLight(index,{ SpotLightColor,SpotLightPosition,SpotLightIntensity,SpotLightDirection,SpotLightDistance,SpotLightDecay,SpotLightCosAngle,SpotLightCosFalloffStart });
+					ImGui::PopID();
+					++idIndex;
+				}
 				ImGui::EndMenu();
 			}
 			std::string blendName = "Now Blend";
@@ -235,10 +256,14 @@ void GameScene::Update(){
 					Vector4 color = object3d->GetColor();
 					ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".Color").c_str(), &color.x);
 
+					Vector4 highLightColor = object3d->GetHighLightColor();
+					ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".HighLightColor").c_str(), &highLightColor.x);
+
 					object3d->SetTranslate(translate);
 					object3d->SetRotate(rotate);
 					object3d->SetScale(scale);
 					object3d->SetColor(color);
+					object3d->SetHighLightColor(highLightColor);
 					
 					ImGui::Text("\n");
 					object3dCount++;
@@ -305,6 +330,7 @@ void GameScene::Update(){
 			if (ImGui::BeginMenu(groupName.c_str())) {
 				uint32_t objectIDIndex = 0;
 				for (Sprite* sprite : sprites) {
+					ImGui::PushID(objectIDIndex);
 					int SpriteItem_selected_idx = static_cast<int>(sprite->GetBlendMode());
 					const char* currentItem = blendState[SpriteItem_selected_idx].c_str();
 					if (ImGui::BeginCombo((blendName + std::to_string(objectIDIndex)).c_str(), currentItem)) {
@@ -321,7 +347,6 @@ void GameScene::Update(){
 						ImGui::EndCombo();
 					}
 
-					ImGui::PushID(objectIDIndex);
 
 					Vector2 position = sprite->GetPosition();
 					ImGui::DragFloat2("Sprite.Translate", &position.x, 1.0f, 0.0f, 1180.0f, "%.1f");

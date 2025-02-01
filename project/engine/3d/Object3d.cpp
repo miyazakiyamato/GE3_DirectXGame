@@ -52,6 +52,11 @@ void Object3d::Update(){
 	wvpData->WVP = worldViewProjectionMatrix;
 	wvpData->World = worldMatrix;
 	wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(worldMatrix));
+	if (model_) {
+		wvpData->WVP = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldViewProjectionMatrix;
+		wvpData->World = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldMatrix;
+		wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
+	}
 }
 
 void Object3d::Draw(){
@@ -87,7 +92,8 @@ void Object3d::SetModel(const std::string& filePath){
 	materialData->color = model_->LoadColor();//色を書き込む
 	materialData->enableLighting = true;//Lightingを有効にする
 	materialData->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
-	materialData->shininess = 10.0f;
+	materialData->shininess = 40.0f;
+	materialData->highLightColor = { 1.0f,1.0f,1.0f,1.0f };
 }
 
 Vector3 Object3d::GetCenterPosition() const
