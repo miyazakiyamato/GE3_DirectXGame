@@ -17,7 +17,7 @@ void Player::Initialize() {
 	model_->SetParent(baseObject3D_.get());
 	model_->SetTranslate({ 0.3f, -0.15f, 1.0f });
 	model_->SetScale({ 0.1f,0.1f,0.1f });
-	model_->SetModel("sphere");
+	model_->SetModel("sphere/sphere.obj");
 	model_->SetRotate({ 0,3.14f,0 });
 	model_->SetParent(baseObject3D_.get());
 	reticle3D_ = std::make_unique<Object3d>();
@@ -49,7 +49,7 @@ void Player::Update() {
 	LightManager::SpotLight spotLight = *LightManager::GetInstance()->GetSpotLight();
 	spotLight.position = baseObject3D_->GetCenterPosition();
 	spotLight.direction = Vector3::Normalize(reticle3D_->GetCenterPosition() - baseObject3D_->GetCenterPosition());
-	LightManager::GetInstance()->SetSpotLight(spotLight);
+	LightManager::GetInstance()->SetSpotLight(0,spotLight);
 	//isCollision = false;
 }
 

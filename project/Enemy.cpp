@@ -9,9 +9,9 @@ void Enemy::Initialize(){
 	model_ = std::make_unique<Object3d>();
 	model_->Initialize();
 	model_->SetParent(baseObject3D_.get());
-	model_->SetModel("sphere");
+	model_->SetModel("sphere/sphere.obj");
 	model_->SetRotate({ 0,3.14f,0 });
-	model_->SetTexture("resources/dirt.png");
+	model_->SetTexture("resources/texture/dirt.png");
 }
 
 void Enemy::Update(){

@@ -32,7 +32,7 @@ void GameScene::Initialize(){
 	collisionManager_ = std::make_unique<CollisionManager>();
 	collisionManager_->Initialize();
 
-	TextureManager::GetInstance()->LoadTexture("resources/dirt.png");
+	TextureManager::GetInstance()->LoadTexture("resources/texture/dirt.png");
 
 	for (uint32_t i = 0; i < 3; ++i) {
 		Object3d* object3d = new Object3d;
@@ -46,6 +46,8 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("sphere/sphere.obj");
 	ModelManager::GetInstance()->LoadModel("terrain/terrain.obj");
 	ModelManager::GetInstance()->LoadModel("plane/plane.gltf");
+	ModelManager::GetInstance()->LoadModel("skydome/skydome.obj");
+	ModelManager::GetInstance()->LoadModel("ground/ground.obj");
 
 	object3ds[0]->SetModel("sphere/sphere.obj");
 	object3ds[0]->SetTranslate({ -1,0,0 });

@@ -8,7 +8,7 @@ void TitleScene::Initialize(){
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 1; ++i) {
 		Sprite* sprite = new Sprite;
-		sprite->Initialize("resources/title.png");
+		sprite->Initialize("resources/texture/title.png");
 		//sprite->SetPosition({ 100 + 200.0f * float(i), 100 });
 		sprite->SetSize({ 1280.0f,720.0f });
 		sprites.push_back(sprite);

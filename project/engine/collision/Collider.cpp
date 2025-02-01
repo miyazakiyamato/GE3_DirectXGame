@@ -4,8 +4,8 @@
 void Collider::Initialize() { 
 	colliderModel_ = std::make_unique<Object3d>();
 	colliderModel_->Initialize();
-	ModelManager::GetInstance()->LoadModel("sphereCollider");
-	colliderModel_->SetModel("sphereCollider");
+	ModelManager::GetInstance()->LoadModel("sphereCollider/sphereCollider.obj");
+	colliderModel_->SetModel("sphereCollider/sphereCollider.obj");
 	colliderModel_->SetRotate({ 0,3.14f,0 });
 }
 
