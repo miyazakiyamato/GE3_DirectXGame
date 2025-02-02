@@ -20,6 +20,7 @@
 #include "Camera.h"
 #include "CameraManager.h"
 #include "SrvManager.h"
+#include "UavManager.h"
 #include "ImGuiManager.h"
 #include "GlobalVariables.h"
 #include "AudioManager.h"
@@ -52,6 +53,8 @@ protected://メンバ変数
 	Input* input_ = nullptr;
 	//SRV
 	SrvManager* srvManager = nullptr;
+	//UAV
+	UavManager* uavManager = nullptr;
 	//ImGuiマネージャ
 	ImGuiManager* imGuiManager = nullptr;
 	//

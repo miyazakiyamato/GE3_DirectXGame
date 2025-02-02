@@ -26,6 +26,7 @@ ConstantBuffer<Camera> gCamera : register(b2);
 
 Texture2D<float32_t4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
+//RWTexture2D<float32_t4> uav : register(u0);
 
 struct PointLight{
     float32_t4 color; //!<ライトの色
@@ -49,6 +50,7 @@ struct SpotLight{
     float32_t padding;
 };
 StructuredBuffer<SpotLight> gSpotLight : register(t2);
+
 
 struct PixelShaderOutput{
     float32_t4 color : SV_TARGET0;

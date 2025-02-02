@@ -270,6 +270,9 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\manager\UavManager.cpp">
+      <Filter>ソース ファイル\engine\manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -421,6 +424,9 @@
     </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\manager\UavManager.h">
+      <Filter>ヘッダー ファイル\engine\manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

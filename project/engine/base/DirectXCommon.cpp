@@ -518,6 +518,32 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateTextureResource(cons
 	return resource;
 }
 
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateCounterResource() {
+	D3D12_RESOURCE_DESC counterDesc{};
+	counterDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	counterDesc.Width = sizeof(UINT); // 4バイト (UINT)
+	counterDesc.Height = 1;
+	counterDesc.DepthOrArraySize = 1;
+	counterDesc.MipLevels = 1;
+	counterDesc.Format = DXGI_FORMAT_UNKNOWN;
+	counterDesc.SampleDesc.Count = 1;
+	counterDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	counterDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	D3D12_HEAP_PROPERTIES heapProps{};
+	heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+
+	ComPtr<ID3D12Resource> counterResource;
+	HRESULT hr = device->CreateCommittedResource(
+		&heapProps, D3D12_HEAP_FLAG_NONE, &counterDesc,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nullptr,
+		IID_PPV_ARGS(&counterResource)
+	);
+	assert(SUCCEEDED(hr));
+
+	return counterResource;
+}
+
 Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
 	std::vector<D3D12_SUBRESOURCE_DATA> subResources;
 	DirectX::PrepareUpload(device.Get(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subResources);

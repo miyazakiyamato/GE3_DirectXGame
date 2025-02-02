@@ -20,6 +20,10 @@ void Framework::Initialize(){
 	srvManager = new SrvManager();
 	srvManager->Initialize(dxCommon);
 	
+	//UAVの初期化
+	uavManager = new UavManager();
+	uavManager->Initialize(dxCommon);
+
 	//ImGuiの初期化
 	imGuiManager = new ImGuiManager();
 	imGuiManager->Initialize(winApp, dxCommon, srvManager);
@@ -34,7 +38,7 @@ void Framework::Initialize(){
 
 	//テクスチャマネージャの初期化
 	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize(dxCommon, srvManager);
+	textureManager_->Initialize(dxCommon, srvManager,uavManager);
 
 	//パーティクルマネージャの初期化
 	particleManager_ = ParticleManager::GetInstance();
@@ -83,6 +87,7 @@ void Framework::Finalize(){
 	//解放
 	delete sceneFactory_;
 	delete imGuiManager;
+	delete uavManager;
 	delete srvManager;
 	delete dxCommon;
 	delete winApp;
