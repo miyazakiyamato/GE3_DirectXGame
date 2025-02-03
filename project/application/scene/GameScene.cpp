@@ -25,6 +25,10 @@ void GameScene::Initialize(){
 
 	CameraManager::GetInstance()->FindCamera("default");
 
+	LightManager::DirectionalLight* directionalLight = LightManager::GetInstance()->GetDirectionalLight();
+	directionalLight->spotLightCount = 1;
+	LightManager::GetInstance()->SetDirectionalLight(*directionalLight);
+
 	AudioManager::GetInstance()->LoadWave("maou_se_system48.wav");
 	//AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
 
@@ -32,8 +36,10 @@ void GameScene::Initialize(){
 	collisionManager_ = std::make_unique<CollisionManager>();
 	collisionManager_->Initialize();
 
-	TextureManager::GetInstance()->LoadTexture("resources/texture/dirt.png");
+	//TextureManager::GetInstance()->LoadTexture("resources/texture/dirt.png");
 	TextureManager::GetInstance()->LoadRWTexture("resources/texture/dirt.png");
+	TextureManager::GetInstance()->LoadRWTexture("resources/texture/checkerBoard.png");
+	TextureManager::GetInstance()->LoadRWTexture("resources/texture/ground.png");
 	for (uint32_t i = 0; i < 3; ++i) {
 		Object3d* object3d = new Object3d;
 		object3d->Initialize();
@@ -435,8 +441,8 @@ void GameScene::Update(){
 
 void GameScene::Draw(){
 	//Object3dの描画
-	skydome_->Draw();
-	ground_->Draw();
+	/*skydome_->Draw();
+	ground_->Draw();*/
 	
 	/*for (Object3d* object3d : object3ds) {
 		object3d->Draw();

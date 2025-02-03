@@ -26,7 +26,6 @@ ConstantBuffer<Camera> gCamera : register(b2);
 
 Texture2D<float32_t4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
-RWTexture2D<float32_t4> gSubTexture : register(u0);
 
 struct PointLight{
     float32_t4 color; //!<ライトの色
@@ -51,6 +50,7 @@ struct SpotLight{
 };
 StructuredBuffer<SpotLight> gSpotLight : register(t2);
 
+RWTexture2D<float32_t4> gSubTexture : register(u0);
 
 struct PixelShaderOutput{
     float32_t4 color : SV_TARGET0;
@@ -119,10 +119,10 @@ PixelShaderOutput main(VertexShaderOutput input){
     float32_t4 transformedUV = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
     //テクスチャカラー
     float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
-    //float32_t4 subTextureColor = gSubTexture.Sample(gSampler, transformedUV.xy);
+    float32_t4 subTextureColor = gSubTexture.Load(int32_t2(transformedUV.xy));
     if (textureColor.a == 0.0){ discard;}
     if (textureColor.a <= 0.5){ discard;}
-    //textureColor += subTextureColor;
+    textureColor.rgb = (subTextureColor.rgb * subTextureColor.a) + (textureColor.rgb * (1 - subTextureColor.a));
     //outputカラー
     if (gMaterial.enableLighting != 0){ //Lightingする場合
         //DirectionalLight
@@ -137,21 +137,21 @@ PixelShaderOutput main(VertexShaderOutput input){
         
         //PointLight
         float32_t3 pointLightColor = float32_t3(0.0f,0.0f,0.0f);
-        for (uint32_t i = 0; i < gDirectionalLight.PointLightCount; ++i)
-        {
+        for (uint32_t i = 0; i < gDirectionalLight.PointLightCount; ++i){
             pointLightColor += MakePointLightColor(input, textureColor, gPointLight[i]);
         }
         
         //SpotLight
         float32_t3 spotLightColor = float32_t3(0.0f, 0.0f, 0.0f);
-        for (uint32_t j = 0; j < gDirectionalLight.SpotLightCount; ++j)
-        {
+        for (uint32_t j = 0; j < gDirectionalLight.SpotLightCount; ++j){
             spotLightColor += MakeSpotLightColor(input, textureColor, gSpotLight[j]);
         }
-        
         //拡散反射・鏡面反射
         output.color.rgb = directionalLightCollor + pointLightColor + spotLightColor;
         output.color.a = gMaterial.color.a * textureColor.a;
+        if (1.0f - length(spotLightColor) < subTextureColor.a){
+            gSubTexture[transformedUV.xy] = float32_t4(subTextureColor.rgb,1.0f - length(spotLightColor));
+        }
     }
     else{
         output.color = gMaterial.color * textureColor;
