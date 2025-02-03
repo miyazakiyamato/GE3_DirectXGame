@@ -119,7 +119,13 @@ PixelShaderOutput main(VertexShaderOutput input){
     float32_t4 transformedUV = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
     //テクスチャカラー
     float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
-    float32_t4 subTextureColor = gSubTexture.Load(int32_t2(transformedUV.xy));
+    int32_t width, height;
+    gSubTexture.GetDimensions(width, height);
+
+    // UV座標をピクセル座標に変換
+    int32_t2 pixelPos = int32_t2(transformedUV.xy * float32_t2(width, height));
+    float32_t4 subTextureColor = gSubTexture.Load(pixelPos);
+    //float32_t4 subTextureColor = gSubTexture.Load(int32_t2(transformedUV.xy));
     if (textureColor.a == 0.0){ discard;}
     if (textureColor.a <= 0.5){ discard;}
     textureColor.rgb = (subTextureColor.rgb * subTextureColor.a) + (textureColor.rgb * (1 - subTextureColor.a));
@@ -154,7 +160,7 @@ PixelShaderOutput main(VertexShaderOutput input){
             if (subTextureA <= 0.0f){
                 subTextureA = 0.0f;
             }
-            gSubTexture[transformedUV.xy] = float32_t4(subTextureColor.rgb, subTextureA);
+            gSubTexture[pixelPos] = float32_t4(subTextureColor.rgb, subTextureA);
         }
     }
     else{
