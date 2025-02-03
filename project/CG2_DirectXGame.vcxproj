@@ -150,7 +150,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\manager\LightManager.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="engine\manager\SrvManager.cpp" />
     <ClCompile Include="application\scene\MyGame.cpp" />
     <ClCompile Include="application\scene\SceneFactory.cpp" />
     <ClCompile Include="engine\scene\SceneManager.cpp" />
@@ -162,8 +161,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\2d\SpritePipeline.cpp" />
     <ClCompile Include="engine\particle\ParticlePipeline.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="engine\manager\ResourceManager.cpp" />
     <ClCompile Include="Skydome.cpp" />
-    <ClCompile Include="engine\manager\UavManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\3d\AccelerationField.h" />
@@ -197,7 +196,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\Vector2.h" />
     <ClInclude Include="engine\math\Vector3.h" />
     <ClInclude Include="engine\math\Vector4.h" />
-    <ClInclude Include="engine\manager\SrvManager.h" />
     <ClInclude Include="engine\debug\ImGuiManager.h" />
     <ClInclude Include="engine\scene\Framework.h" />
     <ClInclude Include="application\scene\MyGame.h" />
@@ -215,8 +213,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\particle\ParticlePipeline.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="engine\manager\ResourceManager.h" />
     <ClInclude Include="Skydome.h" />
-    <ClInclude Include="engine\manager\UavManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

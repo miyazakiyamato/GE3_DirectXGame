@@ -1,6 +1,6 @@
 #include "ParticleManager.h"
 #include "DirectXCommon.h"
-#include "SrvManager.h"
+#include "ResourceManager.h"
 #include "TextureManager.h"
 #include "CameraManager.h"
 #include <numbers>
@@ -17,9 +17,9 @@ ParticleManager* ParticleManager::GetInstance()
 	return instance;
 }
 
-void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
+void ParticleManager::Initialize(DirectXCommon* dxCommon, ResourceManager* resourceManager) {
 	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
+    resourceManager_ = resourceManager;
 
 	//ランダムエンジンの初期化
 	std::random_device seedGenerator;
@@ -93,9 +93,9 @@ void ParticleManager::Draw() {
         commandList->IASetVertexBuffers(0, 1, &group->vertexBufferView);// VBVを設定
         commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
         // インスタンシングデータのSRVのDescriptorTableを設定
-        srvManager_->SetGraphicsRootDescriptorTable(0, group->srvIndexForInstancing);
+        resourceManager_->SetGraphicsRootDescriptorTable(0, group->srvIndexForInstancing);
         //SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
-        commandList->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->GetSrvHandleGPU(group->materialData.textureFilePath));
+        TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(1,group->materialData.textureFilePath);
         // DrawCall (インスタンシング描画)
         commandList->DrawIndexedInstanced(6, group->kNumInstance, 0, 0, 0);
     }
@@ -138,7 +138,7 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
     group->vertexData[3] = { {  0.5f,  0.5f, 0.0f, 1.0f }, { tex_right,tex_top    }, { 1.0f,1.0f,1.0f,1.0f } };//右上
     
     // TextureManagerからGPUハンドルを取得
-    group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(textureFilePath);
+    group->materialData.srvIndex = TextureManager::GetInstance()->GetIndex(textureFilePath);
 
     //WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
     group->instancingResource = dxCommon_->CreateBufferResource(sizeof(ParticleForGPU) * kMaxInstance);
@@ -152,8 +152,8 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
         group->instancingData[index].color = { 1.0f,1.0f,1.0f,1.0f };//色を書き込む
     }
 
-    group->srvIndexForInstancing = srvManager_->ALLocate();
-    srvManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
+    group->srvIndexForInstancing = resourceManager_->Allocate();
+    resourceManager_->CreateSRVForStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
 
     particleGroups[name] = std::move(group);
 }

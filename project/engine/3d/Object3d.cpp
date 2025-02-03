@@ -70,12 +70,16 @@ void Object3d::Draw(){
 		//wvp用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 		//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
-		commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureFilePath_));
+		TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(2, textureFilePath_);
 		//マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 		//カメラCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
-		
+		if (subTextureFilePath_ != "") {
+			//UAVのDescriptorTableの先頭を設定
+			TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(7, subTextureFilePath_);
+		}
+
 		lightManager_->Draw();
 
 		model_->Draw();

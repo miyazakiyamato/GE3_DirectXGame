@@ -123,7 +123,7 @@ void Sprite::Draw(){
 	//TransformationMatrixCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 	//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
-	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureFilePath_));
+	TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(2, textureFilePath_);
 	//描画！(DrawColl/ドローコール)
 	//commandList->DrawInstanced(6, 1, 0, 0);
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);

@@ -58,6 +58,10 @@ void Player::Draw() {
 	//reticle3D_->Draw();
 }
 
+void Player::ImGuiDraw(){
+
+}
+
 void Player::OnCollision([[maybe_unused]] Collider* other) {
 	isCollision = true;
 

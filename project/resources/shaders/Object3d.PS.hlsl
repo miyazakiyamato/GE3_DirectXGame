@@ -26,7 +26,7 @@ ConstantBuffer<Camera> gCamera : register(b2);
 
 Texture2D<float32_t4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
-//RWTexture2D<float32_t4> uav : register(u0);
+RWTexture2D<float32_t4> gSubTexture : register(u0);
 
 struct PointLight{
     float32_t4 color; //!<ライトの色
@@ -119,9 +119,10 @@ PixelShaderOutput main(VertexShaderOutput input){
     float32_t4 transformedUV = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
     //テクスチャカラー
     float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
+    //float32_t4 subTextureColor = gSubTexture.Sample(gSampler, transformedUV.xy);
     if (textureColor.a == 0.0){ discard;}
     if (textureColor.a <= 0.5){ discard;}
-    
+    //textureColor += subTextureColor;
     //outputカラー
     if (gMaterial.enableLighting != 0){ //Lightingする場合
         //DirectionalLight

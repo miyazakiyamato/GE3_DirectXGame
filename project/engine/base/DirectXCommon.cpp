@@ -517,7 +517,38 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateTextureResource(cons
 	assert(SUCCEEDED(hr));
 	return resource;
 }
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateRWTextureResource(const DirectX::TexMetadata& metadata) {
+	// metadataを基にResourceの設定
+	D3D12_RESOURCE_DESC resourceDesc{};
+	resourceDesc.Width = UINT(metadata.width);
+	resourceDesc.Height = UINT(metadata.height);
+	resourceDesc.MipLevels = 1;  // UAVではMipmapは不要
+	resourceDesc.DepthOrArraySize = 1;
+	resourceDesc.Format = metadata.format;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 
+	// UAVを許可
+	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	// ヒーププロパティ
+	D3D12_HEAP_PROPERTIES heapProperties{};
+	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+
+	//UAVはD3D12_RESOURCE_STATE_UNORDERED_ACCESSで作成
+	ComPtr<ID3D12Resource> resource;
+	HRESULT hr = device->CreateCommittedResource(
+		&heapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDesc,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS, //初期状態をUAVにする
+		nullptr,
+		IID_PPV_ARGS(&resource)
+	);
+	assert(SUCCEEDED(hr));
+
+	return resource;
+}
 Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateCounterResource() {
 	D3D12_RESOURCE_DESC counterDesc{};
 	counterDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
@@ -561,7 +592,49 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::UploadTextureData(ID3D12Re
 	commandList->ResourceBarrier(1, &barrier);
 	return intermediateResource;
 }
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::UploadRWTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
+	assert(texture && "テクスチャが null です");
 
+	std::vector<D3D12_SUBRESOURCE_DATA> subResources;
+	DirectX::PrepareUpload(device.Get(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subResources);
+
+	//NumSubresources を 1 に制限
+	UINT validNumSubresources = 1;
+	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, validNumSubresources);
+	assert(intermediateSize > 0 && "intermediateSize が 0 です");
+
+	//Intermediate バッファを作成
+	ComPtr<ID3D12Resource> intermediateResource = CreateBufferResource(intermediateSize);
+	assert(intermediateResource && "Intermediate リソースの作成に失敗");
+
+	//Copy 前に UAV → COPY_DEST に変更
+	D3D12_RESOURCE_BARRIER barrierBefore{};
+	barrierBefore.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrierBefore.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrierBefore.Transition.pResource = texture;
+	barrierBefore.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrierBefore.Transition.StateBefore = D3D12_RESOURCE_STATE_UNORDERED_ACCESS; // UAV
+	barrierBefore.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST; // Copy 用
+	commandList->ResourceBarrier(1, &barrierBefore);
+
+	//UpdateSubresources のエラーチェック
+	assert(!subResources.empty() && "subResources が空です");
+	assert(commandList && "commandList が null です");
+
+	UpdateSubresources(commandList.Get(), texture, intermediateResource.Get(), 0, 0, validNumSubresources, subResources.data());
+
+	//Copy 後に COPY_DEST → UAV に戻す
+	D3D12_RESOURCE_BARRIER barrierAfter{};
+	barrierAfter.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrierAfter.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrierAfter.Transition.pResource = texture;
+	barrierAfter.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrierAfter.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST; // Copy 用
+	barrierAfter.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS; // UAV 用
+	commandList->ResourceBarrier(1, &barrierAfter);
+
+	return intermediateResource;
+}
 DirectX::ScratchImage DirectXCommon::LoadTexture(const std::string& filePath) {
 	//テクスチャファイルを読んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};

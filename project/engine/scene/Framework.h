@@ -19,8 +19,7 @@
 #include "Logger.h"
 #include "Camera.h"
 #include "CameraManager.h"
-#include "SrvManager.h"
-#include "UavManager.h"
+#include "ResourceManager.h"
 #include "ImGuiManager.h"
 #include "GlobalVariables.h"
 #include "AudioManager.h"
@@ -51,10 +50,8 @@ protected://メンバ変数
 	DirectXCommon* dxCommon = nullptr;
 	//入力
 	Input* input_ = nullptr;
-	//SRV
-	SrvManager* srvManager = nullptr;
-	//UAV
-	UavManager* uavManager = nullptr;
+	//SRV UAV
+	ResourceManager* resourceManager_ = nullptr;
 	//ImGuiマネージャ
 	ImGuiManager* imGuiManager = nullptr;
 	//

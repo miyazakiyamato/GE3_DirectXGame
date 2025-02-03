@@ -64,11 +64,14 @@ public://メンバ関数
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(const size_t& sizeInbytes);
 	//テクスチャリソースの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateRWTextureResource(const DirectX::TexMetadata& metadata);
 	//カウンター付きUAVの作成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateCounterResource();
 	//テクスチャデータの転送
 	[[nodiscard]]
 	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+	[[nodiscard]]
+	Microsoft::WRL::ComPtr<ID3D12Resource> UploadRWTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 	//テクスチャファイルの読み込み
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 private://メンバ関数

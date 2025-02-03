@@ -8,7 +8,7 @@ void MyGame::Initialize(){
 	// BGM
 	AudioManager::GetInstance()->LoadWave("titleBGM.wav");
 	AudioManager::GetInstance()->PlayWave("titleBGM.wav", 0.1f, true);
-	sceneManager_->ChangeScene("TITLE");
+	sceneManager_->ChangeScene("GAME");
 }
 
 void MyGame::Finalize(){
@@ -24,7 +24,7 @@ void MyGame::Update(){
 void MyGame::Draw(){
 	//描画前処理
 	dxCommon->PreDraw();
-	srvManager->PreDraw();
+	resourceManager_->PreDraw();
 
 	CameraManager::GetInstance()->GetCamera()->Update();
 		

@@ -1,7 +1,6 @@
 #include "TextureManager.h"
 #include "DirectXCommon.h"
-#include "SrvManager.h"
-#include "UavManager.h"
+#include "ResourceManager.h"
 
 TextureManager* TextureManager::instance = nullptr;
 
@@ -13,10 +12,9 @@ TextureManager* TextureManager::GetInstance()
 	return instance;
 }
 
-void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager,UavManager* uavManager){
+void TextureManager::Initialize(DirectXCommon* dxCommon, ResourceManager* resourceManager){
 	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
-	uavManager_ = uavManager;
+	resourceManager_ = resourceManager;
 }
 
 void TextureManager::Finalize(){
@@ -32,7 +30,7 @@ void TextureManager::LoadTexture(const std::string& filePath){
 	}
 
 	//テクスチャ枚数上限チェック
-	assert(srvManager_->AvailabilityCheck());
+	assert(resourceManager_->AvailabilityCheck());
 
 	//Textureを読んで転送する
 	DirectX::ScratchImage mipImages = dxCommon_->LoadTexture(filePath);
@@ -44,81 +42,73 @@ void TextureManager::LoadTexture(const std::string& filePath){
 	textureData.metadata = mipImages.GetMetadata();
 	textureData.resource = dxCommon_->CreateTextureResource(textureData.metadata);
 	textureData.intermediateResource = dxCommon_->UploadTextureData(textureData.resource.Get(), mipImages);
-	textureData.srvIndex = srvManager_->ALLocate();
-	textureData.srvHandleCPU = srvManager_->GetCPUDescriptorHandle(textureData.srvIndex);
-	textureData.srvHandleGPU = srvManager_->GetGPUDescriptorHandle(textureData.srvIndex);
+	textureData.index = resourceManager_->Allocate();
+	textureData.handleCPU = resourceManager_->GetCPUDescriptorHandle(textureData.index);
+	textureData.handleGPU = resourceManager_->GetGPUDescriptorHandle(textureData.index);
+	textureData.isSRV = true;
 
-	srvManager_->CreateSRVforTexture2D(textureData.srvIndex, textureData.resource.Get(), textureData.metadata.format, UINT(textureData.metadata.mipLevels));
+	resourceManager_->CreateSRVForTexture2D(textureData.index, textureData.resource.Get(), textureData.metadata.format, UINT(textureData.metadata.mipLevels));
 }
 void TextureManager::LoadRWTexture(const std::string& filePath) {
 	//読み込み済みテクスチャを検索
-	if (rwTextureDatas.contains(filePath)) {
+	if (textureDatas.contains(filePath)) {
 		//読み込み済みなら早期return
 		return;
 	}
 
 	//テクスチャ枚数上限チェック
-	assert(uavManager_->AvailabilityCheck());
+	assert(resourceManager_->AvailabilityCheck());
 
 	//Textureを読んで転送する
 	DirectX::ScratchImage mipImages = dxCommon_->LoadTexture(filePath);
 
 	//追加したテクスチャデータの参照を取得
-	RWTextureData& textureData = rwTextureDatas[filePath];
+	TextureData& textureData = textureDatas[filePath];
 
 	//テクスチャデータの書き込み
 	textureData.metadata = mipImages.GetMetadata();
-	textureData.resource = dxCommon_->CreateTextureResource(textureData.metadata);
-	textureData.intermediateResource = dxCommon_->UploadTextureData(textureData.resource.Get(), mipImages);
-	textureData.uavIndex = uavManager_->ALLocate();
-	textureData.uavHandleCPU = uavManager_->GetCPUDescriptorHandle(textureData.uavIndex);
-	textureData.uavHandleGPU = uavManager_->GetGPUDescriptorHandle(textureData.uavIndex);
+	textureData.resource = dxCommon_->CreateRWTextureResource(textureData.metadata);
+	textureData.intermediateResource = dxCommon_->UploadRWTextureData(textureData.resource.Get(), mipImages);
+	textureData.index = resourceManager_->Allocate();
+	textureData.handleCPU = resourceManager_->GetCPUDescriptorHandle(textureData.index);
+	textureData.handleGPU = resourceManager_->GetGPUDescriptorHandle(textureData.index);
+	textureData.isSRV = false;
 
-	uavManager_->CreateUAVForTexture2D(textureData.uavIndex, textureData.resource.Get(), textureData.metadata.format);
+	resourceManager_->CreateUAVForTexture2D(textureData.index, textureData.resource.Get(), textureData.metadata.format);
 }
-
-D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(const std::string& filePath){
+D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetHandleGPU(const std::string& filePath){
 	//テクスチャ枚数上限チェック
-	assert(srvManager_->AvailabilityCheck());
+	assert(resourceManager_->AvailabilityCheck());
 
 	TextureData& textureData = textureDatas[filePath];
-	return textureData.srvHandleGPU;
-}
-
-D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetUavHandleGPU(const std::string& filePath) {
-	//テクスチャ枚数上限チェック
-	assert(uavManager_->AvailabilityCheck());
-
-	RWTextureData& textureData = rwTextureDatas[filePath];
-	return textureData.uavHandleGPU;
+	return textureData.handleGPU;
 }
 
 const DirectX::TexMetadata& TextureManager::GetMetaData(const std::string& filePath){
 	//範囲外指定違反チェック
-	assert(srvManager_->AvailabilityCheck() || uavManager_->AvailabilityCheck());
+	assert(resourceManager_->AvailabilityCheck());
 
 	if (textureDatas.contains(filePath)) {
 		return textureDatas[filePath].metadata;
-	}
-	else if (rwTextureDatas.contains(filePath)) {
-		return rwTextureDatas[filePath].metadata;
 	}
 
 	assert(false && "テクスチャが見つかりません");
 	return textureDatas.begin()->second.metadata;
 }
 
-uint32_t TextureManager::GetSrvIndex(const std::string& filePath){
-	//範囲外指定違反チェック
-	assert(srvManager_->AvailabilityCheck());
+void TextureManager::SetGraphicsRootDescriptorTable(UINT rootParameterIndex, const std::string& filePath){
+	//テクスチャ枚数上限チェック
+	assert(resourceManager_->AvailabilityCheck());
 
 	TextureData& textureData = textureDatas[filePath];
-	return textureData.srvIndex;
-}
-uint32_t TextureManager::GetUavIndex(const std::string& filePath) {
-	//範囲外指定違反チェック
-	assert(uavManager_->AvailabilityCheck());
 
-	RWTextureData& textureData = rwTextureDatas[filePath];
-	return textureData.uavIndex;
+	resourceManager_->SetGraphicsRootDescriptorTable(rootParameterIndex, textureData.index, textureData.isSRV);
+}
+
+uint32_t TextureManager::GetIndex(const std::string& filePath){
+	//範囲外指定違反チェック
+	assert(resourceManager_->AvailabilityCheck());
+
+	TextureData& textureData = textureDatas[filePath];
+	return textureData.index;
 }

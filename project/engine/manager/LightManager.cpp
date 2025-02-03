@@ -2,7 +2,7 @@
 #include <cassert>
 #include <numbers>
 #include "DirectXCommon.h"
-#include "SrvManager.h"
+#include "ResourceManager.h"
 
 LightManager* LightManager::instance = nullptr;
 
@@ -13,9 +13,9 @@ LightManager* LightManager::GetInstance() {
 	return instance;
 }
 
-void LightManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
+void LightManager::Initialize(DirectXCommon* dxCommon, ResourceManager* resourceManager) {
 	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
+	resourceManager_ = resourceManager;
 
 	//DirectionalLightのリソースを作る。
 	directionalLightResource_ = dxCommon_->CreateBufferResource(sizeof(DirectionalLight));
@@ -40,8 +40,8 @@ void LightManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 		pointLightData_[index].decay = 1.0f;
 	}
 
-	srvIndexForPointLight = srvManager_->ALLocate();
-	srvManager_->CreateSRVforStructuredBuffer(srvIndexForPointLight, pointLightResource_.Get(), kMaxPointLight, sizeof(PointLight));
+	srvIndexForPointLight = resourceManager_->Allocate();
+	resourceManager_->CreateSRVForStructuredBuffer(srvIndexForPointLight, pointLightResource_.Get(), kMaxPointLight, sizeof(PointLight));
 	
 	//SpotLightのリソースを作る。
 	spotLightResource_ = dxCommon_->CreateBufferResource(sizeof(SpotLight) * kMaxSpotLight);
@@ -58,8 +58,8 @@ void LightManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 		spotLightData_[index].cosFalloffStart = 1.0f;
 	}
 
-	srvIndexForSpotLight = srvManager_->ALLocate();
-	srvManager_->CreateSRVforStructuredBuffer(srvIndexForSpotLight, spotLightResource_.Get(), kMaxSpotLight, sizeof(SpotLight));
+	srvIndexForSpotLight = resourceManager_->Allocate();
+	resourceManager_->CreateSRVForStructuredBuffer(srvIndexForSpotLight, spotLightResource_.Get(), kMaxSpotLight, sizeof(SpotLight));
 }
 
 void LightManager::Draw(){
@@ -69,9 +69,9 @@ void LightManager::Draw(){
 	//DirectionalLight
 	commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource_.Get()->GetGPUVirtualAddress());
 	//PointLight
-	srvManager_->SetGraphicsRootDescriptorTable(5, srvIndexForPointLight);
+	resourceManager_->SetGraphicsRootDescriptorTable(5, srvIndexForPointLight);
 	//SpotLight
-	srvManager_->SetGraphicsRootDescriptorTable(6, srvIndexForSpotLight);
+	resourceManager_->SetGraphicsRootDescriptorTable(6, srvIndexForSpotLight);
 }
 
 void LightManager::Finalize() {

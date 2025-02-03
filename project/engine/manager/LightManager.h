@@ -6,7 +6,7 @@
 #include "Matrix4x4.h"
 
 class DirectXCommon;
-class SrvManager;
+class ResourceManager;
 class LightManager {
 public:
 	//namespace省略
@@ -43,7 +43,7 @@ public://メンバ関数
 	//シングルトンインスタンスの取得
 	static LightManager* GetInstance();
 	//初期化
-	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
+	void Initialize(DirectXCommon* dxCommon, ResourceManager* resourceManager);
 	//描画
 	void Draw();
 	//終了
@@ -59,7 +59,7 @@ private://シングルインスタンス
 private://メンバ変数
 	//ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
-	SrvManager* srvManager_ = nullptr;
+	ResourceManager* resourceManager_ = nullptr;
 	//ライトデータ
 	//DirectionalLight
 	ComPtr<ID3D12Resource> directionalLightResource_;

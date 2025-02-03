@@ -23,6 +23,9 @@ public://メンバ関数
 	/// </summary>
 	void Draw() override;
 
+	//ImGui
+	void ImGuiDraw();
+
 	//衝突を検知したら呼び出されるコールバック関数
 	void OnCollision([[maybe_unused]] Collider* other) override;
 private://ローカル関数

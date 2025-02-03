@@ -39,6 +39,7 @@ private://メンバ変数
 	Model* model_ = nullptr;
 	BlendMode blendMode_ = BlendMode::kNormal;
 	std::string textureFilePath_ = "";
+	std::string subTextureFilePath_ = "";
 	//バッファリソース
 	ComPtr<ID3D12Resource> wvpResource;
 	ComPtr<ID3D12Resource> materialResource;
@@ -74,5 +75,6 @@ public://ゲッターセッター
 	void SetParent(Object3d* parent) { parent_ = parent; }
 	void SetIsLighting(bool isLighting) { materialData->enableLighting = isLighting; }
 	void SetTexture(std::string textureFilePath) { textureFilePath_ = textureFilePath; }
+	void SetSubTexture(std::string textureFilePath) { subTextureFilePath_ = textureFilePath; }
 };
 

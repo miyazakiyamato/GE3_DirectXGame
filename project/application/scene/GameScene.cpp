@@ -33,7 +33,7 @@ void GameScene::Initialize(){
 	collisionManager_->Initialize();
 
 	TextureManager::GetInstance()->LoadTexture("resources/texture/dirt.png");
-
+	TextureManager::GetInstance()->LoadRWTexture("resources/texture/dirt.png");
 	for (uint32_t i = 0; i < 3; ++i) {
 		Object3d* object3d = new Object3d;
 		object3d->Initialize();
@@ -379,6 +379,9 @@ void GameScene::Update(){
 				}
 				ImGui::EndMenu();
 			}
+			player_->ImGuiDraw();
+			enemy_->ImGuiDraw();
+
 			ImGui::EndMenuBar();
 		}
 		ImGui::End();

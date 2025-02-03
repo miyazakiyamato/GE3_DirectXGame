@@ -17,16 +17,12 @@ void Framework::Initialize(){
 	input_->Initialize(winApp);
 	
 	//SRVの初期化
-	srvManager = new SrvManager();
-	srvManager->Initialize(dxCommon);
-	
-	//UAVの初期化
-	uavManager = new UavManager();
-	uavManager->Initialize(dxCommon);
+	resourceManager_ = new ResourceManager();
+	resourceManager_->Initialize(dxCommon);
 
 	//ImGuiの初期化
 	imGuiManager = new ImGuiManager();
-	imGuiManager->Initialize(winApp, dxCommon, srvManager);
+	imGuiManager->Initialize(winApp, dxCommon, resourceManager_);
 
 	// グローバル変数の読み込み
 	globalVariables_ = GlobalVariables::GetInstance();
@@ -38,11 +34,11 @@ void Framework::Initialize(){
 
 	//テクスチャマネージャの初期化
 	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize(dxCommon, srvManager,uavManager);
+	textureManager_->Initialize(dxCommon, resourceManager_);
 
 	//パーティクルマネージャの初期化
 	particleManager_ = ParticleManager::GetInstance();
-	particleManager_->Initialize(dxCommon, srvManager);
+	particleManager_->Initialize(dxCommon, resourceManager_);
 
 	//モデルマネージャの初期化
 	modelManager_ = ModelManager::GetInstance();
@@ -50,7 +46,7 @@ void Framework::Initialize(){
 	
 	//ライトマネージャの初期化
 	lightManager_ = LightManager::GetInstance();
-	lightManager_->Initialize(dxCommon,srvManager);
+	lightManager_->Initialize(dxCommon, resourceManager_);
 
 	//カメラマネージャの初期化
 	cameraManager_ = CameraManager::GetInstance();
@@ -87,8 +83,7 @@ void Framework::Finalize(){
 	//解放
 	delete sceneFactory_;
 	delete imGuiManager;
-	delete uavManager;
-	delete srvManager;
+	delete resourceManager_;
 	delete dxCommon;
 	delete winApp;
 }
