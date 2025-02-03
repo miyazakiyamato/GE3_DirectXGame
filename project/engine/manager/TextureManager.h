@@ -28,7 +28,7 @@ public://メンバ関数
 	void Finalize();
 	//テクスチャファイルの読み込み
 	void LoadTexture(const std::string& filePath);
-	void LoadRWTexture(const std::string& filePath);
+	void LoadRWTexture(const std::string& filePath, const std::string& objectName);
 	//テクスチャ番号からGPUハンドルを取得
 	D3D12_GPU_DESCRIPTOR_HANDLE GetHandleGPU(const std::string& filePath);
 	//メタデータの取得

@@ -1,4 +1,5 @@
 #include "Skydome.h"
+#include "TextureManager.h"
 
 void Skydome::Initialize(){
 	object3d = std::make_unique<Object3d>();
@@ -7,7 +8,9 @@ void Skydome::Initialize(){
 	object3d->SetIsLighting(false);
 	object3d->SetTranslate({ -1,0,0 });
 	object3d->SetRotate({ 0,3.14f,0 });
-	object3d->SetSubTexture("resources/texture/dirt.png");
+	std::string objectName = "skydome";
+	TextureManager::GetInstance()->LoadRWTexture("resources/texture/dirt.png", objectName);
+	object3d->SetSubTexture("resources/texture/dirt.png", objectName);
 }
 
 void Skydome::Update(){

@@ -149,8 +149,12 @@ PixelShaderOutput main(VertexShaderOutput input){
         //拡散反射・鏡面反射
         output.color.rgb = directionalLightCollor + pointLightColor + spotLightColor;
         output.color.a = gMaterial.color.a * textureColor.a;
-        if (1.0f - length(spotLightColor) < subTextureColor.a){
-            gSubTexture[transformedUV.xy] = float32_t4(subTextureColor.rgb,1.0f - length(spotLightColor));
+        float32_t subTextureA = 1.0f - length(spotLightColor);
+        if (subTextureA < subTextureColor.a){
+            if (subTextureA <= 0.0f){
+                subTextureA = 0.0f;
+            }
+            gSubTexture[transformedUV.xy] = float32_t4(subTextureColor.rgb, subTextureA);
         }
     }
     else{

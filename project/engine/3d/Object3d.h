@@ -75,6 +75,6 @@ public://ゲッターセッター
 	void SetParent(Object3d* parent) { parent_ = parent; }
 	void SetIsLighting(bool isLighting) { materialData->enableLighting = isLighting; }
 	void SetTexture(std::string textureFilePath) { textureFilePath_ = textureFilePath; }
-	void SetSubTexture(std::string textureFilePath) { subTextureFilePath_ = textureFilePath; }
+	void SetSubTexture(std::string textureFilePath,std::string ObjectName) { subTextureFilePath_ = textureFilePath + ObjectName; }
 };
 

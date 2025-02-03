@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include <imgui.h>
+#include "TextureManager.h"
 
 void Enemy::Initialize(){
 	BaseCharacter::Initialize();
@@ -9,7 +10,9 @@ void Enemy::Initialize(){
 	baseObject3D_->SetTranslate({ 0.0f,1.0f,0.0f });
 	baseObject3D_->SetModel("sphere/sphere.obj");
 	baseObject3D_->SetRotate({ 0,3.14f,0 });
-	baseObject3D_->SetSubTexture("resources/texture/dirt.png");
+	std::string objectName = "enemy";
+	TextureManager::GetInstance()->LoadRWTexture("resources/texture/dirt.png", objectName);
+	baseObject3D_->SetSubTexture("resources/texture/dirt.png", objectName);
 }
 
 void Enemy::Update(){

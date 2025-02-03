@@ -1,4 +1,5 @@
 #include "Ground.h"
+#include "TextureManager.h"
 
 void Ground::Initialize() {
 	object3d = std::make_unique<Object3d>();
@@ -6,7 +7,9 @@ void Ground::Initialize() {
 	object3d->SetModel("ground/ground.obj");
 	object3d->SetTranslate({ -1,0,0 });
 	object3d->SetRotate({ 0,3.14f,0 });
-	object3d->SetSubTexture("resources/texture/dirt.png");
+	std::string objectName = "ground";
+	TextureManager::GetInstance()->LoadRWTexture("resources/texture/dirt.png", objectName);
+	object3d->SetSubTexture("resources/texture/dirt.png", objectName);
 }
 
 void Ground::Update() {

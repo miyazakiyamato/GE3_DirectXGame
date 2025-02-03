@@ -4,8 +4,7 @@
 
 TextureManager* TextureManager::instance = nullptr;
 
-TextureManager* TextureManager::GetInstance()
-{
+TextureManager* TextureManager::GetInstance(){
 	if (instance == nullptr) {
 		instance = new TextureManager;
 	}
@@ -49,9 +48,9 @@ void TextureManager::LoadTexture(const std::string& filePath){
 
 	resourceManager_->CreateSRVForTexture2D(textureData.index, textureData.resource.Get(), textureData.metadata.format, UINT(textureData.metadata.mipLevels));
 }
-void TextureManager::LoadRWTexture(const std::string& filePath) {
+void TextureManager::LoadRWTexture(const std::string& filePath ,const std::string& objectName) {
 	//読み込み済みテクスチャを検索
-	if (textureDatas.contains(filePath)) {
+	if (textureDatas.contains(filePath + objectName)) {
 		//読み込み済みなら早期return
 		return;
 	}
@@ -63,7 +62,7 @@ void TextureManager::LoadRWTexture(const std::string& filePath) {
 	DirectX::ScratchImage mipImages = dxCommon_->LoadTexture(filePath);
 
 	//追加したテクスチャデータの参照を取得
-	TextureData& textureData = textureDatas[filePath];
+	TextureData& textureData = textureDatas[filePath + objectName];
 
 	//テクスチャデータの書き込み
 	textureData.metadata = mipImages.GetMetadata();
