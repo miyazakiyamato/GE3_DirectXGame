@@ -5,6 +5,8 @@
 #include <vector>
 #include <imgui.h>
 
+#include "D3DResourceLeakChecker.h"
+
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
@@ -17,7 +19,6 @@
 #include "TextureManager.h"
 #include "ModelManager.h"
 #include "Logger.h"
-#include "D3DResourceLeakChecker.h"
 #include "Camera.h"
 #include "CameraManager.h"
 #include "SrvManager.h"
@@ -43,20 +44,18 @@ public://メンバ関数
 	//実行
 	void Run();
 protected://メンバ変数
-	//リークチェック
-	D3DResourceLeakChecker leakCheck;
 
 	//ポインタ
 	//WindowsAPI
-	WinApp* winApp = nullptr;
+	std::unique_ptr<WinApp> winApp = nullptr;
 	//DirecX
-	DirectXCommon* dxCommon = nullptr;
+	std::unique_ptr<DirectXCommon> dxCommon = nullptr;
 	//入力
 	Input* input_ = nullptr;
 	//SRV
-	SrvManager* srvManager = nullptr;
+	std::unique_ptr<SrvManager> srvManager = nullptr;
 	//ImGuiマネージャ
-	ImGuiManager* imGuiManager = nullptr;
+	std::unique_ptr<ImGuiManager> imGuiManager = nullptr;
 	//
 	GlobalVariables* globalVariables_ = nullptr;
 	//パイプラインマネージャ
@@ -76,6 +75,6 @@ protected://メンバ変数
 	//シーン
 	SceneManager* sceneManager_ = nullptr;
 	//シーンファクトリー
-	AbstractSceneFactory* sceneFactory_ = nullptr;
+	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;
 };
 

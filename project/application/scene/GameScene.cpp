@@ -32,9 +32,9 @@ void GameScene::Initialize(){
 	collisionManager_->Initialize();
 
 	for (uint32_t i = 0; i < 3; ++i) {
-		Object3d* object3d = new Object3d;
+		std::unique_ptr<Object3d> object3d(new Object3d);
 		object3d->Initialize();
-		object3ds.push_back(object3d);
+		object3ds_.push_back(std::move(object3d));
 	}
 
 	ModelManager::GetInstance()->LoadModel("plane/plane.obj");
@@ -44,50 +44,48 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("terrain/terrain.obj");
 	ModelManager::GetInstance()->LoadModel("plane/plane.gltf");
 
-	object3ds[0]->SetModel("sphere/sphere.obj");
-	object3ds[0]->SetTranslate({ -1,0,0 });
-	object3ds[0]->SetRotate({ 0,3.14f,0 });
-	object3ds[1]->SetModel("plane/plane.gltf");
-	//object3ds[1]->SetModel("axis/axis.obj");
-	object3ds[1]->SetTranslate({ 1,0,0 });
-	object3ds[1]->SetRotate({ 0,3.14f,0 });
-	object3ds[2]->SetModel("terrain/terrain.obj");
-	object3ds[2]->SetTranslate({ 0,0,0 });
-	object3ds[2]->SetRotate({ 0,3.14f,0 });
+	object3ds_[0]->SetModel("sphere/sphere.obj");
+	object3ds_[0]->SetTranslate({ -1,0,0 });
+	object3ds_[0]->SetRotate({ 0,3.14f,0 });
+	object3ds_[1]->SetModel("plane/plane.gltf");
+	//object3ds_[1]->SetModel("axis/axis.obj");
+	object3ds_[1]->SetTranslate({ 1,0,0 });
+	object3ds_[1]->SetRotate({ 0,3.14f,0 });
+	object3ds_[2]->SetModel("terrain/terrain.obj");
+	object3ds_[2]->SetTranslate({ 0,0,0 });
+	object3ds_[2]->SetRotate({ 0,3.14f,0 });
 	
 	//
 	isAccelerationField = false;
-	accelerationField_ = new AccelerationField;
+	accelerationField_.reset(new AccelerationField);
 
 	//ParticleManager::GetInstance()->CreateParticleGroup();
-	particleEmitter_ = new ParticleEmitter();
+	particleEmitter_.reset(new ParticleEmitter());
 	particleEmitter_->Initialize("circle", "resources/texture/circle.png");
 
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
-		Sprite* sprite = new Sprite;
+		std::unique_ptr<Sprite> sprite(new Sprite);
 		sprite->Initialize("resources/texture/uvChecker.png");
 		sprite->SetPosition({ 100 + 200.0f * float(i), 100 });
 		sprite->SetSize({ 100.0f,100.0f });
-		sprites.push_back(sprite);
+		sprites_.push_back(std::move(sprite));
 	}
-	sprites[0]->SetTextureSize({ 64.0f,64.0f });
-	sprites[1]->SetTexture("resources/texture/monsterBall.png");
-	sprites[1]->SetIsFlipX(true);
-	sprites[2]->SetIsFlipY(true);
-	sprites[3]->SetIsFlipX(true);
-	sprites[3]->SetIsFlipY(true);
+	sprites_[0]->SetTextureSize({ 64.0f,64.0f });
+	sprites_[1]->SetTexture("resources/texture/monsterBall.png");
+	sprites_[1]->SetIsFlipX(true);
+	sprites_[2]->SetIsFlipY(true);
+	sprites_[3]->SetIsFlipX(true);
+	sprites_[3]->SetIsFlipY(true);
 }
 
 void GameScene::Finalize(){
 	//解放
-	delete particleEmitter_;
-	delete accelerationField_;
-	for (Sprite* sprite : sprites) {
-		delete sprite;
+	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
+		object3d.reset();  // メモリを解放する
 	}
-	for (Object3d* object3d : object3ds) {
-		delete object3d;
+	for (std::unique_ptr<Sprite>& sprite : sprites_) {
+		sprite.reset();  // メモリを解放する
 	}
 	BaseScene::Finalize();
 }
@@ -206,7 +204,7 @@ void GameScene::Update(){
 			if (ImGui::BeginMenu(groupName.c_str())) {
 				
 				size_t object3dCount = 0;
-				for (Object3d* object3d : object3ds) {
+				for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 					int Object3dItem_selected_idx = static_cast<int>(object3d->GetBlendMode());
 					const char* currentItem = blendState[Object3dItem_selected_idx].c_str();
 					if (ImGui::BeginCombo((blendName + std::to_string(object3dCount)).c_str(), currentItem)) {
@@ -310,7 +308,7 @@ void GameScene::Update(){
 			groupName = "Sprite";
 			if (ImGui::BeginMenu(groupName.c_str())) {
 				uint32_t objectIDIndex = 0;
-				for (Sprite* sprite : sprites) {
+				for (std::unique_ptr<Sprite>& sprite : sprites_) {
 					ImGui::PushID(objectIDIndex);
 					int SpriteItem_selected_idx = static_cast<int>(sprite->GetBlendMode());
 					const char* currentItem = blendState[SpriteItem_selected_idx].c_str();
@@ -366,7 +364,7 @@ void GameScene::Update(){
 	collisionManager_->UpdateWorldTransform();
 #endif //_DEBUG
 
-	for (Object3d* object3d : object3ds) {
+	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		object3d->Update();
 	}
 
@@ -391,14 +389,14 @@ void GameScene::Update(){
 	particleEmitter_->Update();
 	ParticleManager::GetInstance()->Update();
 
-	for (Sprite* sprite : sprites) {
+	for (std::unique_ptr<Sprite>& sprite : sprites_) {
 		sprite->Update();
 	}
 }
 
 void GameScene::Draw(){
 	//Object3dの描画
-	for (Object3d* object3d : object3ds) {
+	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		object3d->Draw();
 	}
 
@@ -408,7 +406,7 @@ void GameScene::Draw(){
 	ParticleManager::GetInstance()->Draw();
 
 	//Spriteの描画
-	for (Sprite* sprite : sprites) {
+	for (std::unique_ptr<Sprite>& sprite : sprites_) {
 		sprite->Draw();
 	}
 }
