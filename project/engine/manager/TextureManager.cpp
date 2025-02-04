@@ -51,7 +51,20 @@ void TextureManager::LoadTexture(const std::string& filePath){
 void TextureManager::LoadRWTexture(const std::string& filePath ,const std::string& objectName) {
 	//読み込み済みテクスチャを検索
 	if (textureDatas.contains(filePath + objectName)) {
-		//読み込み済みなら早期return
+		//読み込み済みなら
+		//Textureを読んで転送する
+		DirectX::ScratchImage mipImages = dxCommon_->LoadTexture(filePath);
+
+		//追加したテクスチャデータの参照を取得
+		TextureData& textureData = textureDatas[filePath + objectName];
+
+		//テクスチャデータの書き込み
+		textureData.metadata = mipImages.GetMetadata();
+		textureData.resource = dxCommon_->CreateRWTextureResource(textureData.metadata);
+		textureData.intermediateResource = dxCommon_->UploadRWTextureData(textureData.resource.Get(), mipImages);
+		textureData.isSRV = false;
+
+		resourceManager_->CreateUAVForTexture2D(textureData.index, textureData.resource.Get(), textureData.metadata.format);
 		return;
 	}
 

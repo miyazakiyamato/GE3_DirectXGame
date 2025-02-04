@@ -95,6 +95,8 @@ void GameScene::Initialize(){
 	sprites[0]->SetTextureSize({ 64.0f,64.0f });
 	sprites[1]->SetTexture("resources/texture/clear.png");
 	sprites[1]->SetSize({ 1280.0f,720.0f });
+	sprites[2]->SetTexture("resources/texture/setumei.png");
+	sprites[2]->SetSize({ 1280.0f,720.0f });
 	/*sprites[1]->SetIsFlipX(true);
 	sprites[2]->SetIsFlipY(true);
 	sprites[3]->SetIsFlipX(true);
@@ -457,6 +459,7 @@ void GameScene::Draw(){
 	/*for (Sprite* sprite : sprites) {
 		sprite->Draw();
 	}*/
+	sprites[2]->Draw();
 	if (isClear) {
 		sprites[1]->Draw();
 	}

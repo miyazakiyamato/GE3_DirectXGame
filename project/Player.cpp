@@ -80,7 +80,7 @@ void Player::OnCollision([[maybe_unused]] Collider* other) {
 		Enemy* enemy = static_cast<Enemy*>(other);
 
 		if (input_->PushKey(DIK_SPACE)) {
-			enemy->SetHp(enemy->GetHp() - 2);
+			enemy->SetHp(enemy->GetHp() - 1);
 		}
 	}
 }

@@ -8,7 +8,7 @@ void MyGame::Initialize(){
 	// BGM
 	AudioManager::GetInstance()->LoadWave("titleBGM.wav");
 	AudioManager::GetInstance()->PlayWave("titleBGM.wav", 0.1f, true);
-	sceneManager_->ChangeScene("GAME");
+	sceneManager_->ChangeScene("TITLE");
 }
 
 void MyGame::Finalize(){
