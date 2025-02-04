@@ -25,6 +25,14 @@ void Player::Initialize() {
 	//reticle3D_->SetModel("shere");
 	reticle3D_->SetTranslate({ 0,0,10.0f });
 	reticle3D_->SetParent(baseObject3D_.get());
+	LightManager::DirectionalLight* directionalLight = LightManager::GetInstance()->GetDirectionalLight();
+	directionalLight->spotLightCount = 0;
+	LightManager::GetInstance()->SetDirectionalLight(*directionalLight);
+	LightManager::SpotLight spotLight = *LightManager::GetInstance()->GetSpotLight();
+	spotLight.intensity = 1.0f;
+	spotLight.distance = 10.0f;
+	spotLight.cosAngle = 0.995f;
+	LightManager::GetInstance()->SetSpotLight(0, spotLight);
 }
 
 void Player::Update() {
@@ -106,6 +114,17 @@ void Player::Move() {// 移動量
 		Vector3 position = baseObject3D_->GetTranslate();
 		baseObject3D_->SetTranslate(position + velocity_);
 		baseObject3D_->SetRotate(rotation);
+	}
+
+	if (input_->PushKey(DIK_SPACE)) {
+		LightManager::DirectionalLight* directionalLight = LightManager::GetInstance()->GetDirectionalLight();
+		directionalLight->spotLightCount = 1;
+		LightManager::GetInstance()->SetDirectionalLight(*directionalLight);
+	}
+	else {
+		LightManager::DirectionalLight* directionalLight = LightManager::GetInstance()->GetDirectionalLight();
+		directionalLight->spotLightCount = 0;
+		LightManager::GetInstance()->SetDirectionalLight(*directionalLight);
 	}
 }
 

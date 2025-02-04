@@ -121,41 +121,17 @@ PixelShaderOutput main(VertexShaderOutput input){
     float32_t4 transformedUV = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
     //テクスチャカラー
     float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
-    ////gTextureのサイズを取得
-    //int32_t textureWidth, textureHeight;
-    //gTexture.GetDimensions(textureWidth, textureHeight);
-
-    ////gSubTextureのサイズを取得
-    //int32_t subTextureWidth, subTextureHeight;
-    //gSubTexture.GetDimensions(subTextureWidth, subTextureHeight);
-
-    ////transformedUVは 0.0〜1.0 の範囲なので、`gTexture` のピクセル座標に変換
-    //float32_t2 texelPos = transformedUV.xy * float32_t2(textureWidth, textureHeight);
-
-    ////gSubTextureの座標スケールをgTextureに合わせる
-    //int32_t2 pixelPos = int32_t2(texelPos * float32_t2(subTextureWidth, subTextureHeight) / float32_t2(textureWidth, textureHeight));
-
-    // `gSubTexture` の解像度を取得
+   
+    // gSubTextureの解像度を取得
     int32_t subTextureWidth, subTextureHeight;
     gSubTexture.GetDimensions(subTextureWidth, subTextureHeight);
-
-    // モデルのスケールを取得（例: ワールド行列のX軸スケールを使用）
-    float32_t3 modelScale = float32_t3(
-    gMaterial.objectScale.x,
-    gMaterial.objectScale.y,
-    gMaterial.objectScale.z
-    );
-
-    // スケール補正
-    float32_t scaleFactor = max(modelScale.x, modelScale.y); // X,Yどちらか大きい方を採用
-    int32_t scaledWidth = int32_t(subTextureWidth * scaleFactor);
-    int32_t scaledHeight = int32_t(subTextureHeight * scaleFactor);
-
-    // UV座標をスケール補正してピクセル座標に変換
-    int32_t2 pixelPos = int32_t2(transformedUV.xy * float32_t2(scaledWidth, scaledHeight));
     
+    //// UV座標をスケール補正してピクセル座標に変換
+    int32_t2 pixelPos = int32_t2(transformedUV.xy * float32_t2(subTextureWidth, subTextureHeight));
     float32_t4 subTextureColor = gSubTexture.Load(pixelPos);
+    
     //float32_t4 subTextureColor = gSubTexture.Load(int32_t2(transformedUV.xy));
+    
     if (textureColor.a == 0.0){ discard;}
     if (textureColor.a <= 0.5){ discard;}
     if (gMaterial.isSubTexture){
@@ -191,13 +167,12 @@ PixelShaderOutput main(VertexShaderOutput input){
         if (gMaterial.isSubTexture)
         {
             textureColor.rgb = (subTextureColor.rgb * subTextureColor.a) + (textureColor.rgb * (1 - subTextureColor.a));
-            float32_t subTextureA = 1.0f - length(spotLightColor);
-            if (subTextureA < subTextureColor.a){
-                if (subTextureA <= 0.0f){
-                    subTextureA = 0.0f;
-                }
-                gSubTexture[pixelPos] = float32_t4(subTextureColor.rgb, subTextureA);
+            float32_t subTextureA = subTextureColor.a - length(spotLightColor);
+            if (subTextureA <= 0.0f)
+            {
+                subTextureA = 0.0f;
             }
+            gSubTexture[pixelPos] = float32_t4(subTextureColor.rgb, subTextureA);
         }
     }
     else{
