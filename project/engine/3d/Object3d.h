@@ -20,6 +20,8 @@ private:
 		Matrix4x4 uvTransform;
 		int enableLighting;
 		float shininess;
+		int isSubTexture = false;
+		Vector3 objectScale{1.0f,1.0f,1.0f};
 		float padding[2];
 	};
 	struct CameraForGpu {
@@ -76,5 +78,6 @@ public://ゲッターセッター
 	void SetIsLighting(bool isLighting) { materialData->enableLighting = isLighting; }
 	void SetTexture(std::string textureFilePath) { textureFilePath_ = textureFilePath; }
 	void SetSubTexture(std::string textureFilePath,std::string ObjectName) { subTextureFilePath_ = textureFilePath + ObjectName; }
+	void SetIsSubTexture(bool isSubTexture) { materialData->isSubTexture = (int)isSubTexture; }
 };
 

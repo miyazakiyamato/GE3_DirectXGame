@@ -10,6 +10,7 @@ void Ground::Initialize() {
 	std::string objectName = "ground";
 	TextureManager::GetInstance()->LoadRWTexture("resources/texture/dirt.png", objectName);
 	object3d->SetSubTexture("resources/texture/dirt.png", objectName);
+	object3d->SetIsSubTexture(true);
 }
 
 void Ground::Update() {

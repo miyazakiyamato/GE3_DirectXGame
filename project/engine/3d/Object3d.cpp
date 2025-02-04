@@ -49,6 +49,8 @@ void Object3d::Update(){
 	else {
 		worldViewProjectionMatrix = worldMatrix;
 	}
+	materialData->objectScale = transform.scale;
+
 	wvpData->WVP = worldViewProjectionMatrix;
 	wvpData->World = worldMatrix;
 	wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(worldMatrix));

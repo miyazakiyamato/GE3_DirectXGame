@@ -13,6 +13,7 @@ void Enemy::Initialize(){
 	std::string objectName = "enemy";
 	TextureManager::GetInstance()->LoadRWTexture("resources/texture/dirt.png", objectName);
 	baseObject3D_->SetSubTexture("resources/texture/dirt.png", objectName);
+	baseObject3D_->SetIsSubTexture(true);
 }
 
 void Enemy::Update(){
