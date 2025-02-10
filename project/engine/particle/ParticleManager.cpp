@@ -102,7 +102,9 @@ void ParticleManager::Draw() {
 }
 
 void ParticleManager::CreateParticleGroup(const std::string name, const std::string textureFilePath) {
-    assert(particleGroups.count(name) == 0 && "ParticleGroup with this name already exists.");
+    if (particleGroups.count(name)) {
+        return;
+    }
 
     // パーティクルグループの作成と初期化
     auto group = std::make_unique<ParticleGroup>();

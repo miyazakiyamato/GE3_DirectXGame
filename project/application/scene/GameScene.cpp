@@ -23,7 +23,7 @@ void GameScene::Initialize(){
 	CameraManager::GetInstance()->GetCamera()->SetRotate({ 0.3f,-0.8f,0.0f });
 	CameraManager::GetInstance()->GetCamera()->SetTranslate({ 8.0f,4.0f,-8.0f });
 
-	CameraManager::GetInstance()->FindCamera("default");
+	CameraManager::GetInstance()->FindCamera("default"); 
 
 	LightManager::DirectionalLight* directionalLight = LightManager::GetInstance()->GetDirectionalLight();
 	directionalLight->spotLightCount = 1;
