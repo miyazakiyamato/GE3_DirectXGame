@@ -44,6 +44,8 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("terrain/terrain.obj");
 	ModelManager::GetInstance()->LoadModel("plane/plane.gltf");
 
+	//ModelManager::GetInstance()->LoadModel("AnimatedCube/AnimatedCube.gltf");
+
 	object3ds[0]->SetModel("sphere/sphere.obj");
 	object3ds[0]->SetTranslate({ -1,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });

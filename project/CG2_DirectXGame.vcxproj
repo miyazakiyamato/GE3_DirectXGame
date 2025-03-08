@@ -121,6 +121,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\collision\CollisionManager.cpp" />
     <ClCompile Include="engine\collision\ContactRecord.cpp" />
     <ClCompile Include="engine\math\Easing.cpp" />
+    <ClCompile Include="engine\math\Quaternion.cpp" />
     <ClCompile Include="engine\scene\AbstractSceneFactory.cpp" />
     <ClCompile Include="application\scene\BaseScene.cpp" />
     <ClCompile Include="engine\audio\AudioManager.cpp" />
@@ -169,6 +170,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\collision\CollisionTypeIdDef.h" />
     <ClInclude Include="engine\collision\ContactRecord.h" />
     <ClInclude Include="engine\math\Easing.h" />
+    <ClInclude Include="engine\math\Quaternion.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />
     <ClInclude Include="application\scene\BaseScene.h" />
     <ClInclude Include="engine\audio\AudioManager.h" />

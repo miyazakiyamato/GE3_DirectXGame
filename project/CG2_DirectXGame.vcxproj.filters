@@ -255,6 +255,9 @@
     <ClCompile Include="engine\particle\ParticlePipeline.cpp">
       <Filter>ソース ファイル\engine\particle</Filter>
     </ClCompile>
+    <ClCompile Include="engine\math\Quaternion.cpp">
+      <Filter>ソース ファイル\engine\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -391,6 +394,9 @@
     </ClInclude>
     <ClInclude Include="engine\particle\ParticlePipeline.h">
       <Filter>ヘッダー ファイル\engine\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\Quaternion.h">
+      <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
