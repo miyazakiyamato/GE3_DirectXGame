@@ -31,9 +31,6 @@ private://メンバ変数
 	AccelerationField* accelerationField_;
 
 	ParticleEmitter* particleEmitter_;
-	
-	//デルタタイム
-	const float kDeltaTime_ = 1.0f / 60.0f;
 
 	/*std::vector<std::unique_ptr<Object3d>> object3ds_;
 	std::vector< std::unique_ptr<Sprite>> sprites_;*/

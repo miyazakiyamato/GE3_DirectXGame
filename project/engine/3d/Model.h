@@ -4,7 +4,7 @@
 #include <assimp/postprocess.h>
 #include "DirectXCommon.h"
 #include "BlendMode.h"
-#include "Matrix4x4.h"
+#include "Quaternion.h"
 
 class Model{
 private:
@@ -31,6 +31,7 @@ private:
 		MaterialData material;
 		Node rootNode;
 	};
+
 public://メンバ関数
 	//初期化
 	void Initialize(DirectXCommon* dxCommon, const std::string& directoryPath, const std::string& filename);

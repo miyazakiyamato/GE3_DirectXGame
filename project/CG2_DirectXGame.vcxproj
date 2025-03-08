@@ -113,6 +113,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="application\3d\AccelerationField.cpp" />
     <ClCompile Include="engine\base\BasePipeline.cpp" />
     <ClCompile Include="engine\base\BlendMode.cpp" />
@@ -120,6 +121,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\collision\Collision.cpp" />
     <ClCompile Include="engine\collision\CollisionManager.cpp" />
     <ClCompile Include="engine\collision\ContactRecord.cpp" />
+    <ClCompile Include="engine\manager\TimeManager.cpp" />
     <ClCompile Include="engine\math\Easing.cpp" />
     <ClCompile Include="engine\math\Quaternion.cpp" />
     <ClCompile Include="engine\scene\AbstractSceneFactory.cpp" />
@@ -161,6 +163,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\particle\ParticlePipeline.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="application\3d\AccelerationField.h" />
     <ClInclude Include="engine\base\BasePipeline.h" />
     <ClInclude Include="engine\base\BlendMode.h" />
@@ -169,6 +172,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\collision\CollisionManager.h" />
     <ClInclude Include="engine\collision\CollisionTypeIdDef.h" />
     <ClInclude Include="engine\collision\ContactRecord.h" />
+    <ClInclude Include="engine\manager\TimeManager.h" />
     <ClInclude Include="engine\math\Easing.h" />
     <ClInclude Include="engine\math\Quaternion.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />

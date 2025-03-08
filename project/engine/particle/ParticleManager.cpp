@@ -5,7 +5,7 @@
 #include "CameraManager.h"
 #include <numbers>
 #include "PipelineManager.h"
-
+#include "TimeManager.h"
 
 ParticleManager* ParticleManager::instance = nullptr;
 
@@ -61,9 +61,9 @@ void ParticleManager::Update() {
         for (std::list<Particle>::iterator it = group.particles.begin(); it != group.particles.end();) {
             Particle& particle = *it;
 
-            particle.currentTime += kDeltaTime_;
+            particle.currentTime += TimeManager::GetInstance()->deltaTime_;
             particle.color.w = 1.0f - (particle.currentTime / particle.lifeTime);
-            particle.transform.translate = particle.transform.translate + particle.velocity * kDeltaTime_;
+            particle.transform.translate = particle.transform.translate + particle.velocity * TimeManager::GetInstance()->deltaTime_;
             if (particle.lifeTime <= particle.currentTime) {
                 it = group.particles.erase(it);
                 group.kNumInstance--;

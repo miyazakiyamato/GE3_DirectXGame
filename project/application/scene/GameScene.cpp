@@ -7,6 +7,7 @@
 #include "AudioManager.h"
 #include "ParticleManager.h"
 #include "GlobalVariables.h"
+#include "TimeManager.h"
 
 void GameScene::Initialize(){
 	BaseScene::Initialize();
@@ -44,9 +45,11 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("terrain/terrain.obj");
 	ModelManager::GetInstance()->LoadModel("plane/plane.gltf");
 
-	//ModelManager::GetInstance()->LoadModel("AnimatedCube/AnimatedCube.gltf");
+	ModelManager::GetInstance()->LoadModel("AnimatedCube/AnimatedCube.gltf");
+	ModelManager::GetInstance()->LoadAnimation("AnimatedCube/AnimatedCube.gltf");
 
-	object3ds[0]->SetModel("sphere/sphere.obj");
+	object3ds[0]->SetModel("AnimatedCube/AnimatedCube.gltf");
+	object3ds[0]->SetAnimation("AnimatedCube/AnimatedCube.gltf",true);
 	object3ds[0]->SetTranslate({ -1,0,0 });
 	object3ds[0]->SetRotate({ 0,3.14f,0 });
 	object3ds[1]->SetModel("plane/plane.gltf");
@@ -380,7 +383,7 @@ void GameScene::Update(){
 				ParticleManager::Particle& particle = *it;
 
 				if (Collision::IsCollision(accelerationField_->GetAABB(), particle.transform.translate)) {
-					particle.velocity += accelerationField_->GetAcceleration() * kDeltaTime_;
+					particle.velocity += accelerationField_->GetAcceleration() * TimeManager::GetInstance()->deltaTime_;
 
 				}
 

@@ -28,6 +28,7 @@
 #include "AbstractSceneFactory.h"
 #include "ParticleManager.h"
 #include "LightManager.h"
+#include "TimeManager.h"
 
 class Framework{
 public://メンバ関数
@@ -77,5 +78,7 @@ protected://メンバ変数
 	SceneManager* sceneManager_ = nullptr;
 	//シーンファクトリー
 	AbstractSceneFactory* sceneFactory_ = nullptr;
+	//タイムマネージャ
+	TimeManager* timeManager_ = nullptr;
 };
 

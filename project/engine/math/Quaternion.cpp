@@ -147,6 +147,11 @@ Matrix4x4 Quaternion::MakeRotateMatrix(const Quaternion& quaternion)
 	};
 	return result;
 }
+Matrix4x4 Quaternion::MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate){
+	Matrix4x4 m;
+	m = Matrix4x4::MakeScaleMatrix(scale) * MakeRotateMatrix(rotate) * Matrix4x4::MakeTranslateMatrix(translate);
+	return m;
+}
 Quaternion Quaternion::Slerp(const Quaternion& q0, const Quaternion& q1, float t){
 	Quaternion q0Copy = q0;
 	Quaternion q1Copy = q1;

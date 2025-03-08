@@ -64,10 +64,16 @@ void Framework::Initialize(){
 	sceneFactory_ = new SceneFactory();
 	sceneManager_ = SceneManager::GetInstance();
 	sceneManager_->SetSceneFactory(sceneFactory_);
+
+	//タイムマネージャの初期化
+	timeManager_ = TimeManager::GetInstance();
+	timeManager_->Initialize();
+
 }
 
 void Framework::Finalize(){
 	//終了
+	timeManager_->Finalize();
 	sceneManager_->Finalize();
 	audioManager_->Finalize();
 	cameraManager_->Finalize();
@@ -95,6 +101,8 @@ void Framework::Update(){
 	imGuiManager->Begin();
 
 	sceneManager_->Update();
+
+	timeManager_->Update();
 
 	imGuiManager->End();
 }

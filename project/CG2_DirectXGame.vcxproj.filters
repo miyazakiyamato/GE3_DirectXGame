@@ -258,6 +258,12 @@
     <ClCompile Include="engine\math\Quaternion.cpp">
       <Filter>ソース ファイル\engine\math</Filter>
     </ClCompile>
+    <ClCompile Include="engine\manager\TimeManager.cpp">
+      <Filter>ソース ファイル\engine\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -397,6 +403,12 @@
     </ClInclude>
     <ClInclude Include="engine\math\Quaternion.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\manager\TimeManager.h">
+      <Filter>ヘッダー ファイル\engine\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

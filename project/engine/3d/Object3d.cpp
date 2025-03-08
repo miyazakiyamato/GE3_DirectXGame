@@ -2,6 +2,7 @@
 #include "ModelManager.h"
 #include "CameraManager.h"
 #include "PipelineManager.h"
+#include "TimeManager.h"
 
 void Object3d::Initialize(){
 	dxCommon_ = ModelManager::GetInstance()->GetDirectXCommon();
@@ -48,13 +49,29 @@ void Object3d::Update(){
 	else {
 		worldViewProjectionMatrix = worldMatrix;
 	}
-	wvpData->WVP = worldViewProjectionMatrix;
-	wvpData->World = worldMatrix;
-	wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(worldMatrix));
 	if (model_) {
-		wvpData->WVP = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldViewProjectionMatrix;
-		wvpData->World = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldMatrix;
-		wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
+		if (animationData_) {
+			animationData_->time += TimeManager::GetInstance()->deltaTime_;
+			if (animationData_->isLoop) {
+				animationData_->time = fmod(animationData_->time, animationData_->animation->GetDuration());
+			} else if (animationData_->time > animationData_->animation->GetDuration()) {
+				animationData_->time = animationData_->animation->GetDuration();
+			}
+			Matrix4x4 localMatrix = animationData_->animation->MakeLocalMatrix(model_->GetModelData().rootNode.name,animationData_->time);
+			
+			wvpData->WVP = localMatrix * worldViewProjectionMatrix;
+			wvpData->World = localMatrix * worldMatrix;
+			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
+		}
+		else {
+			wvpData->WVP = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldViewProjectionMatrix;
+			wvpData->World = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldMatrix;
+			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
+		}
+	} else {
+		wvpData->WVP = worldViewProjectionMatrix;
+		wvpData->World = worldMatrix;
+		wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(worldMatrix));
 	}
 }
 
@@ -89,6 +106,13 @@ void Object3d::SetModel(const std::string& filePath){
 	materialData->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
 	materialData->shininess = 40.0f;
 	materialData->highLightColor = { 1.0f,1.0f,1.0f,1.0f };
+}
+
+void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
+	animationData_ = std::make_unique<AnimationData>();
+	animationData_->animation = ModelManager::GetInstance()->FindAnimation(filePath);
+	animationData_->time = 0.0f;
+	animationData_->isLoop = isLoop;
 }
 
 Vector3 Object3d::GetCenterPosition() const
