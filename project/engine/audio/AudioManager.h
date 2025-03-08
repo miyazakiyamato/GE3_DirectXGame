@@ -54,7 +54,7 @@ private://メンバ変数
 	ComPtr<IXAudio2> xAudio2;
 	IXAudio2MasteringVoice* masterVoice = nullptr;
 
-	const std::string audioFilePath = "resources/";
+	const std::string audioFilePath = "resources/audio/";
 
 	// 音声格納
 	std::unordered_map<std::string, SoundData> soundDatas;

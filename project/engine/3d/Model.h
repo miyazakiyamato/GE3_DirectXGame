@@ -1,4 +1,7 @@
 #pragma once
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include "DirectXCommon.h"
 #include "BlendMode.h"
 #include "Matrix4x4.h"
@@ -13,6 +16,12 @@ private:
 		Vector2 texcoord;
 		Vector3 normal;
 	};
+	struct Node
+	{
+		Matrix4x4 localMatrix;
+		std::string name;
+		std::vector<Node> children;
+	};
 	struct MaterialData {
 		std::string mtlFilePath;
 		std::string textureFilePath;
@@ -20,16 +29,17 @@ private:
 	struct ModelData {
 		std::vector<VertexData> vertices;
 		MaterialData material;
+		Node rootNode;
 	};
 public://メンバ関数
 	//初期化
 	void Initialize(DirectXCommon* dxCommon, const std::string& directoryPath, const std::string& filename);
 	//描画
 	void Draw();
-	//.mtlファイルの読み取り
-	void LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 	//.objファイルの読み取り
 	void LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	//Node解析
+	Node ReadNode(aiNode* node);
 	//カラー
 	Vector4 LoadColor();
 private:
@@ -47,5 +57,6 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	//D3D12_INDEX_BUFFER_VIEW indexBufferView;
 public://ゲッターセッター
+	const ModelData& GetModelData() { return modelData; }
 };
 

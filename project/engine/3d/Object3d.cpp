@@ -51,6 +51,11 @@ void Object3d::Update(){
 	wvpData->WVP = worldViewProjectionMatrix;
 	wvpData->World = worldMatrix;
 	wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(worldMatrix));
+	if (model_) {
+		wvpData->WVP = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldViewProjectionMatrix;
+		wvpData->World = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldMatrix;
+		wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
+	}
 }
 
 void Object3d::Draw(){
