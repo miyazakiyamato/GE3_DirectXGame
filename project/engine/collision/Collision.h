@@ -35,6 +35,23 @@ struct OBB {
 	Vector3 orientations[3];
 	Vector3 size;
 };
+//OBB MakeOBBRotate(const OBB& obb, const Vector3& rotate) {
+//	OBB obb2 = obb;
+//	Matrix4x4 obbRotateMatrix = Matrix4x4::MakeRotateXMatrix(rotate.x) * Matrix4x4::MakeRotateYMatrix(rotate.y) * Matrix4x4::MakeRotateZMatrix(rotate.z);
+//	obb2.orientations[0] = {
+//		obbRotateMatrix.m[0][0],
+//		obbRotateMatrix.m[0][1],
+//		obbRotateMatrix.m[0][2] };
+//	obb2.orientations[1] = {
+//		obbRotateMatrix.m[1][0],
+//		obbRotateMatrix.m[1][1],
+//		obbRotateMatrix.m[1][2] };
+//	obb2.orientations[2] = {
+//		obbRotateMatrix.m[2][0],
+//		obbRotateMatrix.m[2][1],
+//		obbRotateMatrix.m[2][2] };
+//	return obb2;
+//}
 class Collision {
 public:
 	static bool IsCollision(const Sphere& s1, const Sphere& s2);

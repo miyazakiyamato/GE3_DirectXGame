@@ -30,6 +30,7 @@
 #include "ParticleManager.h"
 #include "LightManager.h"
 #include "TimeManager.h"
+#include "Line3D.h"
 
 class Framework{
 public://メンバ関数
@@ -67,6 +68,8 @@ protected://メンバ変数
 	ParticleManager* particleManager_ = nullptr;
 	//モデルマネージャ
 	ModelManager* modelManager_ = nullptr;
+	//ラインマネージャ
+	Line3dManager* lineManager_ = nullptr;
 	//ライトマネージャ
 	LightManager* lightManager_ = nullptr;
 	//カメラマネージャ

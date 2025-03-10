@@ -44,6 +44,10 @@ void Framework::Initialize(){
 	modelManager_ = ModelManager::GetInstance();
 	modelManager_->Initialize(dxCommon.get());
 	
+	//ラインマネージャ
+	lineManager_ = Line3dManager::GetInstance();
+	lineManager_->Initialize(srvManager.get());
+
 	//ライトマネージャの初期化
 	lightManager_ = LightManager::GetInstance();
 	lightManager_->Initialize(dxCommon.get(), srvManager.get());
@@ -78,6 +82,7 @@ void Framework::Finalize(){
 	audioManager_->Finalize();
 	cameraManager_->Finalize();
 	lightManager_->Finalize();
+	lineManager_->Finalize();
 	modelManager_->Finalize();
 	particleManager_->Finalize();
 	textureManager_->Finalize();
@@ -94,6 +99,8 @@ void Framework::Update(){
 	Input::GetInstance()->Update();
 
 	imGuiManager->Begin();
+
+	lineManager_->Update();
 
 	sceneManager_->Update();
 

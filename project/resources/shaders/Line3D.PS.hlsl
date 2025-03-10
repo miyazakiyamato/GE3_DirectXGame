@@ -1,8 +1,4 @@
-#include "Object3d.hlsli"
-struct Material{
-    float32_t4 color;
-};
-ConstantBuffer<Material> gMaterial : register(b0);
+#include "Line3D.hlsli"
 
 struct PixelShaderOutput{
     float32_t4 color : SV_TARGET0;
@@ -11,10 +7,9 @@ struct PixelShaderOutput{
 PixelShaderOutput main(VertexShaderOutput input){
     PixelShaderOutput output;
     
-    output.color = gMaterial.color;
+    output.color = input.color;
     
-    if (output.color.a == 0.0)
-    {
+    if (output.color.a == 0.0){
         discard;
     }
     return output;

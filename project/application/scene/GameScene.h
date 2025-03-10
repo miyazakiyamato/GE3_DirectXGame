@@ -6,7 +6,6 @@
 #include "ParticleEmitter.h"
 #include "CollisionManager.h"
 #include "AccelerationField.h"
-#include "Line3D.h"
 
 class GameScene : public BaseScene {
 public://メンバ関数
@@ -32,7 +31,5 @@ private://メンバ変数
 	std::vector< std::unique_ptr<Sprite>> sprites_;
 
 	std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
-
-	std::unique_ptr<Line3D> line3D_;
 };
 

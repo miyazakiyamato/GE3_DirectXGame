@@ -8,6 +8,7 @@
 #include "ParticleManager.h"
 #include "GlobalVariables.h"
 #include "TimeManager.h"
+#include "Line3D.h"
 
 void GameScene::Initialize(){
 	BaseScene::Initialize();
@@ -60,9 +61,6 @@ void GameScene::Initialize(){
 	object3ds_[2]->SetTranslate({ 0,0,0 });
 	object3ds_[2]->SetRotate({ 0,3.14f,0 });
 	
-	line3D_ = std::make_unique<Line3D>();
-	line3D_->Initialize();
-
 	//
 	isAccelerationField = false;
 	accelerationField_.reset(new AccelerationField);
@@ -92,8 +90,6 @@ void GameScene::Finalize(){
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		object3d.reset();  // メモリを解放する
 	}
-
-	line3D_.reset();
 
 	for (std::unique_ptr<Sprite>& sprite : sprites_) {
 		sprite.reset();  // メモリを解放する
@@ -379,8 +375,6 @@ void GameScene::Update(){
 		object3d->Update();
 	}
 
-	line3D_->Update();
-
 	if (isAccelerationField) {
 		for (std::pair<const std::string, std::unique_ptr<ParticleManager::ParticleGroup>>& pair : ParticleManager::GetInstance()->GetParticleGroups()) {
 			ParticleManager::ParticleGroup& group = *pair.second;
@@ -410,15 +404,18 @@ void GameScene::Update(){
 void GameScene::Draw(){
 	//Object3dの描画
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
-		object3d->Draw();
+		//object3d->Draw();
 	}
 
 	//当たり判定の表示
 	collisionManager_->Draw();
 	
 	//ラインの描画
-	line3D_->Draw();
-	
+	Line3dManager::GetInstance()->DrawLine(object3ds_[0]->GetCenterPosition(), object3ds_[1]->GetCenterPosition(),{1.0f,0.0f,0.0f,1.0f});
+	Line3dManager::GetInstance()->DrawLine(object3ds_[1]->GetCenterPosition(), object3ds_[2]->GetCenterPosition(),{1.0f,0.0f,0.0f,1.0f});
+	Line3dManager::GetInstance()->DrawGrid();
+	Line3dManager::GetInstance()->Draw();
+
 	//Particleの描画
 	ParticleManager::GetInstance()->Draw();
 
