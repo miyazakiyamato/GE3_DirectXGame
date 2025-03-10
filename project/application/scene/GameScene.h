@@ -6,6 +6,7 @@
 #include "ParticleEmitter.h"
 #include "CollisionManager.h"
 #include "AccelerationField.h"
+#include "Line3D.h"
 
 class GameScene : public BaseScene {
 public://メンバ関数
@@ -31,6 +32,8 @@ private://メンバ変数
 	AccelerationField* accelerationField_;
 
 	ParticleEmitter* particleEmitter_;
+
+	std::unique_ptr<Line3D> line3D_;
 
 	/*std::vector<std::unique_ptr<Object3d>> object3ds_;
 	std::vector< std::unique_ptr<Sprite>> sprites_;*/

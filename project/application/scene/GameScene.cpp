@@ -60,6 +60,9 @@ void GameScene::Initialize(){
 	object3ds[2]->SetTranslate({ 0,0,0 });
 	object3ds[2]->SetRotate({ 0,3.14f,0 });
 	
+	line3D_ = std::make_unique<Line3D>();
+	line3D_->Initialize();
+
 	//
 	isAccelerationField = false;
 	accelerationField_ = new AccelerationField;
@@ -375,6 +378,8 @@ void GameScene::Update(){
 		object3d->Update();
 	}
 
+	line3D_->Update();
+
 	if (isAccelerationField) {
 		for (std::pair<const std::string, std::unique_ptr<ParticleManager::ParticleGroup>>& pair : ParticleManager::GetInstance()->GetParticleGroups()) {
 			ParticleManager::ParticleGroup& group = *pair.second;
@@ -409,6 +414,10 @@ void GameScene::Draw(){
 
 	//当たり判定の表示
 	collisionManager_->Draw();
+	
+	//ラインの描画
+	line3D_->Draw();
+	
 	//Particleの描画
 	ParticleManager::GetInstance()->Draw();
 
