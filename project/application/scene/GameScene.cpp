@@ -48,17 +48,17 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("AnimatedCube/AnimatedCube.gltf");
 	ModelManager::GetInstance()->LoadAnimation("AnimatedCube/AnimatedCube.gltf");
 
-	object3ds[0]->SetModel("AnimatedCube/AnimatedCube.gltf");
-	object3ds[0]->SetAnimation("AnimatedCube/AnimatedCube.gltf",true);
-	object3ds[0]->SetTranslate({ -1,0,0 });
-	object3ds[0]->SetRotate({ 0,3.14f,0 });
-	object3ds[1]->SetModel("plane/plane.gltf");
-	//object3ds[1]->SetModel("axis/axis.obj");
-	object3ds[1]->SetTranslate({ 1,0,0 });
-	object3ds[1]->SetRotate({ 0,3.14f,0 });
-	object3ds[2]->SetModel("terrain/terrain.obj");
-	object3ds[2]->SetTranslate({ 0,0,0 });
-	object3ds[2]->SetRotate({ 0,3.14f,0 });
+	object3ds_[0]->SetModel("AnimatedCube/AnimatedCube.gltf");
+	object3ds_[0]->SetAnimation("AnimatedCube/AnimatedCube.gltf",true);
+	object3ds_[0]->SetTranslate({ -1,0,0 });
+	object3ds_[0]->SetRotate({ 0,3.14f,0 });
+	object3ds_[1]->SetModel("plane/plane.gltf");
+	//object3ds_[1]->SetModel("axis/axis.obj");
+	object3ds_[1]->SetTranslate({ 1,0,0 });
+	object3ds_[1]->SetRotate({ 0,3.14f,0 });
+	object3ds_[2]->SetModel("terrain/terrain.obj");
+	object3ds_[2]->SetTranslate({ 0,0,0 });
+	object3ds_[2]->SetRotate({ 0,3.14f,0 });
 	
 	line3D_ = std::make_unique<Line3D>();
 	line3D_->Initialize();
@@ -68,7 +68,7 @@ void GameScene::Initialize(){
 	accelerationField_.reset(new AccelerationField);
 
 	//ParticleManager::GetInstance()->CreateParticleGroup();
-	particleEmitter_.reset(new ParticleEmitter());
+	particleEmitter_.reset(new ParticleEmitter);
 	particleEmitter_->Initialize("circle", "resources/texture/circle.png");
 
 	//スプライトの初期化
@@ -92,6 +92,9 @@ void GameScene::Finalize(){
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		object3d.reset();  // メモリを解放する
 	}
+
+	line3D_.reset();
+
 	for (std::unique_ptr<Sprite>& sprite : sprites_) {
 		sprite.reset();  // メモリを解放する
 	}

@@ -10,20 +10,17 @@ private:
 	//構造体
 	struct VertexData {
 		Vector4 position;
-		Vector2 texcoord;
-		Vector3 normal;
 	};
 	struct Material {
-		Vector4 color;
+		Vector4 color{1.0f,1.0f,1.0f,1.0f};
 	};
 	struct TransformationMatrix {
 		Matrix4x4 WVP;
-		Matrix4x4 World;
 	};
 
 	struct Line{
-		Vector3 origin;
-		Vector3 diff;
+		Vector3 origin{0.0f,0.0f,0.0f};
+		Vector3 diff{ 1.0f,1.0f,1.0f };
 	};
 
 public://メンバ関数
@@ -33,6 +30,8 @@ public://メンバ関数
 	void Update();
 	//描画
 	void Draw();
+
+	
 private://メンバ変数
 	//バッファリソース
 	ComPtr<ID3D12Resource> vertexResource;

@@ -28,12 +28,10 @@ private://メンバ変数
 	bool isAccelerationField = false;
 	std::unique_ptr<AccelerationField> accelerationField_ = nullptr;
 
-	std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
-	
 	std::vector<std::unique_ptr<Object3d>> object3ds_;
 	std::vector< std::unique_ptr<Sprite>> sprites_;
 
-	ParticleEmitter* particleEmitter_;
+	std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
 
 	std::unique_ptr<Line3D> line3D_;
 };
