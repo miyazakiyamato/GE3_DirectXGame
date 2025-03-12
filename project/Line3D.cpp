@@ -138,14 +138,14 @@ void Line3dManager::DrawSphere(const Sphere& sphere, const Vector4& color) {
 }
 
 void Line3dManager::DrawGrid() {
-	const float kGridHalfwidth = 2.0f;
-	const uint32_t kSubdivision = 10;
+	const float kGridHalfwidth = 50.0f;
+	const uint32_t kSubdivision = int(kGridHalfwidth * 2.0f);
 	const float kGridEvery = (kGridHalfwidth * 2.0f) / float(kSubdivision);
 	//
 	for (uint32_t xIndex = 0; xIndex <= kSubdivision; ++xIndex) {
 		Vector3 screenVertices = { kGridEvery * xIndex - kGridEvery * kSubdivision / 2,0.0f, -kGridEvery * (kSubdivision / 2) };
 		Vector3 screenVertices2 = { kGridEvery * xIndex - kGridEvery * kSubdivision / 2,0.0f, kGridEvery * kSubdivision / 2 };
-		if (xIndex == 5) {
+		if (xIndex == kSubdivision / 2) {
 			DrawLine(screenVertices, screenVertices2, {0.0f,0.0f,0.0f,1.0f});
 		} else {
 			DrawLine(screenVertices, screenVertices2, { 0.66f,0.66f,0.66f,1.0f });
@@ -155,7 +155,7 @@ void Line3dManager::DrawGrid() {
 	for (uint32_t zIndex = 0; zIndex <= kSubdivision; ++zIndex) {
 		Vector3 screenVertices = { -kGridEvery * (kSubdivision / 2),0.0f,kGridEvery * zIndex - kGridEvery * kSubdivision / 2 };
 		Vector3 screenVertices2 = { kGridEvery * kSubdivision / 2,0.0f,kGridEvery * zIndex - kGridEvery * kSubdivision / 2 };
-		if (zIndex == 5) {
+		if (zIndex == kSubdivision / 2) {
 			DrawLine(screenVertices, screenVertices2, { 0.0f,0.0f,0.0f,1.0f });
 		} else {
 			DrawLine(screenVertices, screenVertices2, { 0.66f,0.66f,0.66f,1.0f });
