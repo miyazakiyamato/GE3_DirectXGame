@@ -39,13 +39,13 @@ public://メンバ関数
 
 	void DrawLine(const Vector3& pos1,const Vector3& pos2,const Vector4& color);
 	void DrawSphere(const Sphere& sphere, const Vector4& color);
-	void DrawGrid();
-	/*void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
-	void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
-	void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
-	void DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
-	void DrawBezier(const Vector3& controlPoint0, const Vector3& controlPoint1, const Vector3& controlPoint2, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
-	void DrawCotmullRom(const Vector3& controlPoint0, const Vector3& controlPoint1, const Vector3& controlPoint2, const Vector3& controlPoint3, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);*/
+	void DrawGrid(const Vector2 gridHalfLength);
+	void DrawPlane(const Plane& plane, const Vector4& color);
+	void DrawTriangle(const Triangle& triangle, const Vector4& color);
+	void DrawAABB(const AABB& aabb, const Vector4& color);
+	void DrawOBB(const OBB& obb, const Vector4& color);
+	void DrawBezier(const Vector3& controlPoint0, const Vector3& controlPoint1, const Vector3& controlPoint2, const Vector4& color);
+	void DrawCotmullRom(const Vector3& controlPoint0, const Vector3& controlPoint1, const Vector3& controlPoint2, const Vector3& controlPoint3, const Vector4& color);
 private://シングルインスタンス
 	static Line3dManager* instance;
 
