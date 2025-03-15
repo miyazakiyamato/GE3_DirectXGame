@@ -100,6 +100,7 @@ void Framework::Update(){
 
 	imGuiManager->Begin();
 
+
 	lineManager_->Update();
 
 	sceneManager_->Update();

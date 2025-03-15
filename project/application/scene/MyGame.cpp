@@ -22,8 +22,6 @@ void MyGame::Draw(){
 	//描画前処理
 	dxCommon->PreDraw();
 	srvManager->PreDraw();
-
-	CameraManager::GetInstance()->GetCamera()->Update();
 		
 	sceneManager_->Draw();
 

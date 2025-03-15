@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "LightManager.h"
 #include "Animation.h"
+#include "Skeleton.h"
 
 class Object3d{
 public:
@@ -59,6 +60,7 @@ private://メンバ変数
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	std::unique_ptr<AnimationData> animationData_ = nullptr;
+	std::unique_ptr<Skeleton> skeletonData_ = nullptr;
 
 	Object3d* parent_ = nullptr;
 

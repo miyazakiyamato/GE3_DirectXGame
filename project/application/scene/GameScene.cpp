@@ -33,33 +33,39 @@ void GameScene::Initialize(){
 	collisionManager_ = std::make_unique<CollisionManager>();
 	collisionManager_->Initialize();
 
-	for (uint32_t i = 0; i < 3; ++i) {
+	for (uint32_t i = 0; i < 1; ++i) {
 		std::unique_ptr<Object3d> object3d(new Object3d);
 		object3d->Initialize();
 		object3ds_.push_back(std::move(object3d));
 	}
 
-	ModelManager::GetInstance()->LoadModel("plane/plane.obj");
+	/*ModelManager::GetInstance()->LoadModel("plane/plane.obj");
 	ModelManager::GetInstance()->LoadModel("fence/fence.obj");
 	ModelManager::GetInstance()->LoadModel("axis/axis.obj");
 	ModelManager::GetInstance()->LoadModel("sphere/sphere.obj");
 	ModelManager::GetInstance()->LoadModel("terrain/terrain.obj");
-	ModelManager::GetInstance()->LoadModel("plane/plane.gltf");
+	ModelManager::GetInstance()->LoadModel("plane/plane.gltf");*/
 
 	ModelManager::GetInstance()->LoadModel("AnimatedCube/AnimatedCube.gltf");
 	ModelManager::GetInstance()->LoadAnimation("AnimatedCube/AnimatedCube.gltf");
+	ModelManager::GetInstance()->LoadModel("simpleSkin/simpleSkin.gltf");
+	ModelManager::GetInstance()->LoadAnimation("simpleSkin/simpleSkin.gltf");
 
-	object3ds_[0]->SetModel("AnimatedCube/AnimatedCube.gltf");
-	object3ds_[0]->SetAnimation("AnimatedCube/AnimatedCube.gltf",true);
+
+
+	/*object3ds_[0]->SetModel("AnimatedCube/AnimatedCube.gltf");
+	object3ds_[0]->SetAnimation("AnimatedCube/AnimatedCube.gltf",true);*/
+	object3ds_[0]->SetModel("simpleSkin/simpleSkin.gltf");
+	object3ds_[0]->SetAnimation("simpleSkin/simpleSkin.gltf",true);
 	object3ds_[0]->SetTranslate({ -1,0,0 });
 	object3ds_[0]->SetRotate({ 0,3.14f,0 });
-	object3ds_[1]->SetModel("plane/plane.gltf");
+	//object3ds_[1]->SetModel("plane/plane.gltf");
 	//object3ds_[1]->SetModel("axis/axis.obj");
-	object3ds_[1]->SetTranslate({ 1,0,0 });
+	/*object3ds_[1]->SetTranslate({ 1,0,0 });
 	object3ds_[1]->SetRotate({ 0,3.14f,0 });
 	object3ds_[2]->SetModel("terrain/terrain.obj");
 	object3ds_[2]->SetTranslate({ 0,0,0 });
-	object3ds_[2]->SetRotate({ 0,3.14f,0 });
+	object3ds_[2]->SetRotate({ 0,3.14f,0 });*/
 	
 	//
 	isAccelerationField = false;
@@ -367,6 +373,10 @@ void GameScene::Update(){
 		}
 		ImGui::End();
 	}
+#endif //_DEBUG
+	CameraManager::GetInstance()->GetCamera()->Update();
+
+#ifdef _DEBUG
 	// デバッグ用にワールドトランスフォームの更新
 	collisionManager_->UpdateWorldTransform();
 #endif //_DEBUG
@@ -411,9 +421,11 @@ void GameScene::Draw(){
 	collisionManager_->Draw();
 	
 	//ラインの描画
-	Line3dManager::GetInstance()->DrawLine(object3ds_[0]->GetCenterPosition(), object3ds_[1]->GetCenterPosition(),{1.0f,0.0f,0.0f,1.0f});
-	Line3dManager::GetInstance()->DrawLine(object3ds_[1]->GetCenterPosition(), object3ds_[2]->GetCenterPosition(),{1.0f,0.0f,0.0f,1.0f});
-	Line3dManager::GetInstance()->DrawGrid({50.0f,3.0f});
+	//Line3dManager::GetInstance()->DrawLine(object3ds_[0]->GetCenterPosition(), object3ds_[1]->GetCenterPosition(),{1.0f,0.0f,0.0f,1.0f});
+	//Line3dManager::GetInstance()->DrawLine(object3ds_[1]->GetCenterPosition(), object3ds_[2]->GetCenterPosition(),{1.0f,0.0f,0.0f,1.0f});
+	//Line3dManager::GetInstance()->DrawSphere({ object3ds_[0]->GetCenterPosition(),1.0f }, { 1.0f,0.0f,0.0f,1.0f });
+	//Line3dManager::GetInstance()->DrawSphere({ {},1.0f}, {1.0f,0.0f,0.0f,1.0f});
+	//Line3dManager::GetInstance()->DrawGrid({50.0f,3.0f});
 	Line3dManager::GetInstance()->Draw();
 
 	//Particleの描画

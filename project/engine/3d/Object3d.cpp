@@ -3,6 +3,7 @@
 #include "CameraManager.h"
 #include "PipelineManager.h"
 #include "TimeManager.h"
+#include "Line3D.h"
 
 void Object3d::Initialize(){
 	dxCommon_ = ModelManager::GetInstance()->GetDirectXCommon();
@@ -57,11 +58,31 @@ void Object3d::Update(){
 			} else if (animationData_->time > animationData_->animation->GetDuration()) {
 				animationData_->time = animationData_->animation->GetDuration();
 			}
-			Matrix4x4 localMatrix = animationData_->animation->MakeLocalMatrix(model_->GetModelData().rootNode.name,animationData_->time);
+			/*Matrix4x4 localMatrix = animationData_->animation->MakeLocalMatrix(model_->GetModelData().rootNode.name,animationData_->time);
 			
 			wvpData->WVP = localMatrix * worldViewProjectionMatrix;
 			wvpData->World = localMatrix * worldMatrix;
+			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));*/
+
+			wvpData->WVP = worldViewProjectionMatrix;
+			wvpData->World = worldMatrix;
 			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
+
+			//全てのJointを更新。
+			for (Skeleton::Joint& joint : skeletonData_->GetJoints()) {
+				//対象のJointのAnimationがあれば、値の適用を行う
+				/*if (auto it = animation.nodeAnimations.find(joint.name);it != animation.nodeAnimations.end()) {
+					const NodeAnimation& rootNodeAnimation = (*it).second;
+				}*/
+				/*joint.transform.translate = */
+
+				joint.localMatrix = Quaternion::MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
+				if (joint.parent) {
+					joint.skeletonSpaceMatrix = joint.localMatrix * skeletonData_->GetJoints()[*joint.parent].skeletonSpaceMatrix;
+				} else {
+					joint.skeletonSpaceMatrix = joint.localMatrix;
+				}
+			}
 		}
 		else {
 			wvpData->WVP = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldViewProjectionMatrix;
@@ -93,6 +114,16 @@ void Object3d::Draw(){
 		lightManager_->Draw();
 
 		model_->Draw();
+
+		//Skeleton
+		if (skeletonData_) {
+			for (Skeleton::Joint& joint : skeletonData_->GetJoints()) {
+				Line3dManager::GetInstance()->DrawSphere({ Matrix4x4::Transform({0.0f,0.0f,0.0f}, joint.skeletonSpaceMatrix * wvpData->World), 0.1f }, { 1.0f, 1.0f, 1.0f, 1.0f });
+				if (joint.parent && *joint.parent < skeletonData_->GetJoints().size()) {
+					Line3dManager::GetInstance()->DrawLine(Matrix4x4::Transform({ 0.0f,0.0f,0.0f }, joint.skeletonSpaceMatrix * wvpData->World), Matrix4x4::Transform({ 0.0f,0.0f,0.0f }, skeletonData_->GetJoints()[*joint.parent].skeletonSpaceMatrix * wvpData->World), { 1.0f, 1.0f, 1.0f, 1.0f });
+				}
+			}
+		}
 	}
 
 }
@@ -109,10 +140,14 @@ void Object3d::SetModel(const std::string& filePath){
 }
 
 void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
+	//アニメーション
 	animationData_ = std::make_unique<AnimationData>();
 	animationData_->animation = ModelManager::GetInstance()->FindAnimation(filePath);
 	animationData_->time = 0.0f;
 	animationData_->isLoop = isLoop;
+	//スケルトン
+	skeletonData_ = std::make_unique<Skeleton>();
+	skeletonData_->CreateSkeleton(model_->GetModelData().rootNode);
 }
 
 Vector3 Object3d::GetCenterPosition() const

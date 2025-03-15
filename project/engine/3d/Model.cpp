@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include "TextureManager.h"
+#include "Line3D.h"
 
 void Model::Initialize(DirectXCommon* dxCommon, const std::string& directoryPath, const std::string& filename){
 	dxCommon_ = dxCommon;
@@ -86,13 +87,21 @@ void Model::LoadObjFile(const std::string& directoryPath, const std::string& fil
 
 Model::Node Model::ReadNode(aiNode* node){
 	Node result;
-	aiMatrix4x4 aiLocalMatrix = node->mTransformation;//nodeのlocakMatrixを取得
-	aiLocalMatrix.Transpose();//列ベクトル形式を行ベクトル形式に転換
-	for (int i = 0; i < 4; ++i) {
-		for (int j = 0; j < 4; ++j){
-			result.localMatrix.m[i][j] = aiLocalMatrix[i][j];
-		}
-	}
+	aiVector3D scale, translate;
+	aiQuaternion rotate;
+	node->mTransformation.Decompose(scale, rotate, translate);//assimpの行列からSTRを抽出する関数を利用
+	result.transform.scale = { scale.x,scale.y,scale.z };
+	result.transform.rotate = { rotate.x,-rotate.y,-rotate.z,rotate.w };//x軸を反転、回転軸が逆なので軸反転
+	result.transform.translate = { -translate.x,translate.y,translate.z };//x軸を反転
+	result.localMatrix = Quaternion::MakeAffineMatrix(result.transform.scale, result.transform.rotate, result.transform.translate);
+
+	//aiMatrix4x4 aiLocalMatrix = node->mTransformation;//nodeのlocakMatrixを取得
+	//aiLocalMatrix.Transpose();//列ベクトル形式を行ベクトル形式に転換
+	//for (int i = 0; i < 4; ++i) {
+	//	for (int j = 0; j < 4; ++j){
+	//		result.localMatrix.m[i][j] = aiLocalMatrix[i][j];
+	//	}
+	//}
 	result.name = node->mName.C_Str();//Node名を格納
 	result.children.resize(node->mNumChildren);//子供の数だけ確保
 	for (uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {

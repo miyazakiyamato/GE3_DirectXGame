@@ -2,6 +2,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <optional>
+#include <map>
 #include "DirectXCommon.h"
 #include "BlendMode.h"
 #include "Quaternion.h"
@@ -10,14 +12,25 @@ class Model{
 private:
 	//namespace省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+public:
 	//構造体
 	struct VertexData {
 		Vector4 position;
 		Vector2 texcoord;
 		Vector3 normal;
 	};
-	struct Node
-	{
+	struct EulerTransform {
+		Vector3 scale;
+		Vector3 rotate;//Eulerでの回転
+		Vector3 translate;
+	};
+	struct QuaternionTransform {
+		Vector3 scale;
+		Quaternion rotate;
+		Vector3 translate;
+	};
+	struct Node{
+		QuaternionTransform transform;
 		Matrix4x4 localMatrix;
 		std::string name;
 		std::vector<Node> children;
@@ -50,7 +63,6 @@ private:
 	//バッファリソース
 	ComPtr<ID3D12Resource> vertexResource;
 	//Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
-	
 	//バッファリソース内のデータを指すポインタ
 	VertexData* vertexData = nullptr;
 	//uint32_t* indexData = nullptr;
