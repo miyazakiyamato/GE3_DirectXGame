@@ -83,5 +83,6 @@ public://ゲッターセッター
 	//const BlendMode& GetBlendMode() { return blendMode_; }
 
 	//void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
+	void SetKMaxInstance(uint32_t kMaxInstance);
 };
 

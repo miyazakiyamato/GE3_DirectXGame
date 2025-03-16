@@ -39,5 +39,6 @@ private://メンバ変数
 public://ゲッターセッター
 	float GetDuration() { return duration; }
 	const NodeAnimation& GetNodeAnimations(std::string rootNodeName) { return nodeAnimations[rootNodeName]; }
+	const std::map<std::string, NodeAnimation>& GetNodeAnimationsMap() { return nodeAnimations; }
 };
 

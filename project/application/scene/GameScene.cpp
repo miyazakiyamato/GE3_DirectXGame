@@ -33,7 +33,7 @@ void GameScene::Initialize(){
 	collisionManager_ = std::make_unique<CollisionManager>();
 	collisionManager_->Initialize();
 
-	for (uint32_t i = 0; i < 1; ++i) {
+	for (uint32_t i = 0; i < 3; ++i) {
 		std::unique_ptr<Object3d> object3d(new Object3d);
 		object3d->Initialize();
 		object3ds_.push_back(std::move(object3d));
@@ -50,6 +50,10 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadAnimation("AnimatedCube/AnimatedCube.gltf");
 	ModelManager::GetInstance()->LoadModel("simpleSkin/simpleSkin.gltf");
 	ModelManager::GetInstance()->LoadAnimation("simpleSkin/simpleSkin.gltf");
+	ModelManager::GetInstance()->LoadModel("human/sneakWalk.gltf");
+	ModelManager::GetInstance()->LoadAnimation("human/sneakWalk.gltf");
+	ModelManager::GetInstance()->LoadModel("human/walk.gltf");
+	ModelManager::GetInstance()->LoadAnimation("human/walk.gltf");
 
 
 
@@ -66,7 +70,14 @@ void GameScene::Initialize(){
 	object3ds_[2]->SetModel("terrain/terrain.obj");
 	object3ds_[2]->SetTranslate({ 0,0,0 });
 	object3ds_[2]->SetRotate({ 0,3.14f,0 });*/
-	
+	object3ds_[1]->SetModel("human/sneakWalk.gltf");
+	object3ds_[1]->SetAnimation("human/sneakWalk.gltf", true);
+	object3ds_[1]->SetTranslate({ 1,0,0 });
+	object3ds_[1]->SetRotate({ 0,3.14f,0 });
+	object3ds_[2]->SetModel("human/walk.gltf");
+	object3ds_[2]->SetAnimation("human/walk.gltf", true);
+	object3ds_[2]->SetTranslate({ 0,0,0 });
+	object3ds_[2]->SetRotate({ 0,3.14f,0 });
 	//
 	isAccelerationField = false;
 	accelerationField_.reset(new AccelerationField);

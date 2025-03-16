@@ -71,12 +71,11 @@ void Object3d::Update(){
 			//全てのJointを更新。
 			for (Skeleton::Joint& joint : skeletonData_->GetJoints()) {
 				//対象のJointのAnimationがあれば、値の適用を行う
-				/*if (auto it = animation.nodeAnimations.find(joint.name);it != animation.nodeAnimations.end()) {
-					const NodeAnimation& rootNodeAnimation = (*it).second;
-				}*/
-				/*joint.transform.translate = */
+				if (auto it = animationData_->animation->GetNodeAnimationsMap().find(joint.name); it != animationData_->animation->GetNodeAnimationsMap().end()) {
+					const Animation::NodeAnimation& rootNodeAnimation = (*it).second;
+					joint.localMatrix = animationData_->animation->MakeLocalMatrix(joint.name, animationData_->time);
+				}
 
-				joint.localMatrix = Quaternion::MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
 				if (joint.parent) {
 					joint.skeletonSpaceMatrix = joint.localMatrix * skeletonData_->GetJoints()[*joint.parent].skeletonSpaceMatrix;
 				} else {
@@ -118,7 +117,7 @@ void Object3d::Draw(){
 		//Skeleton
 		if (skeletonData_) {
 			for (Skeleton::Joint& joint : skeletonData_->GetJoints()) {
-				Line3dManager::GetInstance()->DrawSphere({ Matrix4x4::Transform({0.0f,0.0f,0.0f}, joint.skeletonSpaceMatrix * wvpData->World), 0.1f }, { 1.0f, 1.0f, 1.0f, 1.0f });
+				Line3dManager::GetInstance()->DrawSphere({ Matrix4x4::Transform({0.0f,0.0f,0.0f}, joint.skeletonSpaceMatrix * wvpData->World), 0.01f }, { 1.0f, 1.0f, 1.0f, 1.0f });
 				if (joint.parent && *joint.parent < skeletonData_->GetJoints().size()) {
 					Line3dManager::GetInstance()->DrawLine(Matrix4x4::Transform({ 0.0f,0.0f,0.0f }, joint.skeletonSpaceMatrix * wvpData->World), Matrix4x4::Transform({ 0.0f,0.0f,0.0f }, skeletonData_->GetJoints()[*joint.parent].skeletonSpaceMatrix * wvpData->World), { 1.0f, 1.0f, 1.0f, 1.0f });
 				}

@@ -110,7 +110,9 @@ void Line3dManager::DrawLine(const Vector3& pos1, const Vector3& pos2, const Vec
 	diff -= pos1;
 	kNumInstance_++;
 	if (kNumInstance_ >= kMaxInstance_) {
-		kNumInstance_ = kMaxInstance_;
+		//kNumInstance_ = kMaxInstance_;
+		kMaxInstance_ += 1000;
+		SetKMaxInstance(kMaxInstance_);
 		return;
 	}
 	lines_.push_back({ origin,diff,color});
@@ -292,4 +294,20 @@ void  Line3dManager::DrawCotmullRom(const Vector3& controlPoint0, const Vector3&
 			DrawLine(pos[0], pos[1], color);
 		}
 	}
+}
+
+void Line3dManager::SetKMaxInstance(uint32_t kMaxInstance){
+	kMaxInstance_ = kMaxInstance;
+
+	//Line用のTransformationMatirx用のリソースを作る
+	wvpResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix) * kMaxInstance_);
+	//データを書き込む
+	//書き込むためのアドレスを取得
+	wvpResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	//単位行列を書き込んでおく
+	for (uint32_t index = 0; index < kMaxInstance_; index++) {
+		wvpData[index].WVP = Matrix4x4::MakeIdentity4x4();
+		wvpData[index].color = { 1.0f,1.0f,1.0f,1.0f };//色を書き込む
+	}
+	srvManager_->CreateSRVforStructuredBuffer(srvIndexForInstancing_, wvpResource.Get(), kMaxInstance_, sizeof(TransformationMatrix));
 }
