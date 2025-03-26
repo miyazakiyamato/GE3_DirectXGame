@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -113,7 +113,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="engine\3d\Animation.cpp" />
     <ClCompile Include="application\3d\AccelerationField.cpp" />
     <ClCompile Include="engine\base\BasePipeline.cpp" />
     <ClCompile Include="engine\base\BlendMode.cpp" />
@@ -163,10 +163,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\PipelineManager.cpp" />
     <ClCompile Include="engine\2d\SpritePipeline.cpp" />
     <ClCompile Include="engine\particle\ParticlePipeline.cpp" />
-    <ClCompile Include="Skeleton.cpp" />
+    <ClCompile Include="engine\3d\Skeleton.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Animation.h" />
+    <ClInclude Include="engine\3d\Animation.h" />
     <ClInclude Include="application\3d\AccelerationField.h" />
     <ClInclude Include="engine\base\BasePipeline.h" />
     <ClInclude Include="engine\base\BlendMode.h" />
@@ -216,7 +216,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\particle\ParticlePipeline.h" />
     <ClInclude Include="engine\3d\Line3D.h" />
     <ClInclude Include="engine\3d\Line3DPipeline.h" />
-    <ClInclude Include="Skeleton.h" />
+    <ClInclude Include="engine\3d\Skeleton.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

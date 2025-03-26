@@ -16,15 +16,7 @@ private:
 	};
 	struct TransformationMatrix {
 		Matrix4x4 WVP;
-		Vector4 color{ 1.0f,1.0f,1.0f,1.0f };
 	};
-
-	struct Line{
-		Vector3 origin{0.0f,0.0f,0.0f};
-		Vector3 diff{ 1.0f,1.0f,1.0f };
-		Vector4 color{ 1.0f,1.0f,1.0f,1.0f };
-	};
-
 public://メンバ関数
 	//シングルトンインスタンスの取得
 	static Line3dManager* GetInstance();
@@ -69,13 +61,11 @@ private://メンバ変数
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView;
 
-	std::list<Line> lines_;
-
 	//インスタンスの最大数
-	uint32_t kMaxInstance_ = 10000;
+	uint32_t kMaxVertex_ = 100;
 	//今のインスタンス数
-	uint32_t kNumInstance_ = 0;
-	uint32_t srvIndexForInstancing_ = 0;
+	uint32_t kNumVertex_ = 0;
+	uint32_t kNumIndex_ = 0;
 
 	BlendMode blendMode_ = BlendMode::kNormal;
 
@@ -83,6 +73,6 @@ public://ゲッターセッター
 	//const BlendMode& GetBlendMode() { return blendMode_; }
 
 	//void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
-	void SetKMaxInstance(uint32_t kMaxInstance);
+	void SetKMaxVertex(uint32_t kMaxVertex);
 };
 

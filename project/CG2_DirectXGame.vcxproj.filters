@@ -261,17 +261,17 @@
     <ClCompile Include="engine\manager\TimeManager.cpp">
       <Filter>ソース ファイル\engine\manager</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>ソース ファイル\engine\3d</Filter>
-    </ClCompile>
     <ClCompile Include="engine\3d\Line3D.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Line3DPipeline.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="Skeleton.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\3d\Skeleton.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\Animation.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -416,17 +416,17 @@
     <ClInclude Include="engine\manager\TimeManager.h">
       <Filter>ヘッダー ファイル\engine\manager</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>ヘッダー ファイル\engine\3d</Filter>
-    </ClInclude>
     <ClInclude Include="engine\3d\Line3D.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Line3DPipeline.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="Skeleton.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\3d\Skeleton.h">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\Animation.h">
+      <Filter>ソース ファイル\engine\3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
