@@ -436,7 +436,7 @@ void GameScene::Draw(){
 	//Line3dManager::GetInstance()->DrawLine(object3ds_[1]->GetCenterPosition(), object3ds_[2]->GetCenterPosition(),{1.0f,0.0f,0.0f,1.0f});
 	//Line3dManager::GetInstance()->DrawSphere({ object3ds_[0]->GetCenterPosition(),1.0f }, { 1.0f,0.0f,0.0f,1.0f });
 	//Line3dManager::GetInstance()->DrawSphere({ {},1.0f}, {1.0f,0.0f,0.0f,1.0f});
-	//Line3dManager::GetInstance()->DrawGrid({50.0f,3.0f});
+	Line3dManager::GetInstance()->DrawGrid({50.0f,3.0f});
 	Line3dManager::GetInstance()->Draw();
 
 	//Particleの描画

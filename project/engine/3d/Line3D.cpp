@@ -17,22 +17,6 @@ Line3dManager* Line3dManager::GetInstance() {
 void Line3dManager::Initialize(SrvManager* srvManager) {
 	srvManager_ = srvManager;
 
-	//Line用の頂点リソースを作る
-	vertexResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * kMaxVertex_);
-	//リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource.Get()->GetGPUVirtualAddress();
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * kMaxVertex_;
-	//1頂点当たりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
-
-	//IndexLine用のインデックスリソースを作る
-	indexResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(uint32_t) * kMaxVertex_);
-	//リソースの先頭のアドレスから使う
-	indexBufferView.BufferLocation = indexResource.Get()->GetGPUVirtualAddress();
-	indexBufferView.SizeInBytes = sizeof(uint32_t) * kMaxVertex_;
-	//インデックスはuint32_tとする
-	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
-
 	//Line用のTransformationMatirx用のリソースを作る
 	wvpResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));
 
@@ -41,27 +25,6 @@ void Line3dManager::Initialize(SrvManager* srvManager) {
 	wvpResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	//単位行列を書き込んでおく
 	wvpData->WVP = Matrix4x4::MakeIdentity4x4();
-
-	//頂点リソースにデータを書き込む
-	vertexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	//頂点座標
-	for (int i = 0; i < kMaxVertex_;) {
-		vertexData[i].position = { 0.0f,0.0f,0.0f,1.0f };
-		vertexData[i + 1].position = { 1.0f,0.0f,0.0f,1.0f };
-
-		vertexData[i].color = { 1.0f,1.0f,1.0f,1.0f };
-		vertexData[i + 1].color = { 1.0f,1.0f,1.0f,1.0f };
-		i += 2;
-	}
-	
-	//インデックスリソースにデータを書き込む
-	indexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
-	for (int i = 0; i < kMaxVertex_;) {
-		indexData[i] = 0;
-		indexData[i + 1] = 1;
-		i += 2;
-	}
-	
 }
 
 void Line3dManager::Finalize() {
@@ -70,53 +33,87 @@ void Line3dManager::Finalize() {
 }
 
 void Line3dManager::Update() {
-	kNumVertex_ = 0;
+	//kNumVertex_ = 0;
+	vertices.clear();
+	//Line用のWorldViewProjectionMtrixを作る
+	Matrix4x4 worldViewProjectionMatrix;
+
+	if (CameraManager::GetInstance()->GetCamera()) {
+		const Matrix4x4& viewProjectionMatrix = CameraManager::GetInstance()->GetCamera()->GetViewProjectionMatrix();
+		worldViewProjectionMatrix = viewProjectionMatrix;
+	} else {
+		worldViewProjectionMatrix = Matrix4x4::MakeIdentity4x4();
+	}
+	wvpData->WVP = worldViewProjectionMatrix;
 }
 
 void Line3dManager::Draw() {
-	int index = 0;
-	for (std::list<Line>::iterator it = lines_.begin(); it != lines_.end();) {
-		Line& line = *it;
-		//Line用のWorldViewProjectionMtrixを作る
-		Matrix4x4 worldMatrix = Matrix4x4::MakeScaleMatrix({ line.diff.Length(),1.0f,1.0f }) * Quaternion::DirectionToDirection({ 1.0f,0.0f,0.0f }, line.diff) * Matrix4x4::MakeTranslateMatrix(line.origin);
-		Matrix4x4 worldViewProjectionMatrix;
-
-		if (CameraManager::GetInstance()->GetCamera()) {
-			const Matrix4x4& viewProjectionMatrix = CameraManager::GetInstance()->GetCamera()->GetViewProjectionMatrix();
-			worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;
-		} else {
-			worldViewProjectionMatrix = worldMatrix;
-		}
-		wvpData[index].WVP = worldViewProjectionMatrix;
-
-		++it;
-		++index;
+	if (vertices.empty()) {
+		return;
 	}
+
+	// Line用の頂点リソースを作る
+	vertexResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * UINT(vertices.size() * 2));
+	// リソースの先頭のアドレスから使う
+	vertexBufferView.BufferLocation = vertexResource.Get()->GetGPUVirtualAddress();
+	vertexBufferView.SizeInBytes = sizeof(VertexData) * UINT(vertices.size() * 2);
+	// 1頂点当たりのサイズ
+	vertexBufferView.StrideInBytes = sizeof(VertexData);
+
+	// IndexLine用のインデックスリソースを作る
+	indexResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(uint32_t) * UINT(vertices.size() * 2));
+	// リソースの先頭のアドレスから使う
+	indexBufferView.BufferLocation = indexResource.Get()->GetGPUVirtualAddress();
+	indexBufferView.SizeInBytes = sizeof(uint32_t) * UINT(vertices.size() * 2);
+	// インデックスはuint32_tとする
+	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+
+	// 頂点リソースにデータを書き込む
+	vertexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	// 頂点座標
+	uint32_t index = 0;
+	for (auto& lineData : vertices) {
+		// 頂点座標
+		vertexData[index].position = lineData.pos1;
+		vertexData[index + 1].position = lineData.pos2;
+
+		vertexData[index].color = lineData.color;
+		vertexData[index + 1].color = lineData.color;
+
+		index += 2;
+	}
+	vertexResource.Get()->Unmap(0, nullptr);
+
+	// インデックスリソースにデータを書き込む
+	index = 0;
+	indexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	for (uint32_t i = 0; i < vertices.size() * 2; i += 2) {
+		indexData[i] = i;
+		indexData[i + 1] = i + 1;
+	}
+	indexResource.Get()->Unmap(0, nullptr);
 
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = PipelineManager::GetInstance()->GetDxCommon()->GetCommandList();
-	//パイプラインを設定
+	// パイプラインを設定
 	PipelineManager::GetInstance()->DrawSetting(PipelineState::kLine3D, blendMode_);
-	//Lineの描画。変更が必要なものだけ変更する
-	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);//VBVを設定
-	commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
-	//TransformationMatrixCBufferの場所を設定
+	// Lineの描画。変更が必要なものだけ変更する
+	commandList->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
+	commandList->IASetIndexBuffer(&indexBufferView); // IBVを設定
+	// TransformationMatrixCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(0, wvpResource.Get()->GetGPUVirtualAddress());
-	//ドローコール
-	commandList->DrawIndexedInstanced(kNumVertex_, 1, 0, 0, 0);
+	// ドローコール
+	commandList->DrawIndexedInstanced(UINT(vertices.size() * 2), 1, 0, 0, 0);
 }
 
 void Line3dManager::DrawLine(const Vector3& pos1, const Vector3& pos2, const Vector4& color){
-	Vector3 origin = pos1;
-	Vector3 diff = pos2;
-	diff -= pos1;
-	kNumVertex_++;
-	if (kNumVertex_ >= kMaxVertex_) {
-		kMaxVertex_ += 100;
-		SetKMaxVertex(kMaxVertex_);
-		return;
-	}
-	
+	LineData lineData;
+	lineData.pos1 = { pos1.x, pos1.y, pos1.z, 1.0f };
+	lineData.pos2 = { pos2.x, pos2.y, pos2.z, 1.0f };
+	lineData.isConnected = false;
+	lineData.color = color;
+	vertices.push_back(lineData);
+	//indices.push_back(kNumVertex_);
 }
 
 void Line3dManager::DrawSphere(const Sphere& sphere, const Vector4& color) {
@@ -295,24 +292,4 @@ void  Line3dManager::DrawCotmullRom(const Vector3& controlPoint0, const Vector3&
 			DrawLine(pos[0], pos[1], color);
 		}
 	}
-}
-
-void Line3dManager::SetKMaxVertex(uint32_t kMaxVertex){
-	kMaxVertex_ = kMaxVertex;
-
-	//Line用の頂点リソースを作る
-	vertexResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * kMaxVertex_);
-	//リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource.Get()->GetGPUVirtualAddress();
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * kMaxVertex_;
-	//1頂点当たりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
-
-	//IndexLine用のインデックスリソースを作る
-	indexResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(uint32_t) * kMaxVertex_);
-	//リソースの先頭のアドレスから使う
-	indexBufferView.BufferLocation = indexResource.Get()->GetGPUVirtualAddress();
-	indexBufferView.SizeInBytes = sizeof(uint32_t) * kMaxVertex_;
-	//インデックスはuint32_tとする
-	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 }
