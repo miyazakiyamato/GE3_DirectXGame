@@ -17,12 +17,6 @@ private:
 	struct TransformationMatrix {
 		Matrix4x4 WVP;
 	};
-	struct LineData {
-		Vector4 pos1;
-		Vector4 pos2;
-		bool isConnected;
-		Vector4 color;
-	};
 public://メンバ関数
 	//シングルトンインスタンスの取得
 	static Line3dManager* GetInstance();
@@ -56,24 +50,16 @@ private://メンバ変数
 	SrvManager* srvManager_ = nullptr;
 	//バッファリソース
 	ComPtr<ID3D12Resource> vertexResource;
-	ComPtr<ID3D12Resource> indexResource;
-	ComPtr<ID3D12Resource> materialResource;
 	ComPtr<ID3D12Resource> wvpResource;
 	//バッファリソース内のデータを指すポインタ
 	VertexData* vertexData = nullptr;
-	uint32_t* indexData = nullptr;
 	TransformationMatrix* wvpData = nullptr;
 	//バッファリソースの使い道を補足するバッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
-	D3D12_INDEX_BUFFER_VIEW indexBufferView;
 	//Line用の頂点リソースを作る
-	std::list<LineData> vertices;
-	std::list<uint32_t> indices;
+	std::list<VertexData> vertices;
 	size_t preVerticesSize = 0;
-	//今のインスタンス数
-	uint32_t kNumVertex_ = 0;
-	uint32_t kNumIndex_ = 0;
-
+	//ブレンドモード
 	BlendMode blendMode_ = BlendMode::kNormal;
 
 public://ゲッターセッター
