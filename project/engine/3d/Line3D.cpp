@@ -98,8 +98,8 @@ void Line3dManager::DrawLine(const Vector3& pos1, const Vector3& pos2, const Vec
 	vertices.push_back(vertex2);
 }
 
-void Line3dManager::DrawSphere(const Sphere& sphere, const Vector4& color) {
-	const uint32_t kSubdivision = 10;
+void Line3dManager::DrawSphere(const Sphere& sphere, const Vector4& color,const uint32_t& subdivision) {
+	const uint32_t kSubdivision = subdivision;
 	const float kLonEvery = std::numbers::pi_v<float> *2 / kSubdivision;
 	const float kLatEvery = std::numbers::pi_v<float> / kSubdivision;
 	//
@@ -119,7 +119,27 @@ void Line3dManager::DrawSphere(const Sphere& sphere, const Vector4& color) {
 		}
 	}
 }
+void Line3dManager::DrawSphere(const Matrix4x4& worldMatrix, const Vector4& color, const uint32_t& subdivision) {
+	const uint32_t kSubdivision = subdivision;
+	const float kLonEvery = std::numbers::pi_v<float> *2 / kSubdivision;
+	const float kLatEvery = std::numbers::pi_v<float> / kSubdivision;
+	//
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		float lat = -std::numbers::pi_v<float> / 2.0f + kLatEvery * latIndex;
 
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+			float lon = lonIndex * kLonEvery;
+
+			Vector3 a, b, c;
+			a = Matrix4x4::Transform({ cosf(lat) * cosf(lon),sinf(lat),cosf(lat) * sinf(lon) },worldMatrix);
+			b = Matrix4x4::Transform({ cosf(lat + kLatEvery) * cosf(lon),sinf(lat + kLatEvery),cosf(lat + kLatEvery) * sinf(lon) },worldMatrix);
+			c = Matrix4x4::Transform({ cosf(lat) * cosf(lon + kLonEvery),sinf(lat),cosf(lat) * sinf(lon + kLonEvery) },worldMatrix);
+			
+			DrawLine(a, b, color);
+			DrawLine(a, c, color);
+		}
+	}
+}
 void Line3dManager::DrawGrid(const Vector2 gridHalfLength) {
 	float kGridHalfwidth = gridHalfLength.x;
 	float kGridHalfheight = gridHalfLength.y;

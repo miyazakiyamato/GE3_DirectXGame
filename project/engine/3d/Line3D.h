@@ -30,7 +30,8 @@ public://メンバ関数
 	void Draw();
 
 	void DrawLine(const Vector3& pos1,const Vector3& pos2,const Vector4& color);
-	void DrawSphere(const Sphere& sphere, const Vector4& color);
+	void DrawSphere(const Sphere& sphere, const Vector4& color, const uint32_t& subdivision);
+	void DrawSphere(const Matrix4x4& worldMatrix, const Vector4& color, const uint32_t& subdivision);
 	void DrawGrid(const Vector2 gridHalfLength);
 	void DrawPlane(const Plane& plane, const Vector4& color);
 	void DrawTriangle(const Triangle& triangle, const Vector4& color);
