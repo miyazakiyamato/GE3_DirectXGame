@@ -41,6 +41,7 @@ public:
 	};
 	struct ModelData {
 		std::vector<VertexData> vertices;
+		std::vector<uint32_t> indices;
 		MaterialData material;
 		Node rootNode;
 	};
@@ -62,13 +63,13 @@ private:
 	ModelData modelData;
 	//バッファリソース
 	ComPtr<ID3D12Resource> vertexResource;
-	//Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
+	ComPtr<ID3D12Resource> indexResource;
 	//バッファリソース内のデータを指すポインタ
 	VertexData* vertexData = nullptr;
-	//uint32_t* indexData = nullptr;
+	uint32_t* indexData = nullptr;
 	//バッファリソースの使い道を補足するバッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
-	//D3D12_INDEX_BUFFER_VIEW indexBufferView;
+	D3D12_INDEX_BUFFER_VIEW indexBufferView;
 public://ゲッターセッター
 	const ModelData& GetModelData() { return modelData; }
 };
