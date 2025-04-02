@@ -117,7 +117,7 @@ void Object3d::Draw(){
 		//Skeleton
 		if (skeletonData_) {
 			for (Skeleton::Joint& joint : skeletonData_->GetJoints()) {
-				Line3dManager::GetInstance()->DrawSphere({ Matrix4x4::Transform({0.0f,0.0f,0.0f}, joint.skeletonSpaceMatrix * wvpData->World), 0.01f }, { 1.0f, 1.0f, 1.0f, 1.0f });
+				//Line3dManager::GetInstance()->DrawSphere({ Matrix4x4::Transform({0.0f,0.0f,0.0f}, joint.skeletonSpaceMatrix * wvpData->World), 0.01f }, { 1.0f, 1.0f, 1.0f, 1.0f });
 				if (joint.parent && *joint.parent < skeletonData_->GetJoints().size()) {
 					Line3dManager::GetInstance()->DrawLine(Matrix4x4::Transform({ 0.0f,0.0f,0.0f }, joint.skeletonSpaceMatrix * wvpData->World), Matrix4x4::Transform({ 0.0f,0.0f,0.0f }, skeletonData_->GetJoints()[*joint.parent].skeletonSpaceMatrix * wvpData->World), { 1.0f, 1.0f, 1.0f, 1.0f });
 				}

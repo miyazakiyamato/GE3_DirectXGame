@@ -51,23 +51,24 @@ void Line3dManager::Draw() {
 	if (vertices.empty()) {
 		return;
 	}
+	if (preVerticesSize != vertices.size()) {
+		// Line用の頂点リソースを作る
+		vertexResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * UINT(vertices.size() * 2));
+		// リソースの先頭のアドレスから使う
+		vertexBufferView.BufferLocation = vertexResource.Get()->GetGPUVirtualAddress();
+		vertexBufferView.SizeInBytes = sizeof(VertexData) * UINT(vertices.size() * 2);
+		// 1頂点当たりのサイズ
+		vertexBufferView.StrideInBytes = sizeof(VertexData);
 
-	// Line用の頂点リソースを作る
-	vertexResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(VertexData) * UINT(vertices.size() * 2));
-	// リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource.Get()->GetGPUVirtualAddress();
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * UINT(vertices.size() * 2);
-	// 1頂点当たりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
-
-	// IndexLine用のインデックスリソースを作る
-	indexResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(uint32_t) * UINT(vertices.size() * 2));
-	// リソースの先頭のアドレスから使う
-	indexBufferView.BufferLocation = indexResource.Get()->GetGPUVirtualAddress();
-	indexBufferView.SizeInBytes = sizeof(uint32_t) * UINT(vertices.size() * 2);
-	// インデックスはuint32_tとする
-	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
-
+		// IndexLine用のインデックスリソースを作る
+		indexResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(uint32_t) * UINT(vertices.size() * 2));
+		// リソースの先頭のアドレスから使う
+		indexBufferView.BufferLocation = indexResource.Get()->GetGPUVirtualAddress();
+		indexBufferView.SizeInBytes = sizeof(uint32_t) * UINT(vertices.size() * 2);
+		// インデックスはuint32_tとする
+		indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+	}
+	preVerticesSize = vertices.size();
 	// 頂点リソースにデータを書き込む
 	vertexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	// 頂点座標
@@ -82,7 +83,7 @@ void Line3dManager::Draw() {
 
 		index += 2;
 	}
-	vertexResource.Get()->Unmap(0, nullptr);
+	//vertexResource.Get()->Unmap(0, nullptr);
 
 	// インデックスリソースにデータを書き込む
 	index = 0;
@@ -91,7 +92,7 @@ void Line3dManager::Draw() {
 		indexData[i] = i;
 		indexData[i + 1] = i + 1;
 	}
-	indexResource.Get()->Unmap(0, nullptr);
+	//indexResource.Get()->Unmap(0, nullptr);
 
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = PipelineManager::GetInstance()->GetDxCommon()->GetCommandList();
