@@ -42,7 +42,7 @@ void Framework::Initialize(){
 
 	//モデルマネージャの初期化
 	modelManager_ = ModelManager::GetInstance();
-	modelManager_->Initialize(dxCommon.get());
+	modelManager_->Initialize(dxCommon.get(), srvManager.get());
 	
 	//ラインマネージャ
 	lineManager_ = Line3dManager::GetInstance();

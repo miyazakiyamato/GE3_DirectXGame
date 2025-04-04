@@ -59,7 +59,6 @@ void Object3d::Update(){
 				animationData_->time = animationData_->animation->GetDuration();
 			}
 			/*Matrix4x4 localMatrix = animationData_->animation->MakeLocalMatrix(model_->GetModelData().rootNode.name,animationData_->time);
-			
 			wvpData->WVP = localMatrix * worldViewProjectionMatrix;
 			wvpData->World = localMatrix * worldMatrix;
 			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));*/
@@ -68,18 +67,14 @@ void Object3d::Update(){
 			wvpData->World = worldMatrix;
 			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
 
-			//全てのJointを更新。
-			for (Skeleton::Joint& joint : skeletonData_->GetJoints()) {
-				//対象のJointのAnimationがあれば、値の適用を行う
-				if (auto it = animationData_->animation->GetNodeAnimationsMap().find(joint.name); it != animationData_->animation->GetNodeAnimationsMap().end()) {
-					const Animation::NodeAnimation& rootNodeAnimation = (*it).second;
-					joint.localMatrix = animationData_->animation->MakeLocalMatrix(joint.name, animationData_->time);
-				}
+			//スケルトンの更新
+			if (skeletonData_) {
+				skeletonData_->ApplyAnimation(animationData_->animation, animationData_->time);
+				skeletonData_->Update();
 
-				if (joint.parent) {
-					joint.skeletonSpaceMatrix = joint.localMatrix * skeletonData_->GetJoints()[*joint.parent].skeletonSpaceMatrix;
-				} else {
-					joint.skeletonSpaceMatrix = joint.localMatrix;
+				//スキンクラスタの更新
+				if (skinClusterData_) {
+					skinClusterData_->Update(skeletonData_.get());
 				}
 			}
 		}
@@ -101,8 +96,15 @@ void Object3d::Draw(){
 		// コマンドリストの取得
 		ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
-		//パイプラインを設定
-		PipelineManager::GetInstance()->DrawSetting(PipelineState::kModel,blendMode_);
+		if (skinClusterData_) {
+			//パイプラインを設定
+			PipelineManager::GetInstance()->DrawSetting(PipelineState::kSkinningModel, blendMode_);
+			skinClusterData_->Draw();
+		} else {
+			//パイプラインを設定
+			PipelineManager::GetInstance()->DrawSetting(PipelineState::kModel, blendMode_);
+		}
+
 		//wvp用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 		//マテリアルCBufferの場所を設定
@@ -116,13 +118,7 @@ void Object3d::Draw(){
 
 		//Skeleton
 		if (skeletonData_) {
-			for (Skeleton::Joint& joint : skeletonData_->GetJoints()) {
-				//Line3dManager::GetInstance()->DrawSphere({ Matrix4x4::Transform({0.0f,0.0f,0.0f}, joint.skeletonSpaceMatrix * wvpData->World), 0.01f }, { 1.0f, 1.0f, 1.0f, 1.0f },2);
-				Line3dManager::GetInstance()->DrawSphere(joint.skeletonSpaceMatrix * wvpData->World, { 1.0f, 1.0f, 1.0f, 1.0f },4);
-				if (joint.parent && *joint.parent < skeletonData_->GetJoints().size()) {
-					Line3dManager::GetInstance()->DrawLine(Matrix4x4::Transform({ 0.0f,0.0f,0.0f }, joint.skeletonSpaceMatrix * wvpData->World), Matrix4x4::Transform({ 0.0f,0.0f,0.0f }, skeletonData_->GetJoints()[*joint.parent].skeletonSpaceMatrix * wvpData->World), { 1.0f, 1.0f, 1.0f, 1.0f });
-				}
-			}
+			skeletonData_->Draw(wvpData->World);
 		}
 	}
 
@@ -148,6 +144,10 @@ void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
 	//スケルトン
 	skeletonData_ = std::make_unique<Skeleton>();
 	skeletonData_->CreateSkeleton(model_->GetModelData().rootNode);
+
+	//スキンクラスタ
+	skinClusterData_ = std::make_unique<SkinCluster>();
+	skinClusterData_->CreateSkinCluster(skeletonData_.get(), model_->GetModelData());
 }
 
 Vector3 Object3d::GetCenterPosition() const

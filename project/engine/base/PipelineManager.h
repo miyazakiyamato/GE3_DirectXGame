@@ -6,6 +6,7 @@
 
 enum class PipelineState {
 	kModel,
+	kSkinningModel,
 	kParticle,
 	kSprite,
 	kLine3D,

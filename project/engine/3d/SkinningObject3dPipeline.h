@@ -1,7 +1,7 @@
 #pragma once
 #include "BasePipeline.h"
 
-class ParticlePipeline : public BasePipeline {
+class SkinningObject3dPipeline : public BasePipeline {
 public:
 	//namespace省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
@@ -17,3 +17,4 @@ public://メンバ関数
 private:
 
 };
+

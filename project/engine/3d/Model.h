@@ -39,11 +39,20 @@ public:
 		std::string mtlFilePath;
 		std::string textureFilePath;
 	};
+	struct VertexWeightData {
+		float weight;
+		uint32_t vertexIndex;
+	};
+	struct JointWeightData {
+		Matrix4x4 inverseBindPoseMatrix;
+		std::vector<VertexWeightData> vertexWeights;
+	};
 	struct ModelData {
 		std::vector<VertexData> vertices;
 		std::vector<uint32_t> indices;
 		MaterialData material;
 		Node rootNode;
+		std::map<std::string, JointWeightData> skinClusterData;
 	};
 
 public://メンバ関数
@@ -72,5 +81,6 @@ private:
 	D3D12_INDEX_BUFFER_VIEW indexBufferView;
 public://ゲッターセッター
 	const ModelData& GetModelData() { return modelData; }
+	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() { return vertexBufferView; }
 };
 

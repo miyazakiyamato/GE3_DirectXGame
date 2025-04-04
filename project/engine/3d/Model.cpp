@@ -84,6 +84,27 @@ void Model::LoadObjFile(const std::string& directoryPath, const std::string& fil
 				modelData.indices.push_back(vertexIndex);
 			}
 		}
+		//SkinClusterの情報を取得
+		for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+			//Jointごとの格納領域をつくる
+			aiBone* bone = mesh->mBones[boneIndex];
+			std::string jointName = bone->mName.C_Str();
+			JointWeightData& jointWeightData = modelData.skinClusterData[jointName];
+			//InverseBindPoseMatrixを格納
+			aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
+			aiVector3D scale, translate;
+			aiQuaternion rotate;
+			bindPoseMatrixAssimp.Decompose(scale, rotate, translate);//assimpの行列からSTRを抽出する関数を利用
+			Matrix4x4 bindPoseMatrix = Quaternion::MakeAffineMatrix(
+				{ scale.x,scale.y,scale.z },
+				{ rotate.x,-rotate.y,-rotate.z,rotate.w },
+				{ -translate.x,translate.y,translate.z });//x軸を反転、回転軸が逆なので軸反転
+			jointWeightData.inverseBindPoseMatrix = bindPoseMatrix.Inverse();
+			//Weight情報を取り出す
+			for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+				jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight,bone->mWeights[weightIndex].mVertexId });
+			}
+		}
 	}
 
 	modelData.rootNode = ReadNode(scene->mRootNode);

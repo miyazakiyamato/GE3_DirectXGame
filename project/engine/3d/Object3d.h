@@ -5,6 +5,7 @@
 #include "LightManager.h"
 #include "Animation.h"
 #include "Skeleton.h"
+#include "SkinCluster.h"
 
 class Object3d{
 public:
@@ -61,6 +62,7 @@ private://メンバ変数
 
 	std::unique_ptr<AnimationData> animationData_ = nullptr;
 	std::unique_ptr<Skeleton> skeletonData_ = nullptr;
+	std::unique_ptr<SkinCluster> skinClusterData_ = nullptr;
 
 	Object3d* parent_ = nullptr;
 

@@ -10,8 +10,9 @@ ModelManager* ModelManager::GetInstance()
 	return instance;
 }
 
-void ModelManager::Initialize(DirectXCommon* dxCommon){
+void ModelManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager){
 	dxCommon_ = dxCommon;
+	srvManager_ = srvManager;
 }
 
 void ModelManager::Finalize(){
