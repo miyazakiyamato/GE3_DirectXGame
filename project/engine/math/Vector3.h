@@ -1,4 +1,5 @@
 #pragma once
+#include <random>
 
 /// <summary>
 /// 3次元ベクトル
@@ -36,6 +37,7 @@ public:
 	static Vector3 ClosestPoint(const Vector3& point, const Segment& segment);*/
 	static Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t);
 	static Vector3 CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, const float& t);
+	static Vector3 Random(std::mt19937& randomEngine, const Vector3& vMin, const Vector3& vMax);
 	//演算子のオーバーロード
 	Vector3 operator-();
 	Vector3 operator+(const Vector3& v2);

@@ -28,6 +28,7 @@ private:
 	//連続発生するか
 	bool isEmitUpdate_ = false;
 
+
 public:
 	const std::string& GetName() { return name_; }
 	const Vector3& GetPosition() { return transform_.translate; }

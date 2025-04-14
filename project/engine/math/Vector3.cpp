@@ -133,6 +133,13 @@ Vector3 Vector3::CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, c
     return (e3 * t3 + e2 * t2 + e1 * t + e0) * s;
 }
 
+Vector3 Vector3::Random(std::mt19937& randomEngine,const Vector3& vMin, const Vector3& vMax){
+    std::uniform_real_distribution<float> distX(vMin.x, vMax.x);
+    std::uniform_real_distribution<float> distY(vMin.y, vMax.y);
+    std::uniform_real_distribution<float> distZ(vMin.z, vMax.z);
+    return { distX(randomEngine), distY(randomEngine), distZ(randomEngine) };
+}
+
 Vector3 Vector3::operator-(){
     return { -x, -y, -z };
 }
