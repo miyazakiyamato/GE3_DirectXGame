@@ -84,18 +84,18 @@ void GameScene::Initialize(){
 
 	//ParticleManager::GetInstance()->CreateParticleGroup();
 	particleEmitter_.reset(new ParticleEmitter);
-	particleEmitter_->Initialize("circle", "resources/texture/circle.png");
+	particleEmitter_->Initialize("circle", "circle.png");
 
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
 		std::unique_ptr<Sprite> sprite(new Sprite);
-		sprite->Initialize("resources/texture/uvChecker.png");
+		sprite->Initialize("uvChecker.png");
 		sprite->SetPosition({ 100 + 200.0f * float(i), 100 });
 		sprite->SetSize({ 100.0f,100.0f });
 		sprites_.push_back(std::move(sprite));
 	}
 	sprites_[0]->SetTextureSize({ 64.0f,64.0f });
-	sprites_[1]->SetTexture("resources/texture/monsterBall.png");
+	sprites_[1]->SetTexture("monsterBall.png");
 	sprites_[1]->SetIsFlipX(true);
 	sprites_[2]->SetIsFlipY(true);
 	sprites_[3]->SetIsFlipX(true);
@@ -127,6 +127,7 @@ void GameScene::Update(){
 #ifdef _DEBUG
 	//// ウインドウフラグに NoResize を指定
 	//ImGui::Begin("Settings", NULL, ImGuiWindowFlags_NoResize);
+	//ImGui::ShowDemoWindow();
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	globalVariables->Update();
 	std::string groupName = "";
@@ -273,6 +274,7 @@ void GameScene::Update(){
 				}
 				ImGui::EndMenu();
 			}
+			ParticleManager::GetInstance()->UpdateGlobalVariables();
 			groupName = "Particle";
 			if (ImGui::BeginMenu(groupName.c_str())) {
 				int particleItem_selected_idx = static_cast<int>(ParticleManager::GetInstance()->GetBlendMode(particleEmitter_->GetName()));
@@ -425,7 +427,7 @@ void GameScene::Update(){
 void GameScene::Draw(){
 	//Object3dの描画
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
-		object3d->Draw();
+		//object3d->Draw();
 	}
 
 	//当たり判定の表示
@@ -435,8 +437,8 @@ void GameScene::Draw(){
 	//Line3dManager::GetInstance()->DrawLine(object3ds_[0]->GetCenterPosition(), object3ds_[1]->GetCenterPosition(),{1.0f,0.0f,0.0f,1.0f});
 	//Line3dManager::GetInstance()->DrawLine(object3ds_[1]->GetCenterPosition(), object3ds_[2]->GetCenterPosition(),{1.0f,0.0f,0.0f,1.0f});
 	//Line3dManager::GetInstance()->DrawSphere({ object3ds_[0]->GetCenterPosition(),1.0f }, { 1.0f,0.0f,0.0f,1.0f });
-	Line3dManager::GetInstance()->DrawSphere({ {},1.0f}, {1.0f,0.0f,0.0f,1.0f},10);
-	Line3dManager::GetInstance()->DrawGrid({50.0f,3.0f});
+	/*Line3dManager::GetInstance()->DrawSphere({ {},1.0f}, {1.0f,0.0f,0.0f,1.0f},10);
+	Line3dManager::GetInstance()->DrawGrid({50.0f,3.0f});*/
 	Line3dManager::GetInstance()->Draw();
 
 	//Particleの描画

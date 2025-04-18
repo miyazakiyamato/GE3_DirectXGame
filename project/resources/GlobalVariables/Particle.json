@@ -1,0 +1,50 @@
+{
+    "Particle": {
+        "\u0001Name0": "Hit",
+        "\u0002TextureFilePath0": "circle.png",
+        "\u0003RandomScaleMax0": [
+            0.5,
+            1.5,
+            1.0
+        ],
+        "\u0004RandomScaleMin0": [
+            0.5,
+            0.4000000059604645,
+            1.0
+        ],
+        "\u0005RandomRotateMax0": [
+            0.0,
+            0.0,
+            3.140000104904175
+        ],
+        "\u0006RandomRotateMin0": [
+            0.0,
+            0.0,
+            -3.140000104904175
+        ],
+        "\u0007RandomVelocityMax0": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "\bRandomVelocityMin0": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "\tRandomColorMax0": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+        ],
+        "\nRandomColorMin0": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+        ],
+        "\u000bLifeTime0": 1.0,
+        "\fIsBillboard0": true
+    }
+}

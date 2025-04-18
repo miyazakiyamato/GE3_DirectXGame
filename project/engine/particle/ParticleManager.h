@@ -47,7 +47,13 @@ public:
 		Vector4 randomColorMax{1.0f,1.0f,1.0f,1.0f};
 		Vector4 randomColorMin{0.0f,0.0f,0.0f,1.0f};
 		float lifeTime = 2.0f;
-	};;
+		bool isBillboard = true;
+	};
+	struct ParticleGroupCreateData {
+		std::string name = "";
+		std::string textureFilePath = "circle.png";
+		ParticleInitData particleInitData;
+	};
 	struct ParticleGroup {
 		ParticleInitData particleInitData;
 		std::list<Particle> particles;//パーティクルのリスト
@@ -89,9 +95,14 @@ public://メンバ関数
 	void CreateParticleGroup(const std::string name, const std::string textureFilePath);
 	//パーティクルの発生
 	void Emit(const std::string name, const Vector3& position, uint32_t count);
+
+	//調整項目の更新
+	void UpdateGlobalVariables();
 private://ローカル関数
-	//パーティクルの作成
-	Particle CreateNewParticle(std::mt19937& randomEngine, const Vector3& position);
+	//調整項目の初期化
+	void InitializeGlobalVariables();
+	// 調整項目の適用
+	void ApplyGlobalVariables();
 private://シングルインスタンス
 	static ParticleManager* instance;
 
@@ -109,6 +120,11 @@ private://メンバ変数
 	//ランダムエンジン
 	std::mt19937 randomEngine_;
 
+	char buffer[128] = ""; // 入力用のバッファ
+	std::string reflectedText = ""; // 入力を反映する文字列
+
+	//パーティクルグループを作るデータ
+	std::map<std::string, std::unique_ptr<ParticleGroupCreateData>> particleGroupCreateDates_;
 	//パーティクルデータ
 	std::map<std::string, std::unique_ptr<ParticleGroup>> particleGroups;
 public://ゲッターセッター

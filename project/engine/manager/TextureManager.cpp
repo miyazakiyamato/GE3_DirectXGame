@@ -33,7 +33,7 @@ void TextureManager::LoadTexture(const std::string& filePath){
 	assert(srvManager_->AvailabilityCheck());
 
 	//Textureを読んで転送する
-	DirectX::ScratchImage mipImages = dxCommon_->LoadTexture(filePath);
+	DirectX::ScratchImage mipImages = dxCommon_->LoadTexture(directoryPath_ + filePath);
 
 	//追加したテクスチャデータの参照を取得
 	TextureData& textureData = textureDatas[filePath];
