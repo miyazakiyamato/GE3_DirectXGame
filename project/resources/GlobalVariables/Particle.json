@@ -1,7 +1,7 @@
 {
     "Particle": {
         "\u0001Name0": "Hit",
-        "\u0002TextureFilePath0": "circle.png",
+        "\u0002TextureFilePath0": "circle2.png",
         "\u0003RandomScaleMax0": [
             0.5,
             1.5,

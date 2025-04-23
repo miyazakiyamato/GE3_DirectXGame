@@ -55,7 +55,8 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("human/walk.gltf");
 	ModelManager::GetInstance()->LoadAnimation("human/walk.gltf");
 
-
+	TextureManager::GetInstance()->LoadTexture("circle2.png");
+	TextureManager::GetInstance()->LoadTexture("gradationLine.png");
 
 	/*object3ds_[0]->SetModel("AnimatedCube/AnimatedCube.gltf");
 	object3ds_[0]->SetAnimation("AnimatedCube/AnimatedCube.gltf",true);*/

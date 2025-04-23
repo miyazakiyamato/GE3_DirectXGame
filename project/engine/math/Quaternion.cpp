@@ -83,8 +83,7 @@ Quaternion Quaternion::Normalize(const Quaternion& quaternion)
 	return (Quaternion)quaternion / norm;
 }
 
-Quaternion Quaternion::Multiply(const Quaternion& lhs, const Quaternion& rhs)
-{
+Quaternion Quaternion::Multiply(const Quaternion& lhs, const Quaternion& rhs){
 	Quaternion result;
 	result.w = lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z;
 	result.x = lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y;

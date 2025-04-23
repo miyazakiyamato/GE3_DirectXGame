@@ -47,8 +47,8 @@ private://メンバ変数
 	//テクスチャのファイルパス
 	std::string directoryPath_ = "resources/texture/";
 	//テクスチャデータ
-	std::unordered_map<std::string,TextureData> textureDatas;
+	std::unordered_map<std::string,TextureData> textureDates;
 public:
-
+	std::vector<std::string> GetKeys(); // 結果を格納するベクター
 };
 

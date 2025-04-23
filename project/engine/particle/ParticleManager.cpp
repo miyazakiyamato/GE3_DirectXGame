@@ -267,14 +267,14 @@ void ParticleManager::ApplyGlobalVariables() {
 void ParticleManager::UpdateGlobalVariables() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "Particle";
-	std::string blendName = "Now Blend";
-	std::vector<std::string> blendState{
-		"None",      //!< ブレンドなし
-		"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
-		"Add",       //!< 加算。Src * SrcA + Dest * 1
-		"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
-		"Multiply",  //!< 乗算。Src * 0 + Dest * Src
-		"Screen", };
+	//std::string blendName = "Now Blend";
+	//std::vector<std::string> blendState{
+	//	"None",      //!< ブレンドなし
+	//	"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
+	//	"Add",       //!< 加算。Src * SrcA + Dest * 1
+	//	"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
+	//	"Multiply",  //!< 乗算。Src * 0 + Dest * Src
+	//	"Screen", };
 	if (ImGui::BeginMenu(groupName)) {
 		// テキスト入力ボックス
 		if (ImGui::InputText("Input Text", buffer, IM_ARRAYSIZE(buffer))) {
@@ -296,13 +296,40 @@ void ParticleManager::UpdateGlobalVariables() {
 				CreateParticleGroup(reflectedText, particleGroupCreateDates_[reflectedText]->textureFilePath);
 			}
 		}
+		//パーティクル初期化データの更新
 		for (auto& [name, group] : particleGroups) {
 			auto it = particleGroupCreateDates_.find(name);
 			if (it != particleGroupCreateDates_.end() && it->second) {
 				group->particleInitData = it->second->particleInitData;
 			}
 		}
+		uint32_t objectIDIndex = 0;
 		for (auto& [name, group] : particleGroupCreateDates_) {
+			//テクスチャのキーを取得
+			std::string textureName = name + ": Now Texture";
+			std::vector<std::string> textureState = TextureManager::GetInstance()->GetKeys();
+			auto it = particleGroups.find(name);
+			if (it != particleGroups.end() && it->second) {
+				//テクスチャ選択
+				std::string textureItem_selected_idx = it->second->materialData.textureFilePath;
+				const char* currentItem = textureItem_selected_idx.c_str();
+				if (ImGui::BeginCombo((textureName + name).c_str(), currentItem)) {
+					for (int i = 0; i < textureState.size(); ++i) {
+						bool isSelected = (textureItem_selected_idx == textureState[i]);
+						if (ImGui::Selectable(textureState[i].c_str(), isSelected)) {
+							it->second->materialData.textureFilePath = textureState[i];
+
+							group->textureFilePath = textureState[i];
+							globalVariables->SetValue(groupName, "\x02TextureFilePath" + std::to_string(objectIDIndex), group->textureFilePath);
+						}
+						if (isSelected) {
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+					ImGui::EndCombo();
+				}
+			}
+			//パーティクルの発生
 			if (ImGui::Button(std::string(name + ": Emit").c_str())) {
 				if (particleGroupCreateDates_.count(name) == 0) {
 					ImGui::Text("Error: Group name is empty.");
@@ -310,7 +337,9 @@ void ParticleManager::UpdateGlobalVariables() {
 					Emit(name, Vector3(0.0f, 0.0f, 0.0f), 1);
 				}
 			}
+			++objectIDIndex;
 		}
+
 	//	int particleItem_selected_idx = static_cast<int>(ParticleManager::GetInstance()->GetBlendMode(particleEmitter_->GetName()));
 	//	const char* currentItem = blendState[particleItem_selected_idx].c_str();
 	//	if (ImGui::BeginCombo((blendName + particleEmitter_->GetName()).c_str(), currentItem)) {
