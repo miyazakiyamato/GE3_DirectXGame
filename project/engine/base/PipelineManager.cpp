@@ -5,6 +5,7 @@
 #include "ParticlePipeline.h"
 #include "Line3DPipeline.h"
 #include "Logger.h"
+#include "OffScreenPipeline.h"
 
 using namespace Microsoft::WRL;
 using namespace Logger;
@@ -31,6 +32,8 @@ void PipelineManager::Initialize(DirectXCommon* dxCommon) {
 	graphicsPipelineState_[PipelineState::kParticle].get()->Initialize(dxCommon_);
 	graphicsPipelineState_[PipelineState::kLine3D] = std::make_unique<Line3DPipeline>();
 	graphicsPipelineState_[PipelineState::kLine3D].get()->Initialize(dxCommon_);
+	graphicsPipelineState_[PipelineState::kOffScreen] = std::make_unique<OffScreenPipeline>();
+	graphicsPipelineState_[PipelineState::kOffScreen].get()->Initialize(dxCommon_);
 }
 
 void PipelineManager::Finalize(){

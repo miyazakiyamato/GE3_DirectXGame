@@ -20,11 +20,18 @@ void MyGame::Update(){
 
 void MyGame::Draw(){
 	//描画前処理
-	dxCommon->PreDraw();
+	dxCommon->RenderTexturePreDraw();
 	srvManager->PreDraw();
 		
 	sceneManager_->Draw();
 
+	//OffScreenの描画
+	dxCommon->SwapChainPreDraw();
+	//コマンドリストの取得
+	//auto commandList = dxCommon->GetCommandList();
+	//パイプラインマネージャの描画設定
+	pipelineManager->DrawSetting(PipelineState::kOffScreen, BlendMode::kNone);
+	dxCommon->OffScreenDraw();
 #ifdef _DEBUG
 	//実際のcommandListのImGuiの描画コマンドを積む
 	imGuiManager->Draw();

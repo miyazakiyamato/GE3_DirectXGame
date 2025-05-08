@@ -10,21 +10,29 @@
 #include <chrono>
 #include "WinApp.h"
 #include "externals/DirectXTex/DirectXTex.h"
+#include "Vector4.h"
 
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
 
 namespace {
 	//RTVのかず
-	const uint32_t kRTVHandleNum = 2;
+	const uint32_t kRTVHandleSwapChainNum = 2;
+	const uint32_t kRTVHandleRenderTextureNum = 1;
+	const uint32_t kRTVHandleNum = 3;
 }
 
+class SrvManager;
 class DirectXCommon{
 public://メンバ関数
 	//初期化
 	void Initialize(WinApp* winApp);
-	//描画前処理
-	void PreDraw();
+	//描画前処理(レンダーテクスチャ)
+	void RenderTexturePreDraw();
+	//描画前処理(スワップチェイン)
+	void SwapChainPreDraw();
+	//offScreen描画
+	void OffScreenDraw();
 	//描画後処理
 	void PostDraw();
 	//デバイスの初期化
@@ -41,6 +49,7 @@ public://メンバ関数
 	void CreateDescriptorHeaps();
 	//レンダーターゲットビューの初期化
 	void CreateRTVDescriptorHeaps();
+	void CreateOffScreenSRV(SrvManager* srvManager);
 	//指定の番号のCPUデスクリプタハンドルを取得
 	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, const uint32_t& descriptorSize, const uint32_t& index);
 	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, const uint32_t& descriptorSize, const uint32_t& index);
@@ -60,6 +69,8 @@ public://メンバ関数
 		const std::wstring& filePath,
 		//Compilerに使用するProfile
 		const wchar_t* profile);
+	//RenderTextureResourceの生成
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateRenderTextureResource(DXGI_FORMAT format,const Vector4& clearColor);
 	//バッファリソースの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(const size_t& sizeInbytes);
 	//テクスチャリソースの生成
@@ -79,7 +90,7 @@ private://メンバ関数
 private://メンバ変数
 	//WindowsAPI
 	WinApp* winApp_ = nullptr;
-
+	SrvManager* srvManager_ = nullptr;
 	//DirectX12デバイス
 	Microsoft::WRL::ComPtr<ID3D12Device> device;
 	//DXGIファクトリ
@@ -104,6 +115,10 @@ private://メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap = nullptr;
 	//RTV
 	std::array<D3D12_CPU_DESCRIPTOR_HANDLE,kRTVHandleNum> rtvHandles;
+	//RenderTextureResource
+	Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource = nullptr;
+	D3D12_CLEAR_VALUE clearValue_;
+	uint32_t offScreenSRVIndex = 0;
 	//スワップチェインリソース
 	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2> swapChainResources;
 	//スワップチェーン
@@ -126,5 +141,9 @@ public:
 	ID3D12GraphicsCommandList* GetCommandList() { return commandList.Get(); }
 	//バックバッファの数を取得
 	size_t GetBackBufferCount() const { return swapChainDesc.BufferCount; }
+	//スワップチェインの取得
+	IDXGISwapChain4* GetSwapChain() { return swapChain.Get(); }
+
+	ID3D12DescriptorHeap* GetDsvDescriptorHeap() { return dsvDescriptorHeap.Get(); }
 };
 

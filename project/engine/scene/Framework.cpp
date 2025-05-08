@@ -19,7 +19,8 @@ void Framework::Initialize(){
 	//SRVの初期化
 	srvManager.reset(new SrvManager());
 	srvManager->Initialize(dxCommon.get());
-	
+	dxCommon->CreateOffScreenSRV(srvManager.get());
+
 	//ImGuiの初期化
 	imGuiManager.reset(new ImGuiManager());
 	imGuiManager->Initialize(winApp.get(), dxCommon.get(), srvManager.get());
