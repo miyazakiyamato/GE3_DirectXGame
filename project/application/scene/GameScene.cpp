@@ -42,9 +42,9 @@ void GameScene::Initialize(){
 	/*ModelManager::GetInstance()->LoadModel("plane/plane.obj");
 	ModelManager::GetInstance()->LoadModel("fence/fence.obj");
 	ModelManager::GetInstance()->LoadModel("axis/axis.obj");
-	ModelManager::GetInstance()->LoadModel("sphere/sphere.obj");
+	ModelManager::GetInstance()->LoadModel("sphere/sphere.obj");*/
 	ModelManager::GetInstance()->LoadModel("terrain/terrain.obj");
-	ModelManager::GetInstance()->LoadModel("plane/plane.gltf");*/
+	/*ModelManager::GetInstance()->LoadModel("plane/plane.gltf");*/
 
 	ModelManager::GetInstance()->LoadModel("AnimatedCube/AnimatedCube.gltf");
 	ModelManager::GetInstance()->LoadAnimation("AnimatedCube/AnimatedCube.gltf");
@@ -60,17 +60,13 @@ void GameScene::Initialize(){
 
 	/*object3ds_[0]->SetModel("AnimatedCube/AnimatedCube.gltf");
 	object3ds_[0]->SetAnimation("AnimatedCube/AnimatedCube.gltf",true);*/
-	object3ds_[0]->SetModel("simpleSkin/simpleSkin.gltf");
-	object3ds_[0]->SetAnimation("simpleSkin/simpleSkin.gltf",true);
+	/*object3ds_[0]->SetModel("simpleSkin/simpleSkin.gltf");
+	object3ds_[0]->SetAnimation("simpleSkin/simpleSkin.gltf",true);*/
 	object3ds_[0]->SetTranslate({ -1,0,0 });
 	object3ds_[0]->SetRotate({ 0,3.14f,0 });
+	object3ds_[0]->SetModel("terrain/terrain.obj");
 	//object3ds_[1]->SetModel("plane/plane.gltf");
 	//object3ds_[1]->SetModel("axis/axis.obj");
-	/*object3ds_[1]->SetTranslate({ 1,0,0 });
-	object3ds_[1]->SetRotate({ 0,3.14f,0 });
-	object3ds_[2]->SetModel("terrain/terrain.obj");
-	object3ds_[2]->SetTranslate({ 0,0,0 });
-	object3ds_[2]->SetRotate({ 0,3.14f,0 });*/
 	object3ds_[1]->SetModel("human/sneakWalk.gltf");
 	object3ds_[1]->SetAnimation("human/sneakWalk.gltf", true);
 	object3ds_[1]->SetTranslate({ 1,0,0 });

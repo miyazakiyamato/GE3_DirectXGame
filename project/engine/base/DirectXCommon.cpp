@@ -51,21 +51,6 @@ void DirectXCommon::Initialize(WinApp* winApp){
 }
 
 void DirectXCommon::RenderTexturePreDraw(){
-	////TransitionBarrierの設定
-	//D3D12_RESOURCE_BARRIER barrier{};
-	////今回のバリアはTransition
-	//barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	////Noneにしておく
-	//barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	////バリアを張る対象のリソース。現在のバックバッファに対して行う
-	//barrier.Transition.pResource = renderTextureResource.Get();
-	////遷移前(現在)のResourceState
-	//barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	////遷移後のResourceState
-	//barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	////TransitionBarrierを張る
-	//commandList->ResourceBarrier(1, &barrier);
-
 	//描画先のRTVとDSVを設定する
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	UINT RenderTextureBackBufferIndex = kRTVHandleSwapChainNum + kRTVHandleRenderTextureNum - 1;
