@@ -31,7 +31,11 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 	InitializeGlobalVariables();
 	ApplyGlobalVariables();
 	for (auto& [name, group] : particleGroupCreateDates_) {
-		CreateParticleGroup(name, group->textureFilePath);
+		if (group->particleType == "ring") {
+			CreateRingParticleGroup(name, group->textureFilePath, 32, 1.0f, 0.2f);
+		} else {
+			CreateParticleGroup(name, group->textureFilePath);
+		}
 	}
 }
 
@@ -101,7 +105,7 @@ void ParticleManager::Draw() {
 		//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
 		commandList->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->GetSrvHandleGPU(group->materialData.textureFilePath));
 		// DrawCall (インスタンシング描画)
-		commandList->DrawIndexedInstanced(6, group->kNumInstance, 0, 0, 0);
+		commandList->DrawIndexedInstanced(group->kParticleIndexNum, group->kNumInstance, 0, 0, 0);
 	}
 }
 
@@ -181,6 +185,103 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 	auto it = particleGroupCreateDates_.find(name);
 	if (it != particleGroupCreateDates_.end() && it->second) {
 		group->particleInitData = it->second->particleInitData;
+		it->second->particleType = "plane";
+	}
+	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
+
+	particleGroups[name] = std::move(group);
+}
+
+void ParticleManager::CreateRingParticleGroup(const std::string name, const std::string textureFilePath, const uint32_t& kDivide, const float& kOuterRadius, const float& kInnerRadius){
+	if (particleGroups.count(name) != 0) {
+		return;
+	}
+
+	// パーティクルグループの作成と初期化
+	auto group = std::make_unique<ParticleGroup>();
+	//.objの参照しているテクスチャファイル読み込み
+	TextureManager::GetInstance()->LoadTexture(textureFilePath);
+	group->materialData.textureFilePath = textureFilePath;
+
+	group->kNumInstance = 0;
+
+	group->kParticleVertexNum = 4 * kDivide;
+	group->kParticleIndexNum = 6 * kDivide;
+	// 頂点リソースの生成
+	group->vertexResource = dxCommon_->CreateBufferResource(sizeof(VertexData) * group->kParticleVertexNum);
+
+	// 頂点バッファビューの生成
+	group->vertexBufferView.BufferLocation = group->vertexResource->GetGPUVirtualAddress();
+	group->vertexBufferView.SizeInBytes = sizeof(VertexData) * group->kParticleVertexNum;
+	group->vertexBufferView.StrideInBytes = sizeof(VertexData);
+	// 頂点リソースに頂点データを書き込む
+	group->vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&group->vertexData));
+	//テクスチャの頂点
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureFilePath);
+	group->textureSize_.x = static_cast<float>(metadata.width);
+	group->textureSize_.y = static_cast<float>(metadata.height);
+
+	/*float tex_left = group->textureLeftTop_.x / metadata.width;
+	float tex_right = (group->textureLeftTop_.x + group->textureSize_.x) / metadata.width;
+	float tex_top = group->textureLeftTop_.y / metadata.height;
+	float tex_bottom = (group->textureLeftTop_.y + group->textureSize_.y) / metadata.height;*/
+
+	//// 頂点データを設定（四角形を構成）
+	//group->vertexData[0] = { { -0.5f, -0.5f, 0.0f, 1.0f }, { tex_left ,tex_bottom }, { 1.0f,1.0f,1.0f,1.0f } };//左下
+	//group->vertexData[1] = { { -0.5f,  0.5f, 0.0f, 1.0f }, { tex_left ,tex_top    }, { 1.0f,1.0f,1.0f,1.0f } };//左上
+	//group->vertexData[2] = { {  0.5f, -0.5f, 0.0f, 1.0f }, { tex_right,tex_bottom }, { 1.0f,1.0f,1.0f,1.0f } };//右下
+	//group->vertexData[3] = { {  0.5f,  0.5f, 0.0f, 1.0f }, { tex_right,tex_top    }, { 1.0f,1.0f,1.0f,1.0f } };//右上
+
+	// インデックスリソースの生成
+	group->indexResource = dxCommon_->CreateBufferResource(sizeof(uint32_t) * group->kParticleIndexNum);
+
+	// インデックスバッファビューの生成
+	group->indexBufferView.BufferLocation = group->indexResource->GetGPUVirtualAddress();
+	group->indexBufferView.SizeInBytes = sizeof(uint32_t) * group->kParticleIndexNum;
+	group->indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+	group->indexResource->Map(0, nullptr, reinterpret_cast<void**>(&group->indexData));
+	
+	const float radianPerDivide = 2.0f * std::numbers::pi_v<float> / float(kDivide);
+	for (uint32_t index = 0; index < kDivide; index++) {
+		float sin = std::sin(radianPerDivide * float(index));
+		float cos = std::cos(radianPerDivide * float(index));
+		float sinNext = std::sin(radianPerDivide * float(index + 1));
+		float cosNext = std::cos(radianPerDivide * float(index + 1));
+		float u = float(index) / float(kDivide);
+		float uNext = float(index + 1) / float(kDivide);
+		group->vertexData[index * 4 + 0] = { { kOuterRadius * -sin,     kOuterRadius * cos, 0.0f, 1.0f },     { u ,0.0f }, { 1.0f,1.0f,1.0f,1.0f } };//左下
+		group->vertexData[index * 4 + 1] = { { kInnerRadius * -sin,     kInnerRadius * cos, 0.0f, 1.0f },     { u ,1.0f }, { 1.0f,1.0f,1.0f,1.0f } };//左上
+		group->vertexData[index * 4 + 2] = { { kOuterRadius * -sinNext, kOuterRadius * cosNext, 0.0f, 1.0f }, { uNext ,0.0f }, { 1.0f,1.0f,1.0f,1.0f } };//右下
+		group->vertexData[index * 4 + 3] = { { kInnerRadius * -sinNext, kInnerRadius * cosNext, 0.0f, 1.0f }, { uNext ,1.0f }, { 1.0f,1.0f,1.0f,1.0f } };//右上
+
+		group->indexData[index * 6 + 0] = index * 4 + 0; group->indexData[index * 6 + 1] = index * 4 + 1; group->indexData[index * 6 + 2] = index * 4 + 2;
+		group->indexData[index * 6 + 3] = index * 4 + 1; group->indexData[index * 6 + 4] = index * 4 + 3; group->indexData[index * 6 + 5] = index * 4 + 2;
+	}
+	group->vertexResource->Unmap(0, nullptr);
+	group->indexResource->Unmap(0, nullptr);
+
+	// TextureManagerからGPUハンドルを取得
+	group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(textureFilePath);
+
+	//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
+	group->instancingResource = dxCommon_->CreateBufferResource(sizeof(ParticleForGPU) * kMaxInstance);
+	//データを書き込む
+	//書き込むためのアドレスを取得
+	group->instancingResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&group->instancingData));
+	//単位行列を書き込んでおく
+	for (uint32_t index = 0; index < kMaxInstance; index++) {
+		group->instancingData[index].World = Matrix4x4::MakeIdentity4x4();
+		group->instancingData[index].WVP = Matrix4x4::MakeIdentity4x4();
+		group->instancingData[index].color = { 1.0f,1.0f,1.0f,1.0f };//色を書き込む
+	}
+
+	group->srvIndexForInstancing = srvManager_->ALLocate();
+	srvManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
+
+	auto it = particleGroupCreateDates_.find(name);
+	if (it != particleGroupCreateDates_.end() && it->second) {
+		group->particleInitData = it->second->particleInitData;
+		it->second->particleType = "ring";
 	}
 	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
 
@@ -229,16 +330,17 @@ void ParticleManager::InitializeGlobalVariables(){
 	for (auto& [name, group] : particleGroupCreateDates_) {
 		globalVariables->AddItem(groupName, "\x01Name" + std::to_string(objectIDIndex), name);
 		globalVariables->AddItem(groupName, "\x02TextureFilePath" + std::to_string(objectIDIndex), group->textureFilePath);
-		globalVariables->AddItem(groupName, "\x03RandomScaleMax" + std::to_string(objectIDIndex), group->particleInitData.randomScaleMax);
-		globalVariables->AddItem(groupName, "\x04RandomScaleMin" + std::to_string(objectIDIndex), group->particleInitData.randomScaleMin);
-		globalVariables->AddItem(groupName, "\x05RandomRotateMax" + std::to_string(objectIDIndex), group->particleInitData.randomRotateMax);
-		globalVariables->AddItem(groupName, "\x06RandomRotateMin" + std::to_string(objectIDIndex), group->particleInitData.randomRotateMin);
-		globalVariables->AddItem(groupName, "\x07RandomVelocityMax" + std::to_string(objectIDIndex), group->particleInitData.randomVelocityMax);
-		globalVariables->AddItem(groupName, "\x08RandomVelocityMin" + std::to_string(objectIDIndex), group->particleInitData.randomVelocityMin);
-		globalVariables->AddItem(groupName, "\x09RandomColorMax" + std::to_string(objectIDIndex), group->particleInitData.randomColorMax);
-		globalVariables->AddItem(groupName, "\x0ARandomColorMin" + std::to_string(objectIDIndex), group->particleInitData.randomColorMin);
-		globalVariables->AddItem(groupName, "\x0BLifeTime" + std::to_string(objectIDIndex), group->particleInitData.lifeTime);
-		globalVariables->AddItem(groupName, "\x0CIsBillboard" + std::to_string(objectIDIndex), group->particleInitData.isBillboard);
+		globalVariables->AddItem(groupName, "\x03ParticleType" + std::to_string(objectIDIndex), group->particleType);
+		globalVariables->AddItem(groupName, "\x04RandomScaleMax" + std::to_string(objectIDIndex), group->particleInitData.randomScaleMax);
+		globalVariables->AddItem(groupName, "\x05RandomScaleMin" + std::to_string(objectIDIndex), group->particleInitData.randomScaleMin);
+		globalVariables->AddItem(groupName, "\x06RandomRotateMax" + std::to_string(objectIDIndex), group->particleInitData.randomRotateMax);
+		globalVariables->AddItem(groupName, "\x07RandomRotateMin" + std::to_string(objectIDIndex), group->particleInitData.randomRotateMin);
+		globalVariables->AddItem(groupName, "\x08RandomVelocityMax" + std::to_string(objectIDIndex), group->particleInitData.randomVelocityMax);
+		globalVariables->AddItem(groupName, "\x09RandomVelocityMin" + std::to_string(objectIDIndex), group->particleInitData.randomVelocityMin);
+		globalVariables->AddItem(groupName, "\x0ARandomColorMax" + std::to_string(objectIDIndex), group->particleInitData.randomColorMax);
+		globalVariables->AddItem(groupName, "\x0BRandomColorMin" + std::to_string(objectIDIndex), group->particleInitData.randomColorMin);
+		globalVariables->AddItem(groupName, "\x0CLifeTime" + std::to_string(objectIDIndex), group->particleInitData.lifeTime);
+		globalVariables->AddItem(groupName, "\x0DIsBillboard" + std::to_string(objectIDIndex), group->particleInitData.isBillboard);
 		++objectIDIndex;
 	}
 }
@@ -250,16 +352,17 @@ void ParticleManager::ApplyGlobalVariables() {
 	for (auto& [name, group] : particleGroupCreateDates_) {
 		group->name = globalVariables->GetValue<std::string>(groupName, "\x01Name" + std::to_string(objectIDIndex));
 		group->textureFilePath = globalVariables->GetValue<std::string>(groupName, "\x02TextureFilePath" + std::to_string(objectIDIndex));
-		group->particleInitData.randomScaleMax = globalVariables->GetValue<Vector3>(groupName, "\x03RandomScaleMax" + std::to_string(objectIDIndex));
-		group->particleInitData.randomScaleMin = globalVariables->GetValue<Vector3>(groupName, "\x04RandomScaleMin" + std::to_string(objectIDIndex));
-		group->particleInitData.randomRotateMax = globalVariables->GetValue<Vector3>(groupName, "\x05RandomRotateMax" + std::to_string(objectIDIndex));
-		group->particleInitData.randomRotateMin = globalVariables->GetValue<Vector3>(groupName, "\x06RandomRotateMin" + std::to_string(objectIDIndex));
-		group->particleInitData.randomVelocityMax = globalVariables->GetValue<Vector3>(groupName, "\x07RandomVelocityMax" + std::to_string(objectIDIndex));
-		group->particleInitData.randomVelocityMin = globalVariables->GetValue<Vector3>(groupName, "\x08RandomVelocityMin" + std::to_string(objectIDIndex));
-		group->particleInitData.randomColorMax = globalVariables->GetValue<Vector4>(groupName, "\x09RandomColorMax" + std::to_string(objectIDIndex));
-		group->particleInitData.randomColorMin = globalVariables->GetValue<Vector4>(groupName, "\x0ARandomColorMin" + std::to_string(objectIDIndex));
-		group->particleInitData.lifeTime = globalVariables->GetValue<float>(groupName, "\x0BLifeTime" + std::to_string(objectIDIndex));
-		group->particleInitData.isBillboard = globalVariables->GetValue<bool>(groupName, "\x0CIsBillboard" + std::to_string(objectIDIndex));
+		group->particleType = globalVariables->GetValue<std::string>(groupName, "\x03ParticleType" + std::to_string(objectIDIndex));
+		group->particleInitData.randomScaleMax = globalVariables->GetValue<Vector3>(groupName, "\x04RandomScaleMax" + std::to_string(objectIDIndex));
+		group->particleInitData.randomScaleMin = globalVariables->GetValue<Vector3>(groupName, "\x05RandomScaleMin" + std::to_string(objectIDIndex));
+		group->particleInitData.randomRotateMax = globalVariables->GetValue<Vector3>(groupName, "\x06RandomRotateMax" + std::to_string(objectIDIndex));
+		group->particleInitData.randomRotateMin = globalVariables->GetValue<Vector3>(groupName, "\x07RandomRotateMin" + std::to_string(objectIDIndex));
+		group->particleInitData.randomVelocityMax = globalVariables->GetValue<Vector3>(groupName, "\x08RandomVelocityMax" + std::to_string(objectIDIndex));
+		group->particleInitData.randomVelocityMin = globalVariables->GetValue<Vector3>(groupName, "\x09RandomVelocityMin" + std::to_string(objectIDIndex));
+		group->particleInitData.randomColorMax = globalVariables->GetValue<Vector4>(groupName, "\x0ARandomColorMax" + std::to_string(objectIDIndex));
+		group->particleInitData.randomColorMin = globalVariables->GetValue<Vector4>(groupName, "\x0BRandomColorMin" + std::to_string(objectIDIndex));
+		group->particleInitData.lifeTime = globalVariables->GetValue<float>(groupName, "\x0CLifeTime" + std::to_string(objectIDIndex));
+		group->particleInitData.isBillboard = globalVariables->GetValue<bool>(groupName, "\x0DIsBillboard" + std::to_string(objectIDIndex));
 		++objectIDIndex;
 	}
 }
@@ -277,23 +380,34 @@ void ParticleManager::UpdateGlobalVariables() {
 	//	"Screen", };
 	if (ImGui::BeginMenu(groupName)) {
 		// テキスト入力ボックス
-		if (ImGui::InputText("Input Text", buffer, IM_ARRAYSIZE(buffer))) {
+		if (ImGui::InputText("Input GroupNameText", buffer, IM_ARRAYSIZE(buffer))) {
 			// 入力が変更された場合に反映
-			reflectedText = buffer;
+			groupNameText = buffer;
 		}
-
+		if (ImGui::InputText("Input TypeNameText", buffer2, IM_ARRAYSIZE(buffer2))) {
+			// 入力が変更された場合に反映
+			typeNameText = buffer2;
+		}
+		bool isGroupCreate = false;
 		// 入力された文字列を表示
-		ImGui::Text("Reflected Text: %s", reflectedText.c_str());
+		ImGui::Text("Reflected Text: %s", groupNameText.c_str());
+		if (groupNameText.empty()) {
+			ImGui::Text("Error: Group name cannot be empty.");
+		} else if (particleGroupCreateDates_.count(groupNameText) != 0) {
+			ImGui::Text("Error: Group name already exists.");
+		} else {
+			isGroupCreate = true;
+		}
 		// ボタンを押したときの処理
 		if (ImGui::Button("CreateGroup")) {
-			if (reflectedText.empty()) {
-				ImGui::Text("Error: Group name cannot be empty.");
-			} else if (particleGroupCreateDates_.count(reflectedText) != 0) {
-				ImGui::Text("Error: Group name already exists.");
-			} else {
-				particleGroupCreateDates_[reflectedText] = std::make_unique<ParticleGroupCreateData>();
+			if (isGroupCreate) {
+				particleGroupCreateDates_[groupNameText] = std::make_unique<ParticleGroupCreateData>();
 				InitializeGlobalVariables();
-				CreateParticleGroup(reflectedText, particleGroupCreateDates_[reflectedText]->textureFilePath);
+				if (typeNameText == "ring") {
+					CreateRingParticleGroup(groupNameText, particleGroupCreateDates_[groupNameText]->textureFilePath,32,1.0f,0.2f);
+				} else {
+					CreateParticleGroup(groupNameText, particleGroupCreateDates_[groupNameText]->textureFilePath);
+				}
 			}
 		}
 		//パーティクル初期化データの更新
@@ -328,6 +442,7 @@ void ParticleManager::UpdateGlobalVariables() {
 					}
 					ImGui::EndCombo();
 				}
+				globalVariables->SetValue(groupName, "\x03ParticleType" + std::to_string(objectIDIndex), group->particleType);
 			}
 			//パーティクルの発生
 			if (ImGui::Button(std::string(name + ": Emit").c_str())) {

@@ -424,7 +424,7 @@ void GameScene::Update(){
 void GameScene::Draw(){
 	//Object3dの描画
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
-		object3d->Draw();
+		//object3d->Draw();
 	}
 
 	//当たり判定の表示

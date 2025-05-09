@@ -51,7 +51,8 @@ public:
 	};
 	struct ParticleGroupCreateData {
 		std::string name = "";
-		std::string textureFilePath = "circle.png";
+		std::string textureFilePath = "circle2.png";
+		std::string particleType = "plane";
 		ParticleInitData particleInitData;
 	};
 	struct ParticleGroup {
@@ -93,6 +94,8 @@ public://メンバ関数
 	void Draw();
 	//パーティクルグループの生成
 	void CreateParticleGroup(const std::string name, const std::string textureFilePath);
+	void CreateRingParticleGroup(const std::string name, const std::string textureFilePath,
+		const uint32_t& kDivide,const float& kOuterRadius,const float& kInnerRadius);
 	//パーティクルの発生
 	void Emit(const std::string name, const Vector3& position, uint32_t count);
 
@@ -120,8 +123,10 @@ private://メンバ変数
 	//ランダムエンジン
 	std::mt19937 randomEngine_;
 
+	std::string groupNameText = ""; // グループ名
 	char buffer[128] = ""; // 入力用のバッファ
-	std::string reflectedText = ""; // 入力を反映する文字列
+	std::string typeNameText = ""; // タイプ名
+	char buffer2[128] = ""; // 入力用のバッファ
 
 	//パーティクルグループを作るデータ
 	std::map<std::string, std::unique_ptr<ParticleGroupCreateData>> particleGroupCreateDates_;

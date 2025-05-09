@@ -73,7 +73,6 @@ void Framework::Initialize(){
 	//タイムマネージャの初期化
 	timeManager_ = TimeManager::GetInstance();
 	timeManager_->Initialize();
-
 }
 
 void Framework::Finalize(){

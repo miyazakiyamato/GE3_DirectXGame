@@ -395,7 +395,8 @@ void DirectXCommon::CreateRTVDescriptorHeaps(){
 	//ディスクリプタの先頭を取得する
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	//RTVのハンドルを取得する
-	Vector4 clearColor = { 1.0f, 0.0f, 0.0f, 1.0f } ;//赤色
+	//Vector4 clearColor = { 1.0f, 0.0f, 0.0f, 1.0f } ;//赤色
+	Vector4 clearColor = { 0.1f,0.25f,0.5f,1.0f };//水色
 	renderTextureResource = CreateRenderTextureResource(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, clearColor);
 	//裏表2つ分
 	for (uint32_t i = 0; i < kRTVHandleNum; ++i) {
