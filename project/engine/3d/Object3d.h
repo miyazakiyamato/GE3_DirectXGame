@@ -3,6 +3,9 @@
 #include "Model.h"
 #include "Camera.h"
 #include "LightManager.h"
+#include "Animation.h"
+#include "Skeleton.h"
+#include "SkinCluster.h"
 
 class Object3d{
 public:
@@ -26,6 +29,12 @@ private:
 		Vector3 worldPosition;
 		float padding;
 	};
+	struct AnimationData{
+		Animation* animation;
+		float time = 0.0f;
+		bool isLoop = false;
+	};
+
 public://メンバ関数
 	//初期化
 	void Initialize();
@@ -51,6 +60,10 @@ private://メンバ変数
 	//Transform変数を作る。
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
+	std::unique_ptr<AnimationData> animationData_ = nullptr;
+	std::unique_ptr<Skeleton> skeletonData_ = nullptr;
+	std::unique_ptr<SkinCluster> skinClusterData_ = nullptr;
+
 	Object3d* parent_ = nullptr;
 
 public://ゲッターセッター
@@ -64,6 +77,7 @@ public://ゲッターセッター
 	const Matrix4x4& GetWorldMatrix() const { return wvpData->World; }
 
 	void SetModel(const std::string& filePath);
+	void SetAnimation(const std::string& filePath,bool isLoop);
 	void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 	void SetScale(const Vector3& scale) { transform.scale = scale; }
 	void SetRotate(const Vector3& rotate) { transform.rotate = rotate; }

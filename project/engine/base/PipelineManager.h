@@ -6,8 +6,11 @@
 
 enum class PipelineState {
 	kModel,
+	kSkinningModel,
 	kParticle,
 	kSprite,
+	kLine3D,
+	kOffScreen,
 };
 
 class PipelineManager {

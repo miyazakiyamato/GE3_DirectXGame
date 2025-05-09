@@ -7,6 +7,8 @@
 #include "AudioManager.h"
 #include "ParticleManager.h"
 #include "GlobalVariables.h"
+#include "TimeManager.h"
+#include "Line3D.h"
 
 void GameScene::Initialize(){
 	BaseScene::Initialize();
@@ -32,62 +34,79 @@ void GameScene::Initialize(){
 	collisionManager_->Initialize();
 
 	for (uint32_t i = 0; i < 3; ++i) {
-		Object3d* object3d = new Object3d;
+		std::unique_ptr<Object3d> object3d(new Object3d);
 		object3d->Initialize();
-		object3ds.push_back(object3d);
+		object3ds_.push_back(std::move(object3d));
 	}
 
-	ModelManager::GetInstance()->LoadModel("plane/plane.obj");
+	/*ModelManager::GetInstance()->LoadModel("plane/plane.obj");
 	ModelManager::GetInstance()->LoadModel("fence/fence.obj");
 	ModelManager::GetInstance()->LoadModel("axis/axis.obj");
-	ModelManager::GetInstance()->LoadModel("sphere/sphere.obj");
+	ModelManager::GetInstance()->LoadModel("sphere/sphere.obj");*/
 	ModelManager::GetInstance()->LoadModel("terrain/terrain.obj");
-	ModelManager::GetInstance()->LoadModel("plane/plane.gltf");
+	/*ModelManager::GetInstance()->LoadModel("plane/plane.gltf");*/
 
-	object3ds[0]->SetModel("sphere/sphere.obj");
-	object3ds[0]->SetTranslate({ -1,0,0 });
-	object3ds[0]->SetRotate({ 0,3.14f,0 });
-	object3ds[1]->SetModel("plane/plane.gltf");
-	//object3ds[1]->SetModel("axis/axis.obj");
-	object3ds[1]->SetTranslate({ 1,0,0 });
-	object3ds[1]->SetRotate({ 0,3.14f,0 });
-	object3ds[2]->SetModel("terrain/terrain.obj");
-	object3ds[2]->SetTranslate({ 0,0,0 });
-	object3ds[2]->SetRotate({ 0,3.14f,0 });
-	
+	ModelManager::GetInstance()->LoadModel("AnimatedCube/AnimatedCube.gltf");
+	ModelManager::GetInstance()->LoadAnimation("AnimatedCube/AnimatedCube.gltf");
+	ModelManager::GetInstance()->LoadModel("simpleSkin/simpleSkin.gltf");
+	ModelManager::GetInstance()->LoadAnimation("simpleSkin/simpleSkin.gltf");
+	ModelManager::GetInstance()->LoadModel("human/sneakWalk.gltf");
+	ModelManager::GetInstance()->LoadAnimation("human/sneakWalk.gltf");
+	ModelManager::GetInstance()->LoadModel("human/walk.gltf");
+	ModelManager::GetInstance()->LoadAnimation("human/walk.gltf");
+
+	TextureManager::GetInstance()->LoadTexture("circle2.png");
+	TextureManager::GetInstance()->LoadTexture("gradationLine.png");
+
+	/*object3ds_[0]->SetModel("AnimatedCube/AnimatedCube.gltf");
+	object3ds_[0]->SetAnimation("AnimatedCube/AnimatedCube.gltf",true);*/
+	/*object3ds_[0]->SetModel("simpleSkin/simpleSkin.gltf");
+	object3ds_[0]->SetAnimation("simpleSkin/simpleSkin.gltf",true);*/
+	object3ds_[0]->SetTranslate({ -1,0,0 });
+	object3ds_[0]->SetRotate({ 0,3.14f,0 });
+	object3ds_[0]->SetModel("terrain/terrain.obj");
+	//object3ds_[1]->SetModel("plane/plane.gltf");
+	//object3ds_[1]->SetModel("axis/axis.obj");
+	object3ds_[1]->SetModel("human/sneakWalk.gltf");
+	object3ds_[1]->SetAnimation("human/sneakWalk.gltf", true);
+	object3ds_[1]->SetTranslate({ 1,0,0 });
+	object3ds_[1]->SetRotate({ 0,3.14f,0 });
+	object3ds_[2]->SetModel("human/walk.gltf");
+	object3ds_[2]->SetAnimation("human/walk.gltf", true);
+	object3ds_[2]->SetTranslate({ 0,0,0 });
+	object3ds_[2]->SetRotate({ 0,3.14f,0 });
 	//
 	isAccelerationField = false;
-	accelerationField_ = new AccelerationField;
+	accelerationField_.reset(new AccelerationField);
 
 	//ParticleManager::GetInstance()->CreateParticleGroup();
-	particleEmitter_ = new ParticleEmitter();
-	particleEmitter_->Initialize("circle", "resources/texture/circle.png");
+	particleEmitter_.reset(new ParticleEmitter);
+	particleEmitter_->Initialize("circle", "circle.png");
 
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
-		Sprite* sprite = new Sprite;
-		sprite->Initialize("resources/texture/uvChecker.png");
+		std::unique_ptr<Sprite> sprite(new Sprite);
+		sprite->Initialize("uvChecker.png");
 		sprite->SetPosition({ 100 + 200.0f * float(i), 100 });
 		sprite->SetSize({ 100.0f,100.0f });
-		sprites.push_back(sprite);
+		sprites_.push_back(std::move(sprite));
 	}
-	sprites[0]->SetTextureSize({ 64.0f,64.0f });
-	sprites[1]->SetTexture("resources/texture/monsterBall.png");
-	sprites[1]->SetIsFlipX(true);
-	sprites[2]->SetIsFlipY(true);
-	sprites[3]->SetIsFlipX(true);
-	sprites[3]->SetIsFlipY(true);
+	sprites_[0]->SetTextureSize({ 64.0f,64.0f });
+	sprites_[1]->SetTexture("monsterBall.png");
+	sprites_[1]->SetIsFlipX(true);
+	sprites_[2]->SetIsFlipY(true);
+	sprites_[3]->SetIsFlipX(true);
+	sprites_[3]->SetIsFlipY(true);
 }
 
 void GameScene::Finalize(){
 	//解放
-	delete particleEmitter_;
-	delete accelerationField_;
-	for (Sprite* sprite : sprites) {
-		delete sprite;
+	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
+		object3d.reset();  // メモリを解放する
 	}
-	for (Object3d* object3d : object3ds) {
-		delete object3d;
+
+	for (std::unique_ptr<Sprite>& sprite : sprites_) {
+		sprite.reset();  // メモリを解放する
 	}
 	BaseScene::Finalize();
 }
@@ -105,6 +124,7 @@ void GameScene::Update(){
 #ifdef _DEBUG
 	//// ウインドウフラグに NoResize を指定
 	//ImGui::Begin("Settings", NULL, ImGuiWindowFlags_NoResize);
+	//ImGui::ShowDemoWindow();
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	globalVariables->Update();
 	std::string groupName = "";
@@ -206,7 +226,7 @@ void GameScene::Update(){
 			if (ImGui::BeginMenu(groupName.c_str())) {
 				
 				size_t object3dCount = 0;
-				for (Object3d* object3d : object3ds) {
+				for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 					int Object3dItem_selected_idx = static_cast<int>(object3d->GetBlendMode());
 					const char* currentItem = blendState[Object3dItem_selected_idx].c_str();
 					if (ImGui::BeginCombo((blendName + std::to_string(object3dCount)).c_str(), currentItem)) {
@@ -251,6 +271,7 @@ void GameScene::Update(){
 				}
 				ImGui::EndMenu();
 			}
+			ParticleManager::GetInstance()->UpdateGlobalVariables();
 			groupName = "Particle";
 			if (ImGui::BeginMenu(groupName.c_str())) {
 				int particleItem_selected_idx = static_cast<int>(ParticleManager::GetInstance()->GetBlendMode(particleEmitter_->GetName()));
@@ -310,7 +331,7 @@ void GameScene::Update(){
 			groupName = "Sprite";
 			if (ImGui::BeginMenu(groupName.c_str())) {
 				uint32_t objectIDIndex = 0;
-				for (Sprite* sprite : sprites) {
+				for (std::unique_ptr<Sprite>& sprite : sprites_) {
 					ImGui::PushID(objectIDIndex);
 					int SpriteItem_selected_idx = static_cast<int>(sprite->GetBlendMode());
 					const char* currentItem = blendState[SpriteItem_selected_idx].c_str();
@@ -362,11 +383,15 @@ void GameScene::Update(){
 		}
 		ImGui::End();
 	}
+#endif //_DEBUG
+	CameraManager::GetInstance()->GetCamera()->Update();
+
+#ifdef _DEBUG
 	// デバッグ用にワールドトランスフォームの更新
 	collisionManager_->UpdateWorldTransform();
 #endif //_DEBUG
 
-	for (Object3d* object3d : object3ds) {
+	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		object3d->Update();
 	}
 
@@ -378,7 +403,7 @@ void GameScene::Update(){
 				ParticleManager::Particle& particle = *it;
 
 				if (Collision::IsCollision(accelerationField_->GetAABB(), particle.transform.translate)) {
-					particle.velocity += accelerationField_->GetAcceleration() * kDeltaTime_;
+					particle.velocity += accelerationField_->GetAcceleration() * TimeManager::GetInstance()->deltaTime_;
 
 				}
 
@@ -391,24 +416,33 @@ void GameScene::Update(){
 	particleEmitter_->Update();
 	ParticleManager::GetInstance()->Update();
 
-	for (Sprite* sprite : sprites) {
+	for (std::unique_ptr<Sprite>& sprite : sprites_) {
 		sprite->Update();
 	}
 }
 
 void GameScene::Draw(){
 	//Object3dの描画
-	for (Object3d* object3d : object3ds) {
-		object3d->Draw();
+	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
+		//object3d->Draw();
 	}
 
 	//当たり判定の表示
 	collisionManager_->Draw();
+	
+	//ラインの描画
+	//Line3dManager::GetInstance()->DrawLine(object3ds_[0]->GetCenterPosition(), object3ds_[1]->GetCenterPosition(),{1.0f,0.0f,0.0f,1.0f});
+	//Line3dManager::GetInstance()->DrawLine(object3ds_[1]->GetCenterPosition(), object3ds_[2]->GetCenterPosition(),{1.0f,0.0f,0.0f,1.0f});
+	//Line3dManager::GetInstance()->DrawSphere({ object3ds_[0]->GetCenterPosition(),1.0f }, { 1.0f,0.0f,0.0f,1.0f });
+	/*Line3dManager::GetInstance()->DrawSphere({ {},1.0f}, {1.0f,0.0f,0.0f,1.0f},10);
+	Line3dManager::GetInstance()->DrawGrid({50.0f,3.0f});*/
+	Line3dManager::GetInstance()->Draw();
+
 	//Particleの描画
 	ParticleManager::GetInstance()->Draw();
 
 	//Spriteの描画
-	for (Sprite* sprite : sprites) {
+	for (std::unique_ptr<Sprite>& sprite : sprites_) {
 		sprite->Draw();
 	}
 }

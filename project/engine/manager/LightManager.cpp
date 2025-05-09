@@ -35,7 +35,7 @@ void LightManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 	for (uint32_t index = 0; index < kMaxPointLight; index++) {
 		pointLightData_[index].color = {1.0f,1.0f,1.0f,1.0f};
 		pointLightData_[index].position = { 0.0f,0.0f,0.0f };
-		pointLightData_[index].intensity = 0.0f;
+		pointLightData_[index].intensity = 1.0f;
 		pointLightData_[index].radius = 1.0f;
 		pointLightData_[index].decay = 1.0f;
 	}
@@ -50,7 +50,7 @@ void LightManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
 	for (uint32_t index = 0; index < kMaxSpotLight; index++) {
 		spotLightData_[index].color = { 1.0f,1.0f,1.0f,1.0f };
 		spotLightData_[index].position = { 2.0f,1.25f,0.0f };
-		spotLightData_[index].intensity = 0.0f;
+		spotLightData_[index].intensity = 4.0f;
 		spotLightData_[index].direction = Vector3(-1.0f, -1.0f, 0.0f).Normalize();
 		spotLightData_[index].distance = 7.0f;
 		spotLightData_[index].decay = 2.0f;

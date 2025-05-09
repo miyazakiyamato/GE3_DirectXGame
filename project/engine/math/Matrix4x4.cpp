@@ -2,6 +2,21 @@
 #include <cmath>
 #include <cassert>
 
+Matrix4x4 Matrix4x4::Inverse()
+{
+	return Inverse(*this);
+}
+
+Matrix4x4 Matrix4x4::Transpose()
+{
+	return Transpose(*this);
+}
+
+Vector3 Matrix4x4::Transform(const Vector3& Vector)
+{
+	return Transform(Vector,*this);
+}
+
 Matrix4x4 Matrix4x4::Inverse(const Matrix4x4& m) {
 	Matrix4x4 m2;
 	float a =

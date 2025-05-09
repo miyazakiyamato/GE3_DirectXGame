@@ -44,9 +44,11 @@ private://シングルインスタンス
 private://メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
+	//テクスチャのファイルパス
+	std::string directoryPath_ = "resources/texture/";
 	//テクスチャデータ
-	std::unordered_map<std::string,TextureData> textureDatas;
+	std::unordered_map<std::string,TextureData> textureDates;
 public:
-
+	std::vector<std::string> GetKeys(); // 結果を格納するベクター
 };
 

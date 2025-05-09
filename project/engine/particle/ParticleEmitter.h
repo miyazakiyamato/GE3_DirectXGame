@@ -28,8 +28,6 @@ private:
 	//連続発生するか
 	bool isEmitUpdate_ = false;
 
-	//デルタタイム
-	const float kDeltaTime_ = 1.0f / 60.0f;
 
 public:
 	const std::string& GetName() { return name_; }

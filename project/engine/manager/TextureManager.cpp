@@ -1,6 +1,7 @@
 #include "TextureManager.h"
 #include "DirectXCommon.h"
 #include "SrvManager.h"
+#include <algorithm>
 
 TextureManager* TextureManager::instance = nullptr;
 
@@ -24,7 +25,7 @@ void TextureManager::Finalize(){
 
 void TextureManager::LoadTexture(const std::string& filePath){
 	//読み込み済みテクスチャを検索
-	if (textureDatas.contains(filePath)) {
+	if (textureDates.contains(filePath)) {
 		//読み込み済みなら早期return
 		return;
 	}
@@ -33,10 +34,10 @@ void TextureManager::LoadTexture(const std::string& filePath){
 	assert(srvManager_->AvailabilityCheck());
 
 	//Textureを読んで転送する
-	DirectX::ScratchImage mipImages = dxCommon_->LoadTexture(filePath);
+	DirectX::ScratchImage mipImages = dxCommon_->LoadTexture(directoryPath_ + filePath);
 
 	//追加したテクスチャデータの参照を取得
-	TextureData& textureData = textureDatas[filePath];
+	TextureData& textureData = textureDates[filePath];
 
 	//テクスチャデータの書き込み
 	textureData.metadata = mipImages.GetMetadata();
@@ -53,7 +54,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(const std::string& f
 	//テクスチャ枚数上限チェック
 	assert(srvManager_->AvailabilityCheck());
 
-	TextureData& textureData = textureDatas[filePath];
+	TextureData& textureData = textureDates[filePath];
 	return textureData.srvHandleGPU;
 }
 
@@ -61,7 +62,7 @@ const DirectX::TexMetadata& TextureManager::GetMetaData(const std::string& fileP
 	//範囲外指定違反チェック
 	assert(srvManager_->AvailabilityCheck());
 
-	TextureData& textureData = textureDatas[filePath];
+	TextureData& textureData = textureDates[filePath];
 	return textureData.metadata;
 }
 
@@ -69,6 +70,14 @@ uint32_t TextureManager::GetSrvIndex(const std::string& filePath){
 	//範囲外指定違反チェック
 	assert(srvManager_->AvailabilityCheck());
 
-	TextureData& textureData = textureDatas[filePath];
+	TextureData& textureData = textureDates[filePath];
 	return textureData.srvIndex;
+}
+
+std::vector<std::string> TextureManager::GetKeys(){
+	std::vector<std::string> keys;
+	// std::transformを使用してキーを抽出
+	std::transform(textureDates.begin(), textureDates.end(), std::back_inserter(keys),
+		[](const auto& pair) { return pair.first; });
+	return keys;
 }

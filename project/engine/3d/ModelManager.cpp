@@ -10,8 +10,9 @@ ModelManager* ModelManager::GetInstance()
 	return instance;
 }
 
-void ModelManager::Initialize(DirectXCommon* dxCommon){
+void ModelManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager){
 	dxCommon_ = dxCommon;
+	srvManager_ = srvManager;
 }
 
 void ModelManager::Finalize(){
@@ -33,14 +34,37 @@ void ModelManager::LoadModel(const std::string& filePath){
 	models.insert(std::make_pair(filePath, std::move(model)));
 }
 
-Model* ModelManager::FindModel(const std::string& filePath)
-{
+Model* ModelManager::FindModel(const std::string& filePath){
 	//読み込み済みモデルを検索
 	if (models.contains(filePath)) {
 		//読み込みモデルを戻り値としてreturn
 		return models.at(filePath).get();
 	}
 
+	//ファイル名一致なし
+	return nullptr;
+}
+
+void ModelManager::LoadAnimation(const std::string& filePath){
+	//読み込み済みアニメーションを検索
+	if (animations.contains(filePath)) {
+		//読み込み済みなら早期return
+		return;
+	}
+	//アニメーションの生成とファイル読み込み、初期化
+	std::unique_ptr<Animation> animation = std::make_unique<Animation>();
+	animation->LoadFile(filePath);
+
+	//アニメーションをmapコンテナに格納する
+	animations.insert(std::make_pair(filePath, std::move(animation)));
+}
+
+Animation* ModelManager::FindAnimation(const std::string& filePath){
+	//読み込み済みアニメーションを検索
+	if (animations.contains(filePath)) {
+		//読み込みアニメーションを戻り値としてreturn
+		return animations.at(filePath).get();
+	}
 	//ファイル名一致なし
 	return nullptr;
 }

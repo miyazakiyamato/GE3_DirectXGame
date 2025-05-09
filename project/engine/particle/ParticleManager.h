@@ -37,21 +37,50 @@ public:
 		Vector4 color;
 		//Matrix4x4 uvTransform;
 	};
+	struct ParticleInitData {
+		Vector3 randomScaleMax{1.0f,1.0f,1.0f};
+		Vector3 randomScaleMin{1.0f,1.0f,1.0f};
+		Vector3 randomRotateMax{};
+		Vector3 randomRotateMin{};
+		Vector3 randomVelocityMax{1.0f,1.0f,1.0f};
+		Vector3 randomVelocityMin{-1.0f,-1.0f,-1.0f};
+		Vector4 randomColorMax{1.0f,1.0f,1.0f,1.0f};
+		Vector4 randomColorMin{0.0f,0.0f,0.0f,1.0f};
+		float lifeTime = 2.0f;
+		bool isBillboard = true;
+	};
+	struct ParticleGroupCreateData {
+		std::string name = "";
+		std::string textureFilePath = "circle2.png";
+		std::string particleType = "plane";
+		ParticleInitData particleInitData;
+	};
 	struct ParticleGroup {
-		MaterialData materialData;
-		std::list<Particle> particles;
-		uint32_t kNumInstance;
+		ParticleInitData particleInitData;
+		std::list<Particle> particles;//パーティクルのリスト
+		MaterialData materialData;//マテリアルデータ
+		//インスタンスの数
+		uint32_t kParticleVertexNum;
+		uint32_t kParticleIndexNum;
+		uint32_t kNumInstance = 0;
 		uint32_t srvIndexForInstancing;
 		//バッファリソース
 		ComPtr<ID3D12Resource> vertexResource;
+		ComPtr<ID3D12Resource> indexResource;
 		ComPtr<ID3D12Resource> instancingResource;
 		//バッファリソースの使い道を補足するバッファビュー
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
+		D3D12_INDEX_BUFFER_VIEW indexBufferView;
 		//バッファリソース内のデータを指すポインタ
 		VertexData* vertexData = nullptr;
+		uint32_t* indexData = nullptr;
 		ParticleForGPU* instancingData = nullptr;
 		BlendMode blendMode_ = BlendMode::kAdd;
+		//テクスチャサイズ
+		Vector2 textureLeftTop_ = { 0.0f,0.0f };
+		Vector2 textureSize_ = { 100.0f,100.0f };
 	};
+
 public://メンバ関数
 	//シングルトンインスタンスの取得
 	static ParticleManager* GetInstance();
@@ -65,11 +94,18 @@ public://メンバ関数
 	void Draw();
 	//パーティクルグループの生成
 	void CreateParticleGroup(const std::string name, const std::string textureFilePath);
+	void CreateRingParticleGroup(const std::string name, const std::string textureFilePath,
+		const uint32_t& kDivide,const float& kOuterRadius,const float& kInnerRadius);
 	//パーティクルの発生
 	void Emit(const std::string name, const Vector3& position, uint32_t count);
+
+	//調整項目の更新
+	void UpdateGlobalVariables();
 private://ローカル関数
-	//パーティクルの作成
-	Particle CreateNewParticle(std::mt19937& randomEngine, const Vector3& position);
+	//調整項目の初期化
+	void InitializeGlobalVariables();
+	// 調整項目の適用
+	void ApplyGlobalVariables();
 private://シングルインスタンス
 	static ParticleManager* instance;
 
@@ -81,26 +117,19 @@ private://メンバ変数
 	//ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
-	//
-	const uint32_t kParticleVertexNum = 4;
-	const uint32_t kParticleIndexNum = 6;
-	//バッファリソース
-	ComPtr<ID3D12Resource> indexResource;
-	//バッファリソース内のデータを指すポインタ
-	uint32_t* indexData = nullptr;
-	//バッファリソースの使い道を補足するバッファビュー
-	D3D12_INDEX_BUFFER_VIEW indexBufferView;
-
 	//インスタンスの最大数
 	uint32_t kMaxInstance = 1000;
 
-	//テクスチャサイズ
-	Vector2 textureLeftTop_ = { 0.0f,0.0f };
-	Vector2 textureSize_ = { 100.0f,100.0f };
+	//ランダムエンジン
+	std::mt19937 randomEngine_;
 
-	//デルタタイム
-	const float kDeltaTime_ = 1.0f / 60.0f;
+	std::string groupNameText = ""; // グループ名
+	char buffer[128] = ""; // 入力用のバッファ
+	std::string typeNameText = ""; // タイプ名
+	char buffer2[128] = ""; // 入力用のバッファ
 
+	//パーティクルグループを作るデータ
+	std::map<std::string, std::unique_ptr<ParticleGroupCreateData>> particleGroupCreateDates_;
 	//パーティクルデータ
 	std::map<std::string, std::unique_ptr<ParticleGroup>> particleGroups;
 public://ゲッターセッター

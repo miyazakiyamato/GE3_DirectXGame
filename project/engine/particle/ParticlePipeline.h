@@ -17,4 +17,3 @@ public://メンバ関数
 private:
 
 };
-

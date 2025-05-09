@@ -2,6 +2,8 @@
 #include "ModelManager.h"
 #include "CameraManager.h"
 #include "PipelineManager.h"
+#include "TimeManager.h"
+#include "Line3D.h"
 
 void Object3d::Initialize(){
 	dxCommon_ = ModelManager::GetInstance()->GetDirectXCommon();
@@ -48,13 +50,43 @@ void Object3d::Update(){
 	else {
 		worldViewProjectionMatrix = worldMatrix;
 	}
-	wvpData->WVP = worldViewProjectionMatrix;
-	wvpData->World = worldMatrix;
-	wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(worldMatrix));
 	if (model_) {
-		wvpData->WVP = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldViewProjectionMatrix;
-		wvpData->World = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldMatrix;
-		wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
+		if (animationData_) {
+			animationData_->time += TimeManager::GetInstance()->deltaTime_;
+			if (animationData_->isLoop) {
+				animationData_->time = fmod(animationData_->time, animationData_->animation->GetDuration());
+			} else if (animationData_->time > animationData_->animation->GetDuration()) {
+				animationData_->time = animationData_->animation->GetDuration();
+			}
+			/*Matrix4x4 localMatrix = animationData_->animation->MakeLocalMatrix(model_->GetModelData().rootNode.name,animationData_->time);
+			wvpData->WVP = localMatrix * worldViewProjectionMatrix;
+			wvpData->World = localMatrix * worldMatrix;
+			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));*/
+
+			wvpData->WVP = worldViewProjectionMatrix;
+			wvpData->World = worldMatrix;
+			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
+
+			//スケルトンの更新
+			if (skeletonData_) {
+				skeletonData_->ApplyAnimation(animationData_->animation, animationData_->time);
+				skeletonData_->Update();
+
+				//スキンクラスタの更新
+				if (skinClusterData_) {
+					skinClusterData_->Update(skeletonData_.get());
+				}
+			}
+		}
+		else {
+			wvpData->WVP = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldViewProjectionMatrix;
+			wvpData->World = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldMatrix;
+			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
+		}
+	} else {
+		wvpData->WVP = worldViewProjectionMatrix;
+		wvpData->World = worldMatrix;
+		wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(worldMatrix));
 	}
 }
 
@@ -64,8 +96,15 @@ void Object3d::Draw(){
 		// コマンドリストの取得
 		ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
-		//パイプラインを設定
-		PipelineManager::GetInstance()->DrawSetting(PipelineState::kModel,blendMode_);
+		if (skinClusterData_) {
+			//パイプラインを設定
+			PipelineManager::GetInstance()->DrawSetting(PipelineState::kSkinningModel, blendMode_);
+			skinClusterData_->Draw();
+		} else {
+			//パイプラインを設定
+			PipelineManager::GetInstance()->DrawSetting(PipelineState::kModel, blendMode_);
+		}
+
 		//wvp用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 		//マテリアルCBufferの場所を設定
@@ -76,6 +115,11 @@ void Object3d::Draw(){
 		lightManager_->Draw();
 
 		model_->Draw();
+
+		//Skeleton
+		if (skeletonData_) {
+			skeletonData_->Draw(wvpData->World);
+		}
 	}
 
 }
@@ -89,6 +133,21 @@ void Object3d::SetModel(const std::string& filePath){
 	materialData->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
 	materialData->shininess = 40.0f;
 	materialData->highLightColor = { 1.0f,1.0f,1.0f,1.0f };
+}
+
+void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
+	//アニメーション
+	animationData_ = std::make_unique<AnimationData>();
+	animationData_->animation = ModelManager::GetInstance()->FindAnimation(filePath);
+	animationData_->time = 0.0f;
+	animationData_->isLoop = isLoop;
+	//スケルトン
+	skeletonData_ = std::make_unique<Skeleton>();
+	skeletonData_->CreateSkeleton(model_->GetModelData().rootNode);
+
+	//スキンクラスタ
+	skinClusterData_ = std::make_unique<SkinCluster>();
+	skinClusterData_->CreateSkinCluster(skeletonData_.get(), model_->GetModelData());
 }
 
 Vector3 Object3d::GetCenterPosition() const

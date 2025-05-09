@@ -1,5 +1,6 @@
 #include "ParticleEmitter.h"
 #include "ParticleManager.h"
+#include "TimeManager.h"
 
 void ParticleEmitter::Initialize(const std::string name, const std::string textureFilePath){
 	name_ = name;
@@ -9,7 +10,7 @@ void ParticleEmitter::Initialize(const std::string name, const std::string textu
 
 void ParticleEmitter::Update(){
 	if (!isEmitUpdate_) { return; }
-	frequencyTime_ -= kDeltaTime_;
+	frequencyTime_ -= TimeManager::GetInstance()->deltaTime_;
 	if (frequencyTime_ <= 0.0f) {
 		frequencyTime_ = frequency_;
 		ParticleManager::GetInstance()->Emit(name_, transform_.translate, count_);

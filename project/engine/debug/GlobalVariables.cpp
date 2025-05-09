@@ -34,40 +34,46 @@ void GlobalVariables::Update() {
 			//項目の参照を取得
 			Item& item = itItem->second;
 
+			// 制御文字を削除した表示用の名前を生成
+			std::string displayName = itemName;
+			displayName.erase(std::remove_if(displayName.begin(), displayName.end(),
+				[](unsigned char c) { return std::iscntrl(c); }),
+				displayName.end());
+
 			// bool型の値を保持していれば
 			if (std::holds_alternative<bool>(item)) {
 				bool* ptr = std::get_if<bool>(&item);
-				ImGui::Checkbox(itemName.c_str(), ptr);
+				ImGui::Checkbox(displayName.c_str(), ptr);
 			}
 			//int32_t型の値を保持していれば
 			if (std::holds_alternative<int32_t>(item)) {
 				int32_t* ptr = std::get_if<int32_t>(&item);
-				ImGui::DragInt(itemName.c_str(), ptr, 1.0f);
+				ImGui::DragInt(displayName.c_str(), ptr, 1.0f);
 			}
 			// float型の値を保持していれば
 			else if (std::holds_alternative<float>(item)) {
 				float* ptr = std::get_if<float>(&item);
-				ImGui::DragFloat(itemName.c_str(), ptr,0.01f);
+				ImGui::DragFloat(displayName.c_str(), ptr,0.01f);
 			}
 			//Vector2型の値を保持していれば
 			else if (std::holds_alternative<Vector2>(item)) {
 				Vector2* ptr = std::get_if<Vector2>(&item);
-				ImGui::DragFloat2(itemName.c_str(), reinterpret_cast<float*>(ptr),0.01f);
+				ImGui::DragFloat2(displayName.c_str(), reinterpret_cast<float*>(ptr),0.01f);
 			}
 			//Vector3型の値を保持していれば
 			else if (std::holds_alternative<Vector3>(item)) {
 				Vector3* ptr = std::get_if<Vector3>(&item);
-				ImGui::DragFloat3(itemName.c_str(), reinterpret_cast<float*>(ptr),0.01f);
+				ImGui::DragFloat3(displayName.c_str(), reinterpret_cast<float*>(ptr),0.01f);
 			}
 			//Vector4型の値を保持していれば
 			else if (std::holds_alternative<Vector4>(item)) {
 				Vector4* ptr = std::get_if<Vector4>(&item);
-				ImGui::ColorEdit4(itemName.c_str(), reinterpret_cast<float*>(ptr));
+				ImGui::ColorEdit4(displayName.c_str(), reinterpret_cast<float*>(ptr));
 			}
 			//std::string型の値を保持していれば
 			else if (std::holds_alternative<std::string>(item)) {
 				std::string* ptr = std::get_if<std::string>(&item);
-				ImGui::Text((itemName + " " + *ptr).c_str());
+				ImGui::Text((displayName + " " + *ptr).c_str());
 			}
 		}
 
@@ -273,7 +279,7 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 			SetValue(groupName, itemName, value);
 		}
 		//int32_t型の値を保持していれば
-		if (itItem->is_number_integer()) {
+		else if (itItem->is_number_integer()) {
 			//int型の値を登録
 			int32_t value = itItem->get<int32_t>();
 			SetValue(groupName, itemName, value);
@@ -303,7 +309,7 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 			SetValue(groupName, itemName, value);
 		}
 		// std::string型の値を保持していれば
-		else if (itItem->is_number_float()) {
+		else if (itItem->is_string()) {
 			// std::string型の値を登録
 			std::string value = itItem->get<std::string>();
 			SetValue(groupName, itemName, static_cast<std::string>(value));
@@ -357,6 +363,10 @@ T GlobalVariables::GetValue(const std::string& groupName, const std::string& key
 
 	// グループの参照を取得
 	const Group& group = datas_.at(groupName);
+
+	if (group.find(key) == group.end()) {
+		return T();
+	}
 
 	return std::get<T>(group.at(key));
 }

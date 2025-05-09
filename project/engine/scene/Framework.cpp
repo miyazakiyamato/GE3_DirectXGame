@@ -5,24 +5,25 @@ void Framework::Initialize(){
 	(void)CoInitializeEx(0, COINIT_MULTITHREADED);
 
 	//WindowsAPIの初期化
-	winApp = new WinApp();
+	winApp.reset(new WinApp());
 	winApp->Initialize();
 
 	//DirecXの初期化
-	dxCommon = new DirectXCommon();
-	dxCommon->Initialize(winApp);
+	dxCommon.reset(new DirectXCommon());
+	dxCommon->Initialize(winApp.get());
 
 	//入力の初期化
 	input_ = Input::GetInstance();
-	input_->Initialize(winApp);
+	input_->Initialize(winApp.get());
 	
 	//SRVの初期化
-	srvManager = new SrvManager();
-	srvManager->Initialize(dxCommon);
-	
+	srvManager.reset(new SrvManager());
+	srvManager->Initialize(dxCommon.get());
+	dxCommon->CreateOffScreenSRV(srvManager.get());
+
 	//ImGuiの初期化
-	imGuiManager = new ImGuiManager();
-	imGuiManager->Initialize(winApp, dxCommon, srvManager);
+	imGuiManager.reset(new ImGuiManager());
+	imGuiManager->Initialize(winApp.get(), dxCommon.get(), srvManager.get());
 
 	// グローバル変数の読み込み
 	globalVariables_ = GlobalVariables::GetInstance();
@@ -30,23 +31,27 @@ void Framework::Initialize(){
 
 	//パイプラインマネージャ
 	pipelineManager = PipelineManager::GetInstance();
-	pipelineManager->Initialize(dxCommon);
+	pipelineManager->Initialize(dxCommon.get());
 
 	//テクスチャマネージャの初期化
 	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize(dxCommon, srvManager);
+	textureManager_->Initialize(dxCommon.get(), srvManager.get());
 
 	//パーティクルマネージャの初期化
 	particleManager_ = ParticleManager::GetInstance();
-	particleManager_->Initialize(dxCommon, srvManager);
+	particleManager_->Initialize(dxCommon.get(), srvManager.get());
 
 	//モデルマネージャの初期化
 	modelManager_ = ModelManager::GetInstance();
-	modelManager_->Initialize(dxCommon);
+	modelManager_->Initialize(dxCommon.get(), srvManager.get());
 	
+	//ラインマネージャ
+	lineManager_ = Line3dManager::GetInstance();
+	lineManager_->Initialize(srvManager.get());
+
 	//ライトマネージャの初期化
 	lightManager_ = LightManager::GetInstance();
-	lightManager_->Initialize(dxCommon,srvManager);
+	lightManager_->Initialize(dxCommon.get(), srvManager.get());
 
 	//カメラマネージャの初期化
 	cameraManager_ = CameraManager::GetInstance();
@@ -61,17 +66,23 @@ void Framework::Initialize(){
 	audioManager_->Initialize();
 
 	//シーンマネージャの初期化
-	sceneFactory_ = new SceneFactory();
+	sceneFactory_.reset(new SceneFactory());
 	sceneManager_ = SceneManager::GetInstance();
-	sceneManager_->SetSceneFactory(sceneFactory_);
+	sceneManager_->SetSceneFactory(sceneFactory_.get());
+
+	//タイムマネージャの初期化
+	timeManager_ = TimeManager::GetInstance();
+	timeManager_->Initialize();
 }
 
 void Framework::Finalize(){
 	//終了
+	timeManager_->Finalize();
 	sceneManager_->Finalize();
 	audioManager_->Finalize();
 	cameraManager_->Finalize();
 	lightManager_->Finalize();
+	lineManager_->Finalize();
 	modelManager_->Finalize();
 	particleManager_->Finalize();
 	textureManager_->Finalize();
@@ -81,11 +92,6 @@ void Framework::Finalize(){
 	winApp->Finalize();
 
 	//解放
-	delete sceneFactory_;
-	delete imGuiManager;
-	delete srvManager;
-	delete dxCommon;
-	delete winApp;
 }
 
 void Framework::Update(){
@@ -94,7 +100,12 @@ void Framework::Update(){
 
 	imGuiManager->Begin();
 
+
+	lineManager_->Update();
+
 	sceneManager_->Update();
+
+	timeManager_->Update();
 
 	imGuiManager->End();
 }
