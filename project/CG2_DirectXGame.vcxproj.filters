@@ -469,6 +469,9 @@
     <None Include="resources\shaders\Grayscale.hlsli">
       <Filter>シェーダーファイル</Filter>
     </None>
+    <None Include="resources\shaders\Vignette.hlsli">
+      <Filter>シェーダーファイル</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Object3d.PS.hlsl">
@@ -511,6 +514,12 @@
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\Grayscale.VS.hlsl">
+      <Filter>シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\Vignette.PS.hlsl">
+      <Filter>シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\Vignette.VS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
   </ItemGroup>
