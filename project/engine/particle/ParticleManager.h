@@ -18,6 +18,7 @@ public:
 	struct VertexData {
 		Vector4 position;
 		Vector2 texcoord;
+		//Vector3 normal;
 		Vector4 color;
 	};
 	struct MaterialData {
@@ -26,6 +27,7 @@ public:
 	};
 	struct Particle {
 		Transform transform;
+		Transform uvTransform;
 		Vector3 velocity;
 		Vector4 color;
 		float lifeTime;
@@ -35,7 +37,7 @@ public:
 		Matrix4x4 WVP;
 		Matrix4x4 World;
 		Vector4 color;
-		//Matrix4x4 uvTransform;
+		Matrix4x4 uvTransform;
 	};
 	struct ParticleInitData {
 		Vector3 randomScaleMax{1.0f,1.0f,1.0f};
@@ -96,6 +98,8 @@ public://メンバ関数
 	void CreateParticleGroup(const std::string name, const std::string textureFilePath);
 	void CreateRingParticleGroup(const std::string name, const std::string textureFilePath,
 		const uint32_t& kDivide,const float& kOuterRadius,const float& kInnerRadius);
+	void CreateCylinderParticleGroup(const std::string name, const std::string textureFilePath,
+		const uint32_t& kDivide, const float& kTopRadius, const float& kBottomRadius,const float& kHeight);
 	//パーティクルの発生
 	void Emit(const std::string name, const Vector3& position, uint32_t count);
 

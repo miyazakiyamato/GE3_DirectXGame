@@ -426,7 +426,7 @@ void GameScene::Draw(){
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		//object3d->Draw();
 	}
-
+	object3ds_[0]->Draw();
 	//当たり判定の表示
 	collisionManager_->Draw();
 	
