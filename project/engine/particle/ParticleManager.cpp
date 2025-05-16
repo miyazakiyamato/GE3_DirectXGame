@@ -31,7 +31,9 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 	InitializeGlobalVariables();
 	ApplyGlobalVariables();
 	for (auto& [name, group] : particleGroupCreateDates_) {
-		if (group->particleType == "ring") {
+		if (group->particleType == "cylinder") {
+			CreateCylinderParticleGroup(name, group->textureFilePath, 32, 1.0f, 1.0f, 3.0f);
+		} else if (group->particleType == "ring") {
 			CreateRingParticleGroup(name, group->textureFilePath, 32, 1.0f, 0.2f);
 		} else {
 			CreateParticleGroup(name, group->textureFilePath);
@@ -69,6 +71,7 @@ void ParticleManager::Update() {
 			particle.currentTime += TimeManager::GetInstance()->deltaTime_;
 			particle.color.w = 1.0f - (particle.currentTime / particle.lifeTime);
 			particle.transform.translate = particle.transform.translate + particle.velocity * TimeManager::GetInstance()->deltaTime_;
+			particle.uvTransform.translate.x += 0.001f;
 			if (particle.lifeTime <= particle.currentTime) {
 				it = group.particles.erase(it);
 				group.kNumInstance--;
@@ -83,6 +86,7 @@ void ParticleManager::Update() {
 			group.instancingData[index].World = worldMatrix;
 			group.instancingData[index].WVP = worldViewProjectionMatrix;
 			group.instancingData[index].color = particle.color;
+			group.instancingData[index].uvTransform = Matrix4x4::MakeAffineMatrix(particle.uvTransform.scale, particle.uvTransform.rotate, particle.uvTransform.translate);;
 
 			++it;
 			++index;
@@ -288,6 +292,94 @@ void ParticleManager::CreateRingParticleGroup(const std::string name, const std:
 	particleGroups[name] = std::move(group);
 }
 
+void ParticleManager::CreateCylinderParticleGroup(const std::string name, const std::string textureFilePath, const uint32_t& kDivide, const float& kTopRadius, const float& kBottomRadius, const float& kHeight){
+	if (particleGroups.count(name) != 0) {
+		return;
+	}
+
+	// パーティクルグループの作成と初期化
+	auto group = std::make_unique<ParticleGroup>();
+	//.objの参照しているテクスチャファイル読み込み
+	TextureManager::GetInstance()->LoadTexture(textureFilePath);
+	group->materialData.textureFilePath = textureFilePath;
+
+	group->kNumInstance = 0;
+
+	group->kParticleVertexNum = 4 * kDivide;
+	group->kParticleIndexNum = 6 * kDivide;
+	// 頂点リソースの生成
+	group->vertexResource = dxCommon_->CreateBufferResource(sizeof(VertexData) * group->kParticleVertexNum);
+
+	// 頂点バッファビューの生成
+	group->vertexBufferView.BufferLocation = group->vertexResource->GetGPUVirtualAddress();
+	group->vertexBufferView.SizeInBytes = sizeof(VertexData) * group->kParticleVertexNum;
+	group->vertexBufferView.StrideInBytes = sizeof(VertexData);
+	// 頂点リソースに頂点データを書き込む
+	group->vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&group->vertexData));
+	//テクスチャの頂点
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureFilePath);
+	group->textureSize_.x = static_cast<float>(metadata.width);
+	group->textureSize_.y = static_cast<float>(metadata.height);
+
+	// インデックスリソースの生成
+	group->indexResource = dxCommon_->CreateBufferResource(sizeof(uint32_t) * group->kParticleIndexNum);
+
+	// インデックスバッファビューの生成
+	group->indexBufferView.BufferLocation = group->indexResource->GetGPUVirtualAddress();
+	group->indexBufferView.SizeInBytes = sizeof(uint32_t) * group->kParticleIndexNum;
+	group->indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+	group->indexResource->Map(0, nullptr, reinterpret_cast<void**>(&group->indexData));
+
+	
+	const float radianPerDivide = 2.0f * std::numbers::pi_v<float> / float(kDivide);
+	const float flipY = 1.0f;
+	for (uint32_t index = 0; index < kDivide; index++) {
+		float sin = std::sin(radianPerDivide * float(index));
+		float cos = std::cos(radianPerDivide * float(index));
+		float sinNext = std::sin(radianPerDivide * float(index + 1));
+		float cosNext = std::cos(radianPerDivide * float(index + 1));
+		float u = float(index) / float(kDivide);
+		float uNext = float(index + 1) / float(kDivide);
+		group->vertexData[index * 4 + 1] = { { kTopRadius * -sin,   kHeight,kTopRadius * cos, 1.0f },     { u ,flipY - 0.0f }, { 1.0f, 1.0f, 1.0f,1.0f } };//左上 // normal{-sin,0.0f,cos}
+		group->vertexData[index * 4 + 3] = { { kTopRadius * -sinNext, kHeight,kTopRadius * cosNext, 1.0f }, { uNext ,flipY - 0.0f }, { 1.0f,1.0f,1.0f,1.0f } };//右上 // {-sinNext,0.0f,cosNext}
+		group->vertexData[index * 4 + 0] = { { kBottomRadius * -sin,  0.0f, kBottomRadius * cos, 1.0f },     { u ,flipY - 1.0f }, { 1.0f,1.0f,1.0f,1.0f } };//左下 // {-sinNext,0.0f,cosNext}
+		group->vertexData[index * 4 + 2] = { { kBottomRadius * -sinNext, 0.0f,kBottomRadius * cosNext, 1.0f }, { uNext ,flipY - 1.0f }, { 1.0f, 1.0f,1.0f,1.0f } };//右下 // {-sinNext,0.0f,cosNext}
+
+		group->indexData[index * 6 + 0] = index * 4 + 0; group->indexData[index * 6 + 1] = index * 4 + 1; group->indexData[index * 6 + 2] = index * 4 + 2;
+		group->indexData[index * 6 + 3] = index * 4 + 1; group->indexData[index * 6 + 4] = index * 4 + 3; group->indexData[index * 6 + 5] = index * 4 + 2;
+
+	}
+	group->vertexResource->Unmap(0, nullptr);
+	group->indexResource->Unmap(0, nullptr);
+
+	// TextureManagerからGPUハンドルを取得
+	group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(textureFilePath);
+
+	//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
+	group->instancingResource = dxCommon_->CreateBufferResource(sizeof(ParticleForGPU) * kMaxInstance);
+	//データを書き込む
+	//書き込むためのアドレスを取得
+	group->instancingResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&group->instancingData));
+	//単位行列を書き込んでおく
+	for (uint32_t index = 0; index < kMaxInstance; index++) {
+		group->instancingData[index].World = Matrix4x4::MakeIdentity4x4();
+		group->instancingData[index].WVP = Matrix4x4::MakeIdentity4x4();
+		group->instancingData[index].color = { 1.0f,1.0f,1.0f,1.0f };//色を書き込む
+	}
+
+	group->srvIndexForInstancing = srvManager_->ALLocate();
+	srvManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
+
+	auto it = particleGroupCreateDates_.find(name);
+	if (it != particleGroupCreateDates_.end() && it->second) {
+		group->particleInitData = it->second->particleInitData;
+		it->second->particleType = "cylinder";
+	}
+	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
+
+	particleGroups[name] = std::move(group);
+}
+
 void ParticleManager::Emit(const std::string name, const Vector3& position, uint32_t count) {
 	if (particleGroups.count(name) == 0) {
 		return;
@@ -306,6 +398,9 @@ void ParticleManager::Emit(const std::string name, const Vector3& position, uint
 		particle.transform.scale = Vector3::Random(randomEngine_, group.particleInitData.randomScaleMin, group.particleInitData.randomScaleMax);
 		particle.transform.rotate = Vector3::Random(randomEngine_, group.particleInitData.randomRotateMin, group.particleInitData.randomRotateMax);
 		particle.transform.translate = position;
+		particle.uvTransform.scale = {1.0f,1.0f,1.0f};
+		particle.uvTransform.rotate = { 0.0f,0.0f,0.0f };
+		particle.uvTransform.translate = {0.0f,0.0f,0.0f};
 		particle.velocity = Vector3::Random(randomEngine_, group.particleInitData.randomVelocityMin, group.particleInitData.randomVelocityMax);
 		particle.color = Vector4::Random(randomEngine_, group.particleInitData.randomColorMin, group.particleInitData.randomColorMax);
 		particle.lifeTime = group.particleInitData.lifeTime;
@@ -403,7 +498,9 @@ void ParticleManager::UpdateGlobalVariables() {
 			if (isGroupCreate) {
 				particleGroupCreateDates_[groupNameText] = std::make_unique<ParticleGroupCreateData>();
 				InitializeGlobalVariables();
-				if (typeNameText == "ring") {
+				if (typeNameText == "cylinder") {
+					CreateCylinderParticleGroup(groupNameText, particleGroupCreateDates_[groupNameText]->textureFilePath, 32, 1.0f, 1.0f,3.0f);
+				} else if (typeNameText == "ring") {
 					CreateRingParticleGroup(groupNameText, particleGroupCreateDates_[groupNameText]->textureFilePath,32,1.0f,0.2f);
 				} else {
 					CreateParticleGroup(groupNameText, particleGroupCreateDates_[groupNameText]->textureFilePath);
