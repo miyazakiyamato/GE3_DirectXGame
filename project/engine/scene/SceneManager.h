@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseScene.h"
 #include "AbstractSceneFactory.h"
+#include <PipelineManager.h>
 
 class SceneManager{
 public://メンバ関数
@@ -12,8 +13,11 @@ public://メンバ関数
 	void Update();
 	//描画
 	void Draw();
+	void OffScreenDrawSetting();
 	//次のシーン予約
 	void ChangeScene(std::string SceneName);
+	//次のオフスクリーン
+	void ChangeOffScreenState(std::string shaderName);
 private://シングルインスタンス
 	static SceneManager* instance;
 
@@ -28,6 +32,9 @@ private://メンバ変数
 	BaseScene* nextScene_ = nullptr;
 	//シーンファクトリー
 	AbstractSceneFactory* sceneFactory_ = nullptr;
+	//offScreenの描画
+	std::string offScreenName_ = "";
+	PipelineState pipelineState_{};
 public://ゲッターセッター
 	void SetSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; }
 };

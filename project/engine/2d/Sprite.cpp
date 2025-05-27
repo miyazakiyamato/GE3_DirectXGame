@@ -114,7 +114,7 @@ void Sprite::Draw(){
 	ID3D12GraphicsCommandList* commandList = PipelineManager::GetInstance()->GetDxCommon()->GetCommandList();
 
 	//パイプラインを設定
-	PipelineManager::GetInstance()->DrawSetting(PipelineState::kSprite, blendMode_);
+	//PipelineManager::GetInstance()->DrawSetting(PipelineState::kSprite, blendMode_);
 	//Spriteの描画。変更が必要なものだけ変更する
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);//VBVを設定
 	commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定

@@ -101,7 +101,7 @@ void ParticleManager::Draw() {
 	// 全てのパーティクルグループについて処理
 	for (auto& [name, group] : particleGroups) {
 		//パイプラインを設定
-		PipelineManager::GetInstance()->DrawSetting(PipelineState::kParticle, group->blendMode_);
+		//PipelineManager::GetInstance()->DrawSetting(PipelineState::kParticle, group->blendMode_);
 		commandList->IASetVertexBuffers(0, 1, &group->vertexBufferView);// VBVを設定
 		commandList->IASetIndexBuffer(&group->indexBufferView);//IBVを設定
 		// インスタンシングデータのSRVのDescriptorTableを設定

@@ -47,6 +47,7 @@ private://メンバ変数
 
 	Model* model_ = nullptr;
 	BlendMode blendMode_ = BlendMode::kNormal;
+	std::string pipelineStateName_ = "Object3d";
 	//バッファリソース
 	ComPtr<ID3D12Resource> wvpResource;
 	ComPtr<ID3D12Resource> materialResource;

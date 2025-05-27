@@ -74,7 +74,7 @@ void Line3dManager::Draw() {
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = PipelineManager::GetInstance()->GetDxCommon()->GetCommandList();
 	// パイプラインを設定
-	PipelineManager::GetInstance()->DrawSetting(PipelineState::kLine3D, blendMode_);
+	//PipelineManager::GetInstance()->DrawSetting(PipelineState::kLine3D, blendMode_);
 	// Lineの描画。変更が必要なものだけ変更する
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
 	// TransformationMatrixCBufferの場所を設定

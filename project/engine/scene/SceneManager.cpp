@@ -42,9 +42,24 @@ void SceneManager::Draw(){
 	scene_->Draw();
 }
 
+void SceneManager::OffScreenDrawSetting(){
+	PipelineManager::GetInstance()->DrawSetting(offScreenName_);
+}
+
 void SceneManager::ChangeScene(std::string SceneName){
 	assert(sceneFactory_);
 	assert(nextScene_ == nullptr);
 
 	nextScene_ = sceneFactory_->CreateScene(SceneName);
+}
+
+void SceneManager::ChangeOffScreenState(std::string shaderName){
+	offScreenName_ = shaderName;
+	pipelineState_.shaderName = shaderName;
+	pipelineState_.blendMode = BlendMode::kNone; // オフスクリーン描画はブレンドなし
+	pipelineState_.cullMode = CullMode::kNone; // カリングなし
+	pipelineState_.fillMode = FillMode::kSolid; // ソリッド描画
+	pipelineState_.depthEnable = false; // 深度テストを無効にする
+	pipelineState_.isOffScreen = true; // オフスクリーン描画フラグを設定
+	PipelineManager::GetInstance()->CreatePipelineState(offScreenName_, pipelineState_);
 }

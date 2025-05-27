@@ -30,6 +30,12 @@ void Object3d::Initialize(){
 	//書き込むためのアドレスを取得
 	cameraResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
 	cameraData->worldPosition = { 0.0f,0.0f,0.0f };
+
+	//パイプラインを設定
+	PipelineState pipelineState;
+	pipelineState.shaderName = "Object3d";
+	pipelineState.blendMode = blendMode_;
+	PipelineManager::GetInstance()->CreatePipelineState(pipelineStateName_, pipelineState);
 }
 
 void Object3d::Update(){
@@ -97,13 +103,10 @@ void Object3d::Draw(){
 		ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 		if (skinClusterData_) {
-			//パイプラインを設定
-			PipelineManager::GetInstance()->DrawSetting(PipelineState::kSkinningModel, blendMode_);
 			skinClusterData_->Draw();
-		} else {
-			//パイプラインを設定
-			PipelineManager::GetInstance()->DrawSetting(PipelineState::kModel, blendMode_);
-		}
+		} 
+
+		PipelineManager::GetInstance()->DrawSetting(pipelineStateName_);
 
 		//wvp用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
@@ -148,6 +151,13 @@ void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
 	//スキンクラスタ
 	skinClusterData_ = std::make_unique<SkinCluster>();
 	skinClusterData_->CreateSkinCluster(skeletonData_.get(), model_->GetModelData());
+
+	//パイプラインを設定
+	//pipelineStateName_ = "SkinningObject3D";
+	//PipelineState pipelineState;
+	//pipelineState.shaderName = "SkinningObject3D";
+	//pipelineState.blendMode = blendMode_;
+	//PipelineManager::GetInstance()->CreatePipelineState(pipelineStateName_, pipelineState);
 }
 
 Vector3 Object3d::GetCenterPosition() const
