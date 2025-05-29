@@ -47,6 +47,7 @@ private://メンバ変数
 
 	Model* model_ = nullptr;
 	BlendMode blendMode_ = BlendMode::kNormal;
+	std::string pipelineStateName_ = "";
 	//バッファリソース
 	ComPtr<ID3D12Resource> wvpResource;
 	ComPtr<ID3D12Resource> materialResource;
@@ -78,7 +79,7 @@ public://ゲッターセッター
 
 	void SetModel(const std::string& filePath);
 	void SetAnimation(const std::string& filePath,bool isLoop);
-	void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
+	void SetBlendMode(BlendMode blendMode);
 	void SetScale(const Vector3& scale) { transform.scale = scale; }
 	void SetRotate(const Vector3& rotate) { transform.rotate = rotate; }
 	void SetTranslate(const Vector3& translate) { transform.translate = translate; }

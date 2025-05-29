@@ -68,7 +68,7 @@ private://メンバ変数
 	Vector2 textureSize_ = { 100.0f,100.0f };
 
 	BlendMode blendMode_ = BlendMode::kNormal;
-
+	std::string pipelineStateName_ = "";
 public://ゲッターセッター
 	const BlendMode& GetBlendMode() { return blendMode_; }
 	const Vector2& GetPosition() { return position_; }
@@ -81,7 +81,7 @@ public://ゲッターセッター
 	const Vector2& GetTextureLeftTop() { return textureLeftTop_; }
 	const Vector2& GetTextureSize() { return textureSize_; }
 	
-	void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
+	void SetBlendMode(BlendMode blendMode);
 	void SetPosition(const Vector2& position) { position_ = position; }
 	void SetRotation(float rotation) { rotation_ = rotation; }
 	void SetSize(const Vector2& size) { size_ = size; }

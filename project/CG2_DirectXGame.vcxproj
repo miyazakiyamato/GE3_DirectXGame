@@ -167,6 +167,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Skeleton.cpp" />
     <ClCompile Include="engine\3d\SkinCluster.cpp" />
     <ClCompile Include="engine\3d\SkinningObject3dPipeline.cpp" />
+    <ClCompile Include="PipelineFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\3d\Animation.h" />
@@ -223,6 +224,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Skeleton.h" />
     <ClInclude Include="engine\3d\SkinCluster.h" />
     <ClInclude Include="engine\3d\SkinningObject3dPipeline.h" />
+    <ClInclude Include="PipelineFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

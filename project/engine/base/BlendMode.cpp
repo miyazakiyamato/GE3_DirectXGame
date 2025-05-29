@@ -1,6 +1,15 @@
 #include "BlendMode.h"
 
 namespace BlendModeHelper {
+	//ブレンドモードを設定する関数
+    BlendModeFunc BlendModeFunctionTable[] = { //enum classの順番に対応
+		SetBlendModeNone,                      //kNone
+		SetBlendModeNormal,                    //kNormal
+		SetBlendModeAdd,                       //kAdd
+		SetBlendModeSubtract,                  //kSubtract     
+		SetBlendModeMultiply,				   //kMultiply
+		SetBlendModeScreen,                    //kScreen
+    };
 
     D3D12_BLEND_DESC SetBlendModeNone() {
         D3D12_BLEND_DESC blendDesc{};
@@ -78,13 +87,5 @@ namespace BlendModeHelper {
         return blendDesc;
     }
 
-    BlendModeFunc BlendModeFunctionTable[] = {
-        SetBlendModeNone,
-        SetBlendModeNormal,
-        SetBlendModeAdd,
-        SetBlendModeSubtract,
-        SetBlendModeMultiply,
-        SetBlendModeScreen
-    };
 
 } // namespace BlendModeHelper

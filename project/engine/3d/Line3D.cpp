@@ -25,6 +25,14 @@ void Line3dManager::Initialize(SrvManager* srvManager) {
 	wvpResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	//単位行列を書き込んでおく
 	wvpData->WVP = Matrix4x4::MakeIdentity4x4();
+
+	PipelineState pipelineState;
+	pipelineState.shaderName = "Line3D";
+	pipelineState.blendMode = BlendMode::kNone;
+	pipelineState.cullMode = CullMode::kNone;//カリングなし
+	pipelineState.depthMode = DepthMode::kDisable;
+	pipelineState.primitiveTopologyType = PrimitiveTopologyType::kLineList;
+	pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
 }
 
 void Line3dManager::Finalize() {
@@ -74,7 +82,7 @@ void Line3dManager::Draw() {
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = PipelineManager::GetInstance()->GetDxCommon()->GetCommandList();
 	// パイプラインを設定
-	PipelineManager::GetInstance()->DrawSetting(PipelineState::kLine3D, blendMode_);
+	PipelineManager::GetInstance()->DrawSetting(pipelineStateName_);
 	// Lineの描画。変更が必要なものだけ変更する
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
 	// TransformationMatrixCBufferの場所を設定

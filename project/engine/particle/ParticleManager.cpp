@@ -101,7 +101,8 @@ void ParticleManager::Draw() {
 	// 全てのパーティクルグループについて処理
 	for (auto& [name, group] : particleGroups) {
 		//パイプラインを設定
-		PipelineManager::GetInstance()->DrawSetting(PipelineState::kParticle, group->blendMode_);
+		PipelineManager::GetInstance()->DrawSetting(group->pipelineStateName_);
+
 		commandList->IASetVertexBuffers(0, 1, &group->vertexBufferView);// VBVを設定
 		commandList->IASetIndexBuffer(&group->indexBufferView);//IBVを設定
 		// インスタンシングデータのSRVのDescriptorTableを設定
@@ -192,6 +193,13 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 		it->second->particleType = "plane";
 	}
 	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
+
+	PipelineState pipelineState;
+	pipelineState.shaderName = "Particle";
+	pipelineState.blendMode = group->blendMode_;
+	pipelineState.cullMode = CullMode::kNone;//カリングなし
+	pipelineState.depthMode = DepthMode::kReadOnly;//読み込み
+	group->pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
 
 	particleGroups[name] = std::move(group);
 }
@@ -288,6 +296,13 @@ void ParticleManager::CreateRingParticleGroup(const std::string name, const std:
 		it->second->particleType = "ring";
 	}
 	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
+	PipelineState pipelineState;
+	pipelineState.shaderName = "Particle";
+	pipelineState.blendMode = group->blendMode_;
+	pipelineState.cullMode = CullMode::kNone;//カリングなし
+	pipelineState.depthMode = DepthMode::kReadOnly;//読み込み
+	pipelineState.staticSamplersMode = StaticSamplersMode::kclamp;
+	group->pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
 
 	particleGroups[name] = std::move(group);
 }
@@ -376,6 +391,12 @@ void ParticleManager::CreateCylinderParticleGroup(const std::string name, const 
 		it->second->particleType = "cylinder";
 	}
 	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
+	PipelineState pipelineState;
+	pipelineState.shaderName = "Particle";
+	pipelineState.blendMode = group->blendMode_;
+	pipelineState.cullMode = CullMode::kNone;//カリングなし
+	pipelineState.depthMode = DepthMode::kReadOnly;//読み込み
+	group->pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
 
 	particleGroups[name] = std::move(group);
 }
@@ -462,6 +483,16 @@ void ParticleManager::ApplyGlobalVariables() {
 	}
 }
 
+void ParticleManager::SetBlendMode(std::string name, BlendMode blendMode) { 
+	particleGroups[name]->blendMode_ = blendMode;
+	PipelineState pipelineState;
+	pipelineState.shaderName = "Particle";
+	pipelineState.blendMode = particleGroups[name]->blendMode_;
+	pipelineState.cullMode = CullMode::kNone;//カリングなし
+	pipelineState.depthMode = DepthMode::kReadOnly;//読み込み
+	pipelineState.staticSamplersMode = StaticSamplersMode::kclamp;
+	particleGroups[name]->pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
+}
 void ParticleManager::UpdateGlobalVariables() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "Particle";

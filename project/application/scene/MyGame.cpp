@@ -6,6 +6,8 @@ void MyGame::Initialize(){
 
 	//最初のシーンセット
 	sceneManager_->ChangeScene("GAME");
+	//オフスクリーンの描画設定
+	sceneManager_->ChangeOffScreenState("CopyImage");
 }
 
 void MyGame::Finalize(){
@@ -27,10 +29,7 @@ void MyGame::Draw(){
 
 	//OffScreenの描画
 	dxCommon->SwapChainPreDraw();
-	//コマンドリストの取得
-	//auto commandList = dxCommon->GetCommandList();
-	//パイプラインマネージャの描画設定
-	pipelineManager->DrawSetting(PipelineState::kOffScreen, BlendMode::kNone);
+	sceneManager_->OffScreenDrawSetting();
 	dxCommon->OffScreenDraw();
 #ifdef _DEBUG
 	//実際のcommandListのImGuiの描画コマンドを積む

@@ -78,6 +78,7 @@ public:
 		uint32_t* indexData = nullptr;
 		ParticleForGPU* instancingData = nullptr;
 		BlendMode blendMode_ = BlendMode::kAdd;
+		std::string pipelineStateName_ = "";
 		//テクスチャサイズ
 		Vector2 textureLeftTop_ = { 0.0f,0.0f };
 		Vector2 textureSize_ = { 100.0f,100.0f };
@@ -140,5 +141,5 @@ public://ゲッターセッター
 	std::map<std::string, std::unique_ptr<ParticleGroup>>& GetParticleGroups() { return particleGroups; }
 	const BlendMode& GetBlendMode(std::string name) { return particleGroups[name]->blendMode_; }
 
-	void SetBlendMode(std::string name,BlendMode blendMode) { particleGroups[name]->blendMode_ = blendMode; }
+	void SetBlendMode(std::string name, BlendMode blendMode);
 };

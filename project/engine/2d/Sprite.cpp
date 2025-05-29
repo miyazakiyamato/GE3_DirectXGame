@@ -67,6 +67,13 @@ void Sprite::Initialize(std::string textureFilePath){
 	indexResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
 	indexData[0] = 0; indexData[1] = 1; indexData[2] = 2;
 	indexData[3] = 1; indexData[4] = 3; indexData[5] = 2;
+
+	//pipelineStateの初期化
+	PipelineState pipelineState;
+	pipelineState.shaderName = "Sprite";
+	pipelineState.blendMode = blendMode_;
+	pipelineState.cullMode = CullMode::kNone;//カリングなし
+	pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
 }
 
 void Sprite::Update(){
@@ -114,7 +121,7 @@ void Sprite::Draw(){
 	ID3D12GraphicsCommandList* commandList = PipelineManager::GetInstance()->GetDxCommon()->GetCommandList();
 
 	//パイプラインを設定
-	PipelineManager::GetInstance()->DrawSetting(PipelineState::kSprite, blendMode_);
+	PipelineManager::GetInstance()->DrawSetting(pipelineStateName_);
 	//Spriteの描画。変更が必要なものだけ変更する
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);//VBVを設定
 	commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
@@ -135,6 +142,15 @@ void Sprite::AdjustTextureSize(){
 	//画像サイズをテクスチャサイズに合わせる
 	textureSize_.x = static_cast<float>(metadata.width);
 	textureSize_.y = static_cast<float>(metadata.height);
+}
+
+void Sprite::SetBlendMode(BlendMode blendMode){
+	blendMode_ = blendMode;
+	PipelineState pipelineState;
+	pipelineState.shaderName = "Sprite";
+	pipelineState.blendMode = blendMode_;
+	pipelineState.cullMode = CullMode::kNone;//カリングなし
+	pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
 }
 
 void Sprite::SetTexture(std::string textureFilePath){

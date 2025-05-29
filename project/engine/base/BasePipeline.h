@@ -8,21 +8,15 @@ public:
 	//namespace省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 public://メンバ関数
-	//初期化
-	virtual void Initialize(DirectXCommon* dxCommon) = 0;
-	//描画設定
-	virtual void DrawSetting(BlendMode blendMode) = 0;
-	//ルートシグネチャの作成
-	virtual void CreateRootSignature() = 0;
-	//グラフィックスパイプラインの生成
-	virtual void CreateGraphicsPipeline(BlendMode blendMode) = 0;
-protected:
-	DirectXCommon* dxCommon_ = nullptr;
-
-	//ブレンドモード
-	ComPtr<ID3D12RootSignature> rootSignature = nullptr;
-	std::map<BlendMode, ComPtr<ID3D12PipelineState>> graphicsPipelineState_;
-public:
-	DirectXCommon* GetDxCommon() { return dxCommon_; }
+	//ルートシグネチャのデータを取得
+	virtual std::vector<D3D12_DESCRIPTOR_RANGE> DescriptorRanges() = 0;
+	virtual std::vector<D3D12_ROOT_PARAMETER> RootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges) = 0;
+	//グラフィックスパイプラインのデータを取得
+	virtual std::vector<D3D12_INPUT_ELEMENT_DESC> InputElementDesc() = 0;
+	//値をセットしたものを取得
+	D3D12_DESCRIPTOR_RANGE CreateDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE type, UINT baseShaderRegister, UINT numDescriptors);
+	D3D12_ROOT_PARAMETER CreateRootParameterCBV(D3D12_SHADER_VISIBILITY visibility, UINT shaderRegister);
+	D3D12_ROOT_PARAMETER CreateRootParameterTable(D3D12_SHADER_VISIBILITY visibility, const D3D12_DESCRIPTOR_RANGE& descriptorRegister, UINT descriptorCount);
+	D3D12_INPUT_ELEMENT_DESC CreateInputElementDesc(const char* semanticName, UINT semanticIndex, DXGI_FORMAT format, UINT inputSlot, UINT alignedByteOffset);
 };
 
