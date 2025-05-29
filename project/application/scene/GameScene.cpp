@@ -68,11 +68,11 @@ void GameScene::Initialize(){
 	//object3ds_[1]->SetModel("plane/plane.gltf");
 	//object3ds_[1]->SetModel("axis/axis.obj");
 	object3ds_[1]->SetModel("human/sneakWalk.gltf");
-	//object3ds_[1]->SetAnimation("human/sneakWalk.gltf", true);
+	object3ds_[1]->SetAnimation("human/sneakWalk.gltf", true);
 	object3ds_[1]->SetTranslate({ 1,0,0 });
 	object3ds_[1]->SetRotate({ 0,3.14f,0 });
 	object3ds_[2]->SetModel("human/walk.gltf");
-	//object3ds_[2]->SetAnimation("human/walk.gltf", true);
+	object3ds_[2]->SetAnimation("human/walk.gltf", true);
 	object3ds_[2]->SetTranslate({ 0,0,0 });
 	object3ds_[2]->SetRotate({ 0,3.14f,0 });
 	//
@@ -424,11 +424,11 @@ void GameScene::Update(){
 void GameScene::Draw(){
 	//Object3dの描画
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
-		//object3d->Draw();
+		object3d->Draw();
 	}
 	//object3ds_[0]->Draw();
 	//当たり判定の表示
-	//collisionManager_->Draw();
+	collisionManager_->Draw();
 	
 	//ラインの描画
 	//Line3dManager::GetInstance()->DrawLine(object3ds_[0]->GetCenterPosition(), object3ds_[1]->GetCenterPosition(),{1.0f,0.0f,0.0f,1.0f});
@@ -436,14 +436,14 @@ void GameScene::Draw(){
 	//Line3dManager::GetInstance()->DrawSphere({ object3ds_[0]->GetCenterPosition(),1.0f }, { 1.0f,0.0f,0.0f,1.0f });
 	/*Line3dManager::GetInstance()->DrawSphere({ {},1.0f}, {1.0f,0.0f,0.0f,1.0f},10);
 	Line3dManager::GetInstance()->DrawGrid({50.0f,3.0f});*/
-	//Line3dManager::GetInstance()->Draw();
+	Line3dManager::GetInstance()->Draw();
 
 	//Particleの描画
-	//ParticleManager::GetInstance()->Draw();
+	ParticleManager::GetInstance()->Draw();
 
 	//Spriteの描画
 	for (std::unique_ptr<Sprite>& sprite : sprites_) {
-		//sprite->Draw();
+		sprite->Draw();
 	}
 }
 

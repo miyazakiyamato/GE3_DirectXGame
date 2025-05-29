@@ -4,10 +4,6 @@
 using namespace Microsoft::WRL;
 using namespace Logger;
 
-void ModelPipeline::Initialize(DirectXCommon* dxCommon) {
-	dxCommon_ = dxCommon;
-}
-
 std::vector<D3D12_DESCRIPTOR_RANGE> ModelPipeline::DescriptorRanges(){
 	std::vector<D3D12_DESCRIPTOR_RANGE> descriptorRanges = {};
 	descriptorRanges.resize(3);
@@ -33,8 +29,8 @@ std::vector<D3D12_ROOT_PARAMETER> ModelPipeline::RootParameters(const std::vecto
 std::vector<D3D12_INPUT_ELEMENT_DESC> ModelPipeline::InputElementDesc(){
 	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs = {};
 	inputElementDescs.resize(3);
-	inputElementDescs[0] = CreateInputElementDesc("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D12_APPEND_ALIGNED_ELEMENT);
-	inputElementDescs[1] = CreateInputElementDesc("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, D3D12_APPEND_ALIGNED_ELEMENT);
-	inputElementDescs[2] = CreateInputElementDesc("NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, D3D12_APPEND_ALIGNED_ELEMENT);
+	inputElementDescs[0] = CreateInputElementDesc("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,0, D3D12_APPEND_ALIGNED_ELEMENT);
+	inputElementDescs[1] = CreateInputElementDesc("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0, D3D12_APPEND_ALIGNED_ELEMENT);
+	inputElementDescs[2] = CreateInputElementDesc("NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,0, D3D12_APPEND_ALIGNED_ELEMENT);
 	return inputElementDescs;
 }

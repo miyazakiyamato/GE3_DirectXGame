@@ -15,5 +15,7 @@ public://メンバ関数
 	////グラフィックスパイプラインの生成
 	//void CreateGraphicsPipeline(BlendMode blendMode);
 private:
-
+	std::vector<D3D12_DESCRIPTOR_RANGE> DescriptorRanges();
+	std::vector<D3D12_ROOT_PARAMETER> RootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges);
+	std::vector<D3D12_INPUT_ELEMENT_DESC> InputElementDesc();
 };

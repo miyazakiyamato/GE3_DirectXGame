@@ -14,12 +14,31 @@ enum class FillMode {
 	kWireframe, //!< ワイヤーフレーム描画
 };
 
+enum class DepthMode {
+	kEnable,    //!< 深度テストを有効にする
+	kDisable,   //!< 深度テストを無効にする
+	kReadOnly, //!< 深度テストを読み取り専用にする
+};
+
+enum class StaticSamplersMode {
+	kwrap, //!< Wrapモード
+	kclamp, //!< Clampモード
+};
+
+enum class PrimitiveTopologyType {
+	kTriangleList, //!< 三角形リスト
+	kLineList,     //!< ラインリスト
+	kPointList,    //!< ポイントリスト
+};
+
 struct PipelineState {
 	std::string shaderName = "";
 	BlendMode blendMode = BlendMode::kNone;
 	CullMode cullMode = CullMode::kBack; // カリングモード
 	FillMode fillMode = FillMode::kSolid; // 塗りつぶしモード
-	bool depthEnable = true; // 深度テストを有効にするか
+	DepthMode depthMode = DepthMode::kEnable; // 深度テストを有効にするか
+	StaticSamplersMode staticSamplersMode = StaticSamplersMode::kwrap; // サンプラーのモード
+	PrimitiveTopologyType primitiveTopologyType = PrimitiveTopologyType::kTriangleList; // プリミティブトポロジのタイプ
 	bool isOffScreen = false; // オフスクリーン描画かどうか
 };
 
@@ -43,7 +62,7 @@ public://メンバ関数
 	//描画設定
 	void DrawSetting(const std::string& stateName);
 	//グラフィックスパイプラインの生成
-	void CreatePipelineState(const std::string& stateName, const PipelineState& pipelineState);
+	std::string CreatePipelineState(const PipelineState& pipelineState);
 private:
 	//ルートシグネチャの作成
 	void CreateRootSignature(PipelineData& pipeline);

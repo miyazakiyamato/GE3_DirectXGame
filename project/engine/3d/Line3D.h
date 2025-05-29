@@ -61,11 +61,7 @@ private://メンバ変数
 	std::list<VertexData> vertices;
 	size_t preVerticesSize = 0;
 	//ブレンドモード
-	BlendMode blendMode_ = BlendMode::kNormal;
-
+	std::string pipelineStateName_ = "";
 public://ゲッターセッター
-	//const BlendMode& GetBlendMode() { return blendMode_; }
-
-	//void SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 };
 

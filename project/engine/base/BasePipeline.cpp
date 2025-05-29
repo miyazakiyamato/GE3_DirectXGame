@@ -26,11 +26,12 @@ D3D12_ROOT_PARAMETER BasePipeline::CreateRootParameterTable(D3D12_SHADER_VISIBIL
 	return rootParameter;
 }
 
-D3D12_INPUT_ELEMENT_DESC BasePipeline::CreateInputElementDesc(const char* semanticName, UINT semanticIndex, DXGI_FORMAT format, UINT alignedByteOffset){
+D3D12_INPUT_ELEMENT_DESC BasePipeline::CreateInputElementDesc(const char* semanticName, UINT semanticIndex, DXGI_FORMAT format,UINT inputSlot, UINT alignedByteOffset){
 	D3D12_INPUT_ELEMENT_DESC inputElementDesc = {};
 	inputElementDesc.SemanticName = semanticName;
 	inputElementDesc.SemanticIndex = semanticIndex;
 	inputElementDesc.Format = format;
+	inputElementDesc.InputSlot = inputSlot;
 	inputElementDesc.AlignedByteOffset = alignedByteOffset;
 	return inputElementDesc;
 }

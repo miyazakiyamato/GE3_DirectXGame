@@ -54,12 +54,11 @@ void SceneManager::ChangeScene(std::string SceneName){
 }
 
 void SceneManager::ChangeOffScreenState(std::string shaderName){
-	offScreenName_ = shaderName;
 	pipelineState_.shaderName = shaderName;
 	pipelineState_.blendMode = BlendMode::kNone; // オフスクリーン描画はブレンドなし
 	pipelineState_.cullMode = CullMode::kNone; // カリングなし
 	pipelineState_.fillMode = FillMode::kSolid; // ソリッド描画
-	pipelineState_.depthEnable = false; // 深度テストを無効にする
+	pipelineState_.depthMode = DepthMode::kDisable; // 深度テストを無効にする
 	pipelineState_.isOffScreen = true; // オフスクリーン描画フラグを設定
-	PipelineManager::GetInstance()->CreatePipelineState(offScreenName_, pipelineState_);
+	offScreenName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState_);
 }

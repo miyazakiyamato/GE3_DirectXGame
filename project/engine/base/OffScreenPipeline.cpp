@@ -4,10 +4,6 @@
 using namespace Microsoft::WRL;
 using namespace Logger;
 
-void OffScreenPipeline::Initialize(DirectXCommon* dxCommon){
-	dxCommon_ = dxCommon;
-}
-
 std::vector<D3D12_DESCRIPTOR_RANGE> OffScreenPipeline::DescriptorRanges(){
 	std::vector<D3D12_DESCRIPTOR_RANGE> descriptorRanges = {};
 	descriptorRanges.resize(1);
