@@ -9,6 +9,7 @@
 #include "GlobalVariables.h"
 #include "TimeManager.h"
 #include "Line3D.h"
+#include "HitEffect.h"
 
 void GameScene::Initialize(){
 	BaseScene::Initialize();
@@ -80,9 +81,10 @@ void GameScene::Initialize(){
 	accelerationField_.reset(new AccelerationField);
 
 	//ParticleManager::GetInstance()->CreateParticleGroup();
-	particleEmitter_.reset(new ParticleEmitter);
-	particleEmitter_->Initialize("circle", "circle.png");
-
+	particleSystem_.reset(new ParticleSystem);
+	std::unique_ptr<BaseParticleEmitter> hitEffect = std::make_unique<HitEffect>();
+	particleSystem_->CreateParticleEmitter("hitEffect", std::move(hitEffect));
+	
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
 		std::unique_ptr<Sprite> sprite(new Sprite);
@@ -118,7 +120,7 @@ void GameScene::Update(){
 		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
 		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
 		//ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
-		particleEmitter_->Emit();
+		particleSystem_->Emit("hitEffect");
 	}
 
 #ifdef _DEBUG
@@ -273,61 +275,61 @@ void GameScene::Update(){
 			}
 			ParticleManager::GetInstance()->UpdateGlobalVariables();
 			groupName = "Particle";
-			if (ImGui::BeginMenu(groupName.c_str())) {
-				int particleItem_selected_idx = static_cast<int>(ParticleManager::GetInstance()->GetBlendMode(particleEmitter_->GetName()));
-				const char* currentItem = blendState[particleItem_selected_idx].c_str();
-				if (ImGui::BeginCombo((blendName + particleEmitter_->GetName()).c_str(), currentItem)) {
-					for (int i = 0; i < blendState.size(); ++i) {
-						bool isSelected = (particleItem_selected_idx == i);
-						if (ImGui::Selectable(blendState[i].c_str(), isSelected)) {
-							particleItem_selected_idx = i;
-							ParticleManager::GetInstance()->SetBlendMode(particleEmitter_->GetName(),static_cast<BlendMode>(i));
-						}
-						if (isSelected) {
-							ImGui::SetItemDefaultFocus();
-						}
-					}
-					ImGui::EndCombo();
-				}
+			//if (ImGui::BeginMenu(groupName.c_str())) {
+			//	int particleItem_selected_idx = static_cast<int>(ParticleManager::GetInstance()->GetBlendMode(particleEmitter_->GetName()));
+			//	const char* currentItem = blendState[particleItem_selected_idx].c_str();
+			//	if (ImGui::BeginCombo((blendName + particleEmitter_->GetName()).c_str(), currentItem)) {
+			//		for (int i = 0; i < blendState.size(); ++i) {
+			//			bool isSelected = (particleItem_selected_idx == i);
+			//			if (ImGui::Selectable(blendState[i].c_str(), isSelected)) {
+			//				particleItem_selected_idx = i;
+			//				ParticleManager::GetInstance()->SetBlendMode(particleEmitter_->GetName(),static_cast<BlendMode>(i));
+			//			}
+			//			if (isSelected) {
+			//				ImGui::SetItemDefaultFocus();
+			//			}
+			//		}
+			//		ImGui::EndCombo();
+			//	}
 
-				Vector3 position = particleEmitter_->GetPosition();
-				ImGui::DragFloat2("particleEmitter_.Translate", &position.x, 0.1f);
-				/*if (position.y > 640.0f) {
-					position.y = 640.0f;
-				}*/
+			//	Vector3 position = particleEmitter_->GetPosition();
+			//	ImGui::DragFloat2("particleEmitter_.Translate", &position.x, 0.1f);
+			//	/*if (position.y > 640.0f) {
+			//		position.y = 640.0f;
+			//	}*/
 
-				//Vector3 rotation = particleEmitter_->GetRotation();
-				//ImGui::SliderAngle("particleEmitter_.Rotate", &rotation.x);
+			//	//Vector3 rotation = particleEmitter_->GetRotation();
+			//	//ImGui::SliderAngle("particleEmitter_.Rotate", &rotation.x);
 
-				//Vector3 size = particleEmitter_->GetSize();
-				//ImGui::DragFloat2("particleEmitter_.Scale", &size.x, 0.1f);
-				//if (size.y > 360.0f) {
-				//	size.y = 360.0f;
-				//}
+			//	//Vector3 size = particleEmitter_->GetSize();
+			//	//ImGui::DragFloat2("particleEmitter_.Scale", &size.x, 0.1f);
+			//	//if (size.y > 360.0f) {
+			//	//	size.y = 360.0f;
+			//	//}
 
-				int count = particleEmitter_->GetCount();
-				ImGui::DragInt("particleEmitter_.count", &count, 1, 0, 1000);
+			//	int count = particleEmitter_->GetCount();
+			//	ImGui::DragInt("particleEmitter_.count", &count, 1, 0, 1000);
 
-				float frequency = particleEmitter_->GetFrequency();
-				ImGui::DragFloat("particleEmitter_.frequency", &frequency, 0.1f);
+			//	float frequency = particleEmitter_->GetFrequency();
+			//	ImGui::DragFloat("particleEmitter_.frequency", &frequency, 0.1f);
 
-				if (ImGui::Button("ParticleEmit", { 100,50 })) {
-					particleEmitter_->Emit();
-				}
+			//	if (ImGui::Button("ParticleEmit", { 100,50 })) {
+			//		particleEmitter_->Emit();
+			//	}
 
-				bool isEmitUpdate = particleEmitter_->GetIsEmitUpdate();
-				ImGui::Checkbox("IsEmitUpdate", &isEmitUpdate);
+			//	bool isEmitUpdate = particleEmitter_->GetIsEmitUpdate();
+			//	ImGui::Checkbox("IsEmitUpdate", &isEmitUpdate);
 
-				particleEmitter_->SetPosition(position);
-				//particleEmitter_->SetRotation(rotation);
-				//particleEmitter_->SetSize(size);
-				particleEmitter_->SetCount(count);
-				particleEmitter_->SetFrequency(frequency);
-				particleEmitter_->SetIsEmitUpdate(isEmitUpdate);
-				
-				ImGui::Checkbox("IsAccelerationField", &isAccelerationField);
-				ImGui::EndMenu();
-			}
+			//	particleEmitter_->SetPosition(position);
+			//	//particleEmitter_->SetRotation(rotation);
+			//	//particleEmitter_->SetSize(size);
+			//	particleEmitter_->SetCount(count);
+			//	particleEmitter_->SetFrequency(frequency);
+			//	particleEmitter_->SetIsEmitUpdate(isEmitUpdate);
+			//	
+			//	ImGui::Checkbox("IsAccelerationField", &isAccelerationField);
+			//	ImGui::EndMenu();
+			//}
 			groupName = "Sprite";
 			if (ImGui::BeginMenu(groupName.c_str())) {
 				uint32_t objectIDIndex = 0;
@@ -413,8 +415,7 @@ void GameScene::Update(){
 		}
 	}
 
-	particleEmitter_->Update();
-	ParticleManager::GetInstance()->Update();
+	particleSystem_->Update();
 
 	for (std::unique_ptr<Sprite>& sprite : sprites_) {
 		sprite->Update();
@@ -424,9 +425,9 @@ void GameScene::Update(){
 void GameScene::Draw(){
 	//Object3dの描画
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
-		object3d->Draw();
+		//object3d->Draw();
 	}
-	//object3ds_[0]->Draw();
+	object3ds_[0]->Draw();
 	//当たり判定の表示
 	collisionManager_->Draw();
 	
@@ -439,11 +440,11 @@ void GameScene::Draw(){
 	Line3dManager::GetInstance()->Draw();
 
 	//Particleの描画
-	ParticleManager::GetInstance()->Draw();
+	particleSystem_->Draw();
 
 	//Spriteの描画
 	for (std::unique_ptr<Sprite>& sprite : sprites_) {
-		sprite->Draw();
+		//sprite->Draw();
 	}
 }
 

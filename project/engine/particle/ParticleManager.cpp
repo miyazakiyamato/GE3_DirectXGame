@@ -30,7 +30,7 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 	//調整項目の初期化
 	InitializeGlobalVariables();
 	ApplyGlobalVariables();
-	for (auto& [name, group] : particleGroupCreateDates_) {
+	/*for (auto& [name, group] : particleGroupCreateDates_) {
 		if (group->particleType == "cylinder") {
 			CreateCylinderParticleGroup(name, group->textureFilePath, 32, 1.0f, 1.0f, 3.0f);
 		} else if (group->particleType == "ring") {
@@ -38,7 +38,7 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 		} else {
 			CreateParticleGroup(name, group->textureFilePath);
 		}
-	}
+	}*/
 }
 
 void ParticleManager::Finalize() {
@@ -68,11 +68,12 @@ void ParticleManager::Update() {
 		for (std::list<Particle>::iterator it = group.particles.begin(); it != group.particles.end();) {
 			Particle& particle = *it;
 
-			particle.currentTime += TimeManager::GetInstance()->deltaTime_;
+			/*particle.currentTime += TimeManager::GetInstance()->deltaTime_;
 			particle.color.w = 1.0f - (particle.currentTime / particle.lifeTime);
 			particle.transform.translate = particle.transform.translate + particle.velocity * TimeManager::GetInstance()->deltaTime_;
-			particle.uvTransform.translate.x += 0.001f;
-			if (particle.lifeTime <= particle.currentTime) {
+			particle.uvTransform.translate.x += 0.001f;*/
+			particle.currentTime += TimeManager::GetInstance()->deltaTime_;
+			if (particle.lifeTime < particle.currentTime) {
 				it = group.particles.erase(it);
 				group.kNumInstance--;
 				continue;
@@ -114,17 +115,25 @@ void ParticleManager::Draw() {
 	}
 }
 
-void ParticleManager::CreateParticleGroup(const std::string name, const std::string textureFilePath) {
+void ParticleManager::CreateParticleGroup(const std::string name) {
 	if (particleGroups.count(name) != 0) {
 		return;
 	}
 	//assert(particleGroups.count(name) == 0 && "ParticleGroup with this name already exists.");
-
 	// パーティクルグループの作成と初期化
 	auto group = std::make_unique<ParticleGroup>();
-	//.objの参照しているテクスチャファイル読み込み
-	TextureManager::GetInstance()->LoadTexture(textureFilePath);
-	group->materialData.textureFilePath = textureFilePath;
+
+	auto it = particleGroupCreateDates_.find(name);
+	if (it != particleGroupCreateDates_.end() && it->second) {
+		group->particleInitData = it->second->particleInitData;
+		it->second->particleType = "plane";
+		//.objの参照しているテクスチャファイル読み込み
+		TextureManager::GetInstance()->LoadTexture(it->second->textureFilePath);
+		group->materialData.textureFilePath = it->second->textureFilePath;
+	}
+	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
+
+	
 
 	group->kNumInstance = 0;
 
@@ -140,7 +149,7 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 	// 頂点リソースに頂点データを書き込む
 	group->vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&group->vertexData));
 	//テクスチャの頂点
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureFilePath);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(group->materialData.textureFilePath);
 	group->textureSize_.x = static_cast<float>(metadata.width);
 	group->textureSize_.y = static_cast<float>(metadata.height);
 
@@ -170,7 +179,7 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 	group->indexResource->Unmap(0, nullptr);
 
 	// TextureManagerからGPUハンドルを取得
-	group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(textureFilePath);
+	group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(group->materialData.textureFilePath);
 
 	//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	group->instancingResource = dxCommon_->CreateBufferResource(sizeof(ParticleForGPU) * kMaxInstance);
@@ -187,12 +196,6 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 	group->srvIndexForInstancing = srvManager_->ALLocate();
 	srvManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
 
-	auto it = particleGroupCreateDates_.find(name);
-	if (it != particleGroupCreateDates_.end() && it->second) {
-		group->particleInitData = it->second->particleInitData;
-		it->second->particleType = "plane";
-	}
-	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
 
 	PipelineState pipelineState;
 	pipelineState.shaderName = "Particle";
@@ -204,16 +207,22 @@ void ParticleManager::CreateParticleGroup(const std::string name, const std::str
 	particleGroups[name] = std::move(group);
 }
 
-void ParticleManager::CreateRingParticleGroup(const std::string name, const std::string textureFilePath, const uint32_t& kDivide, const float& kOuterRadius, const float& kInnerRadius){
+void ParticleManager::CreateRingParticleGroup(const std::string name, const uint32_t& kDivide, const float& kOuterRadius, const float& kInnerRadius){
 	if (particleGroups.count(name) != 0) {
 		return;
 	}
 
 	// パーティクルグループの作成と初期化
 	auto group = std::make_unique<ParticleGroup>();
-	//.objの参照しているテクスチャファイル読み込み
-	TextureManager::GetInstance()->LoadTexture(textureFilePath);
-	group->materialData.textureFilePath = textureFilePath;
+
+	auto it = particleGroupCreateDates_.find(name);
+	if (it != particleGroupCreateDates_.end() && it->second) {
+		group->particleInitData = it->second->particleInitData;
+		it->second->particleType = "ring";
+		//.objの参照しているテクスチャファイル読み込み
+		TextureManager::GetInstance()->LoadTexture(it->second->textureFilePath);
+		group->materialData.textureFilePath = it->second->textureFilePath;
+	}
 
 	group->kNumInstance = 0;
 
@@ -229,7 +238,7 @@ void ParticleManager::CreateRingParticleGroup(const std::string name, const std:
 	// 頂点リソースに頂点データを書き込む
 	group->vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&group->vertexData));
 	//テクスチャの頂点
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureFilePath);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(group->materialData.textureFilePath);
 	group->textureSize_.x = static_cast<float>(metadata.width);
 	group->textureSize_.y = static_cast<float>(metadata.height);
 
@@ -273,7 +282,7 @@ void ParticleManager::CreateRingParticleGroup(const std::string name, const std:
 	group->indexResource->Unmap(0, nullptr);
 
 	// TextureManagerからGPUハンドルを取得
-	group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(textureFilePath);
+	group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(group->materialData.textureFilePath);
 
 	//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	group->instancingResource = dxCommon_->CreateBufferResource(sizeof(ParticleForGPU) * kMaxInstance);
@@ -290,12 +299,6 @@ void ParticleManager::CreateRingParticleGroup(const std::string name, const std:
 	group->srvIndexForInstancing = srvManager_->ALLocate();
 	srvManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
 
-	auto it = particleGroupCreateDates_.find(name);
-	if (it != particleGroupCreateDates_.end() && it->second) {
-		group->particleInitData = it->second->particleInitData;
-		it->second->particleType = "ring";
-	}
-	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
 	PipelineState pipelineState;
 	pipelineState.shaderName = "Particle";
 	pipelineState.blendMode = group->blendMode_;
@@ -307,16 +310,23 @@ void ParticleManager::CreateRingParticleGroup(const std::string name, const std:
 	particleGroups[name] = std::move(group);
 }
 
-void ParticleManager::CreateCylinderParticleGroup(const std::string name, const std::string textureFilePath, const uint32_t& kDivide, const float& kTopRadius, const float& kBottomRadius, const float& kHeight){
+void ParticleManager::CreateCylinderParticleGroup(const std::string name,const uint32_t& kDivide, const float& kTopRadius, const float& kBottomRadius, const float& kHeight){
 	if (particleGroups.count(name) != 0) {
 		return;
 	}
 
 	// パーティクルグループの作成と初期化
 	auto group = std::make_unique<ParticleGroup>();
-	//.objの参照しているテクスチャファイル読み込み
-	TextureManager::GetInstance()->LoadTexture(textureFilePath);
-	group->materialData.textureFilePath = textureFilePath;
+
+	auto it = particleGroupCreateDates_.find(name);
+	if (it != particleGroupCreateDates_.end() && it->second) {
+		group->particleInitData = it->second->particleInitData;
+		it->second->particleType = "cylinder";
+		//.objの参照しているテクスチャファイル読み込み
+		TextureManager::GetInstance()->LoadTexture(it->second->textureFilePath);
+		group->materialData.textureFilePath = it->second->textureFilePath;
+	}
+	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
 
 	group->kNumInstance = 0;
 
@@ -332,7 +342,7 @@ void ParticleManager::CreateCylinderParticleGroup(const std::string name, const 
 	// 頂点リソースに頂点データを書き込む
 	group->vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&group->vertexData));
 	//テクスチャの頂点
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(textureFilePath);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(group->materialData.textureFilePath);
 	group->textureSize_.x = static_cast<float>(metadata.width);
 	group->textureSize_.y = static_cast<float>(metadata.height);
 
@@ -368,7 +378,7 @@ void ParticleManager::CreateCylinderParticleGroup(const std::string name, const 
 	group->indexResource->Unmap(0, nullptr);
 
 	// TextureManagerからGPUハンドルを取得
-	group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(textureFilePath);
+	group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(group->materialData.textureFilePath);
 
 	//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	group->instancingResource = dxCommon_->CreateBufferResource(sizeof(ParticleForGPU) * kMaxInstance);
@@ -385,17 +395,12 @@ void ParticleManager::CreateCylinderParticleGroup(const std::string name, const 
 	group->srvIndexForInstancing = srvManager_->ALLocate();
 	srvManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
 
-	auto it = particleGroupCreateDates_.find(name);
-	if (it != particleGroupCreateDates_.end() && it->second) {
-		group->particleInitData = it->second->particleInitData;
-		it->second->particleType = "cylinder";
-	}
-	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
 	PipelineState pipelineState;
 	pipelineState.shaderName = "Particle";
 	pipelineState.blendMode = group->blendMode_;
 	pipelineState.cullMode = CullMode::kNone;//カリングなし
 	pipelineState.depthMode = DepthMode::kReadOnly;//読み込み
+	pipelineState.staticSamplersMode = StaticSamplersMode::kclamp;
 	group->pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
 
 	particleGroups[name] = std::move(group);
@@ -483,7 +488,14 @@ void ParticleManager::ApplyGlobalVariables() {
 	}
 }
 
-void ParticleManager::SetBlendMode(std::string name, BlendMode blendMode) { 
+ParticleManager::ParticleGroup* ParticleManager::GetParticleGroup(std::string name) {
+	if (particleGroups.count(name) == 0) {
+		return nullptr;
+	}
+	return particleGroups[name].get();
+}
+
+void ParticleManager::SetBlendMode(std::string name, BlendMode blendMode) {
 	particleGroups[name]->blendMode_ = blendMode;
 	PipelineState pipelineState;
 	pipelineState.shaderName = "Particle";
@@ -530,11 +542,11 @@ void ParticleManager::UpdateGlobalVariables() {
 				particleGroupCreateDates_[groupNameText] = std::make_unique<ParticleGroupCreateData>();
 				InitializeGlobalVariables();
 				if (typeNameText == "cylinder") {
-					CreateCylinderParticleGroup(groupNameText, particleGroupCreateDates_[groupNameText]->textureFilePath, 32, 1.0f, 1.0f,3.0f);
+					CreateCylinderParticleGroup(groupNameText, 32, 1.0f, 1.0f,3.0f);
 				} else if (typeNameText == "ring") {
-					CreateRingParticleGroup(groupNameText, particleGroupCreateDates_[groupNameText]->textureFilePath,32,1.0f,0.2f);
+					CreateRingParticleGroup(groupNameText,32,1.0f,0.2f);
 				} else {
-					CreateParticleGroup(groupNameText, particleGroupCreateDates_[groupNameText]->textureFilePath);
+					CreateParticleGroup(groupNameText);
 				}
 			}
 		}

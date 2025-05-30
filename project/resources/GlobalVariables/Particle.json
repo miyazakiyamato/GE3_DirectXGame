@@ -1,19 +1,35 @@
 {
     "Particle": {
-        "\u0001Name0": "hit",
-        "\u0001Name1": "levelup",
+        "\u0001Name0": "aRing",
+        "\u0001Name1": "bCross",
+        "\u0001Name2": "cCylinder",
+        "\u0001Name3": "dCircle",
         "\u0002TextureFilePath0": "gradationLine.png",
-        "\u0002TextureFilePath1": "gradationLine.png",
+        "\u0002TextureFilePath1": "circle2.png",
+        "\u0002TextureFilePath2": "gradationLine.png",
+        "\u0002TextureFilePath3": "circle2.png",
         "\u0003ParticleType0": "ring",
-        "\u0003ParticleType1": "cylinder",
+        "\u0003ParticleType1": "plane",
+        "\u0003ParticleType2": "cylinder",
+        "\u0003ParticleType3": "plane",
         "\u0004RandomScaleMax0": [
             1.0,
             1.0,
             1.0
         ],
         "\u0004RandomScaleMax1": [
-            1.0,
-            1.0,
+            0.05000000074505806,
+            0.05000000074505806,
+            1.0
+        ],
+        "\u0004RandomScaleMax2": [
+            0.05000000074505806,
+            3.0,
+            0.05000000074505806
+        ],
+        "\u0004RandomScaleMax3": [
+            0.10000000149011612,
+            0.10000000149011612,
             1.0
         ],
         "\u0005RandomScaleMin0": [
@@ -22,8 +38,18 @@
             1.0
         ],
         "\u0005RandomScaleMin1": [
-            1.0,
-            1.0,
+            0.05000000074505806,
+            0.05000000074505806,
+            1.0
+        ],
+        "\u0005RandomScaleMin2": [
+            0.05000000074505806,
+            0.5,
+            0.05000000074505806
+        ],
+        "\u0005RandomScaleMin3": [
+            0.10000000149011612,
+            0.10000000149011612,
             1.0
         ],
         "\u0006RandomRotateMax0": [
@@ -32,6 +58,16 @@
             0.0
         ],
         "\u0006RandomRotateMax1": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "\u0006RandomRotateMax2": [
+            0.0,
+            0.0,
+            6.28000020980835
+        ],
+        "\u0006RandomRotateMax3": [
             0.0,
             0.0,
             0.0
@@ -46,6 +82,16 @@
             0.0,
             0.0
         ],
+        "\u0007RandomRotateMin2": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "\u0007RandomRotateMin3": [
+            0.0,
+            0.0,
+            0.0
+        ],
         "\bRandomVelocityMax0": [
             0.0,
             0.0,
@@ -55,6 +101,16 @@
             0.0,
             0.0,
             0.0
+        ],
+        "\bRandomVelocityMax2": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "\bRandomVelocityMax3": [
+            1.0,
+            1.0,
+            1.0
         ],
         "\tRandomVelocityMin0": [
             0.0,
@@ -66,33 +122,71 @@
             0.0,
             0.0
         ],
+        "\tRandomVelocityMin2": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "\tRandomVelocityMin3": [
+            -1.0,
+            -1.0,
+            -1.0
+        ],
         "\nRandomColorMax0": [
             1.0,
             1.0,
-            1.0,
+            0.19607843458652496,
             1.0
         ],
         "\nRandomColorMax1": [
-            0.0,
-            0.0,
+            1.0,
+            1.0,
+            0.3921568691730499,
+            1.0
+        ],
+        "\nRandomColorMax2": [
+            0.8941176533699036,
+            0.8941176533699036,
+            0.03921568766236305,
+            1.0
+        ],
+        "\nRandomColorMax3": [
+            1.0,
+            1.0,
             1.0,
             1.0
         ],
         "\u000bRandomColorMin0": [
             1.0,
             1.0,
-            1.0,
+            0.19607841968536377,
             1.0
         ],
         "\u000bRandomColorMin1": [
-            0.0,
-            0.0,
             1.0,
+            1.0,
+            0.3921568691730499,
             1.0
         ],
-        "\fLifeTime0": 2.0,
-        "\fLifeTime1": 10.0,
+        "\u000bRandomColorMin2": [
+            0.8941176533699036,
+            0.8941176533699036,
+            0.03921568766236305,
+            1.0
+        ],
+        "\u000bRandomColorMin3": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+        ],
+        "\fLifeTime0": 0.800000011920929,
+        "\fLifeTime1": 1.0,
+        "\fLifeTime2": 0.5,
+        "\fLifeTime3": 0.5,
         "\rIsBillboard0": true,
-        "\rIsBillboard1": false
+        "\rIsBillboard1": true,
+        "\rIsBillboard2": false,
+        "\rIsBillboard3": true
     }
 }
