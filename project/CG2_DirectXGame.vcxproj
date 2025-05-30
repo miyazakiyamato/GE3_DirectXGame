@@ -113,6 +113,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\particle\BaseParticleEmitter.cpp" />
     <ClCompile Include="engine\3d\Animation.cpp" />
     <ClCompile Include="application\3d\AccelerationField.cpp" />
     <ClCompile Include="engine\base\BasePipeline.cpp" />
@@ -152,13 +153,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\manager\LightManager.cpp" />
     <ClCompile Include="engine\3d\Line3D.cpp" />
     <ClCompile Include="engine\3d\Line3DPipeline.cpp" />
+    <ClCompile Include="engine\particle\HitEffect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\manager\SrvManager.cpp" />
     <ClCompile Include="application\scene\MyGame.cpp" />
     <ClCompile Include="application\scene\SceneFactory.cpp" />
     <ClCompile Include="engine\scene\SceneManager.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
-    <ClCompile Include="engine\particle\ParticleEmitter.cpp" />
     <ClCompile Include="engine\particle\ParticleManager.cpp" />
     <ClCompile Include="engine\3d\ModelPipeline.cpp" />
     <ClCompile Include="engine\base\PipelineManager.cpp" />
@@ -167,9 +168,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Skeleton.cpp" />
     <ClCompile Include="engine\3d\SkinCluster.cpp" />
     <ClCompile Include="engine\3d\SkinningObject3dPipeline.cpp" />
-    <ClCompile Include="PipelineFactory.cpp" />
+    <ClCompile Include="engine\particle\ParticleSystem.cpp" />
+    <ClCompile Include="engine\base\PipelineFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\particle\BaseParticleEmitter.h" />
     <ClInclude Include="engine\3d\Animation.h" />
     <ClInclude Include="application\3d\AccelerationField.h" />
     <ClInclude Include="engine\base\BasePipeline.h" />
@@ -212,7 +215,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="engine\debug\GlobalVariables.h" />
-    <ClInclude Include="engine\particle\ParticleEmitter.h" />
     <ClInclude Include="engine\particle\ParticleManager.h" />
     <ClInclude Include="engine\manager\LightManager.h" />
     <ClInclude Include="engine\3d\ModelPipeline.h" />
@@ -224,7 +226,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Skeleton.h" />
     <ClInclude Include="engine\3d\SkinCluster.h" />
     <ClInclude Include="engine\3d\SkinningObject3dPipeline.h" />
-    <ClInclude Include="PipelineFactory.h" />
+    <ClInclude Include="engine\particle\HitEffect.h" />
+    <ClInclude Include="engine\particle\ParticleSystem.h" />
+    <ClInclude Include="engine\base\PipelineFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

@@ -96,10 +96,10 @@ public://メンバ関数
 	//描画
 	void Draw();
 	//パーティクルグループの生成
-	void CreateParticleGroup(const std::string name, const std::string textureFilePath);
-	void CreateRingParticleGroup(const std::string name, const std::string textureFilePath,
+	void CreateParticleGroup(const std::string name);
+	void CreateRingParticleGroup(const std::string name,
 		const uint32_t& kDivide,const float& kOuterRadius,const float& kInnerRadius);
-	void CreateCylinderParticleGroup(const std::string name, const std::string textureFilePath,
+	void CreateCylinderParticleGroup(const std::string name,
 		const uint32_t& kDivide, const float& kTopRadius, const float& kBottomRadius,const float& kHeight);
 	//パーティクルの発生
 	void Emit(const std::string name, const Vector3& position, uint32_t count);
@@ -139,6 +139,7 @@ private://メンバ変数
 	std::map<std::string, std::unique_ptr<ParticleGroup>> particleGroups;
 public://ゲッターセッター
 	std::map<std::string, std::unique_ptr<ParticleGroup>>& GetParticleGroups() { return particleGroups; }
+	ParticleGroup* GetParticleGroup(std::string name);
 	const BlendMode& GetBlendMode(std::string name) { return particleGroups[name]->blendMode_; }
 
 	void SetBlendMode(std::string name, BlendMode blendMode);

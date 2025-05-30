@@ -3,7 +3,7 @@
 #include "BaseScene.h"
 #include "Sprite.h"
 #include "Object3d.h"
-#include "ParticleEmitter.h"
+#include "ParticleSystem.h"
 #include "CollisionManager.h"
 #include "AccelerationField.h"
 
@@ -30,6 +30,6 @@ private://メンバ変数
 	std::vector<std::unique_ptr<Object3d>> object3ds_;
 	std::vector< std::unique_ptr<Sprite>> sprites_;
 
-	std::unique_ptr<ParticleEmitter> particleEmitter_ = nullptr;
+	std::unique_ptr<ParticleSystem> particleSystem_ = nullptr;
 };
 
