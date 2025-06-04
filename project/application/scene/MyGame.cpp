@@ -11,7 +11,9 @@ void MyGame::Initialize(){
 	//sceneManager_->ChangeOffScreenState("Grayscale");
 	//sceneManager_->ChangeOffScreenState("Vignette");
 	//sceneManager_->ChangeOffScreenState("BoxFilter");
-	sceneManager_->ChangeOffScreenState("GaussianFilter");
+	//sceneManager_->ChangeOffScreenState("GaussianFilter");
+	//sceneManager_->ChangeOffScreenState("LuminanceBasedOutline");
+	sceneManager_->ChangeOffScreenState("DepthBasedOutline");
 }
 
 void MyGame::Finalize(){

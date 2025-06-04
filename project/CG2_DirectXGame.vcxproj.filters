@@ -499,6 +499,12 @@
     <None Include="resources\shaders\OffScreen\Vignette.hlsli">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </None>
+    <None Include="resources\shaders\OffScreen\LuminanceBasedOutline.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </None>
+    <None Include="resources\shaders\OffScreen\DepthBasedOutline.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Object3d.PS.hlsl">
@@ -559,6 +565,18 @@
       <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\Vignette.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\LuminanceBasedOutline.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\LuminanceBasedOutline.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\DepthBasedOutline.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\DepthBasedOutline.VS.hlsl">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
   </ItemGroup>
