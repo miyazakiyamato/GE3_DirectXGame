@@ -7,7 +7,9 @@ void MyGame::Initialize(){
 	//最初のシーンセット
 	sceneManager_->ChangeScene("GAME");
 	//オフスクリーンの描画設定
-	sceneManager_->ChangeOffScreenState("CopyImage");
+	//sceneManager_->ChangeOffScreenState("Fullscreen");
+	//sceneManager_->ChangeOffScreenState("Grayscale");
+	sceneManager_->ChangeOffScreenState("Vignette");
 }
 
 void MyGame::Finalize(){

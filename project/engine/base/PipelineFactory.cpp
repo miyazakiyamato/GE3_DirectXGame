@@ -17,7 +17,9 @@ BasePipeline* PipelineFactory::ChangePipeline(const std::string& pipelineName) {
 		return new ParticlePipeline();
 	} else if (pipelineName == "Line3D") {
 		return new Line3DPipeline();
-	} else if (pipelineName == "CopyImage") {
+	} else if (pipelineName == "Fullscreen"||
+		pipelineName == "Grayscale" ||
+		pipelineName == "Vignette") {
 		return new OffScreenPipeline();
 	}
 	assert(0);
