@@ -54,7 +54,7 @@ void SceneManager::ChangeScene(std::string SceneName){
 }
 
 void SceneManager::ChangeOffScreenState(std::string shaderName){
-	pipelineState_.shaderName = shaderName;
+	pipelineState_.shaderName = "OffScreen/" + shaderName;
 	pipelineState_.blendMode = BlendMode::kNone; // オフスクリーン描画はブレンドなし
 	pipelineState_.cullMode = CullMode::kNone; // カリングなし
 	pipelineState_.fillMode = FillMode::kSolid; // ソリッド描画

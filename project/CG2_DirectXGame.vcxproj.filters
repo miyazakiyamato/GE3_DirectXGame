@@ -118,6 +118,9 @@
     <Filter Include="ヘッダー ファイル\engine\debug">
       <UniqueIdentifier>{d4774140-581e-46dd-86e9-5c001333ea17}</UniqueIdentifier>
     </Filter>
+    <Filter Include="シェーダーファイル\OffScreen">
+      <UniqueIdentifier>{c4c4fa66-3f37-4e6e-a5ec-c83d1e7339ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\2d\Sprite.cpp">
@@ -481,14 +484,20 @@
     <None Include="resources\shaders\SkinningObject3d.hlsli">
       <Filter>シェーダーファイル</Filter>
     </None>
-    <None Include="resources\shaders\Fullscreen.hlsli">
-      <Filter>シェーダーファイル</Filter>
+    <None Include="resources\shaders\OffScreen\BoxFilter.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </None>
-    <None Include="resources\shaders\Grayscale.hlsli">
-      <Filter>シェーダーファイル</Filter>
+    <None Include="resources\shaders\OffScreen\Fullscreen.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </None>
-    <None Include="resources\shaders\Vignette.hlsli">
-      <Filter>シェーダーファイル</Filter>
+    <None Include="resources\shaders\OffScreen\GaussianFilter.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </None>
+    <None Include="resources\shaders\OffScreen\Grayscale.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </None>
+    <None Include="resources\shaders\OffScreen\Vignette.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -522,23 +531,35 @@
     <FxCompile Include="resources\shaders\SkinningObject3d.VS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
-    <FxCompile Include="resources\shaders\Fullscreen.PS.hlsl">
-      <Filter>シェーダーファイル</Filter>
+    <FxCompile Include="resources\shaders\OffScreen\BoxFilter.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
-    <FxCompile Include="resources\shaders\Fullscreen.VS.hlsl">
-      <Filter>シェーダーファイル</Filter>
+    <FxCompile Include="resources\shaders\OffScreen\BoxFilter.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
-    <FxCompile Include="resources\shaders\Grayscale.PS.hlsl">
-      <Filter>シェーダーファイル</Filter>
+    <FxCompile Include="resources\shaders\OffScreen\Fullscreen.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
-    <FxCompile Include="resources\shaders\Grayscale.VS.hlsl">
-      <Filter>シェーダーファイル</Filter>
+    <FxCompile Include="resources\shaders\OffScreen\Fullscreen.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
-    <FxCompile Include="resources\shaders\Vignette.PS.hlsl">
-      <Filter>シェーダーファイル</Filter>
+    <FxCompile Include="resources\shaders\OffScreen\GaussianFilter.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
-    <FxCompile Include="resources\shaders\Vignette.VS.hlsl">
-      <Filter>シェーダーファイル</Filter>
+    <FxCompile Include="resources\shaders\OffScreen\GaussianFilter.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\Grayscale.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\Grayscale.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\Vignette.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\Vignette.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
