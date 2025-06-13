@@ -7,11 +7,11 @@ void MyGame::Initialize(){
 	//最初のシーンセット
 	sceneManager_->ChangeScene("GAME");
 	//オフスクリーンの描画設定
-	//sceneManager_->ChangeOffScreenState("Fullscreen");
+	sceneManager_->ChangeOffScreenState("Fullscreen");
 	//sceneManager_->ChangeOffScreenState("Grayscale");
 	//sceneManager_->ChangeOffScreenState("Vignette");
 	//sceneManager_->ChangeOffScreenState("BoxFilter");
-	sceneManager_->ChangeOffScreenState("GaussianFilter");
+	//sceneManager_->ChangeOffScreenState("GaussianFilter");
 }
 
 void MyGame::Finalize(){

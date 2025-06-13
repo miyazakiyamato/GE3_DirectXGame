@@ -154,6 +154,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Line3D.cpp" />
     <ClCompile Include="engine\3d\Line3DPipeline.cpp" />
     <ClCompile Include="engine\particle\HitEffect.cpp" />
+    <ClCompile Include="engine\manager\LevelDataManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\manager\SrvManager.cpp" />
     <ClCompile Include="application\scene\MyGame.cpp" />
@@ -229,6 +230,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\particle\HitEffect.h" />
     <ClInclude Include="engine\particle\ParticleSystem.h" />
     <ClInclude Include="engine\base\PipelineFactory.h" />
+    <ClInclude Include="engine\manager\LevelDataManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

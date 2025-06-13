@@ -294,6 +294,9 @@
     <ClCompile Include="engine\base\PipelineFactory.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
+    <ClCompile Include="engine\manager\LevelDataManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -466,6 +469,9 @@
     </ClInclude>
     <ClInclude Include="engine\base\PipelineFactory.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\manager\LevelDataManager.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

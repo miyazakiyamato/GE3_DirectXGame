@@ -4,6 +4,7 @@
 #include "PipelineManager.h"
 #include "TimeManager.h"
 #include "Line3D.h"
+#include <numbers>
 
 void Object3d::Initialize(){
 	dxCommon_ = ModelManager::GetInstance()->GetDirectXCommon();
@@ -41,7 +42,7 @@ void Object3d::Initialize(){
 void Object3d::Update(){
 	Matrix4x4 worldMatrix;
 	Matrix4x4 worldViewProjectionMatrix;
-	worldMatrix = Matrix4x4::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	worldMatrix = Matrix4x4::MakeAffineMatrix(transform.scale, transform.rotate + Vector3(0.0f,std::numbers::pi_v<float>,0.0f), transform.translate);
 	if (parent_) {
 		worldMatrix = worldMatrix * parent_->GetWorldMatrix();
 	}

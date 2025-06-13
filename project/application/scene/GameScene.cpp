@@ -30,16 +30,6 @@ void GameScene::Initialize(){
 	AudioManager::GetInstance()->LoadWave("maou_se_system48.wav");
 	//AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
 
-	//衝突マネージャの生成
-	collisionManager_ = std::make_unique<CollisionManager>();
-	collisionManager_->Initialize();
-
-	for (uint32_t i = 0; i < 3; ++i) {
-		std::unique_ptr<Object3d> object3d(new Object3d);
-		object3d->Initialize();
-		object3ds_.push_back(std::move(object3d));
-	}
-
 	/*ModelManager::GetInstance()->LoadModel("plane/plane.obj");
 	ModelManager::GetInstance()->LoadModel("fence/fence.obj");
 	ModelManager::GetInstance()->LoadModel("axis/axis.obj");
@@ -59,23 +49,45 @@ void GameScene::Initialize(){
 	TextureManager::GetInstance()->LoadTexture("circle2.png");
 	TextureManager::GetInstance()->LoadTexture("gradationLine.png");
 
+	//衝突マネージャの生成
+	collisionManager_ = std::make_unique<CollisionManager>();
+	collisionManager_->Initialize();
+
+	//レベルデータマネージャの生成
+	levelDataManager_ = std::make_unique<LevelDataManager>();
+	//レベルデータの読み込み取得
+	levelDataManager_->LoadJsonFile("level1"); 
+	LevelDataManager::LevelData* levelData = levelDataManager_->GetObjectData("level1");
+	for (const ObjectData& objectData : *levelData) {
+		std::unique_ptr<Object3d> object3d(new Object3d);
+		object3d->Initialize();
+		object3d->SetScale(objectData.scaling);
+		object3d->SetRotate(objectData.rotation);
+		object3d->SetTranslate(objectData.translation);
+		if (!objectData.fileName.empty()) {
+			object3d->SetModel(objectData.fileName);
+		}
+		object3ds_.push_back(std::move(object3d));
+	}
+
+
 	/*object3ds_[0]->SetModel("AnimatedCube/AnimatedCube.gltf");
 	object3ds_[0]->SetAnimation("AnimatedCube/AnimatedCube.gltf",true);*/
 	/*object3ds_[0]->SetModel("simpleSkin/simpleSkin.gltf");
 	object3ds_[0]->SetAnimation("simpleSkin/simpleSkin.gltf",true);*/
-	object3ds_[0]->SetTranslate({ -1,0,0 });
-	object3ds_[0]->SetRotate({ 0,3.14f,0 });
-	object3ds_[0]->SetModel("terrain/terrain.obj");
+	/*object3ds_[1]->SetTranslate({ -1,0,0 });
+	object3ds_[1]->SetRotate({ 0,3.14f,0 });
+	object3ds_[1]->SetModel("terrain/terrain.obj");*/
 	//object3ds_[1]->SetModel("plane/plane.gltf");
 	//object3ds_[1]->SetModel("axis/axis.obj");
-	object3ds_[1]->SetModel("human/sneakWalk.gltf");
+	/*object3ds_[1]->SetModel("human/sneakWalk.gltf");
 	object3ds_[1]->SetAnimation("human/sneakWalk.gltf", true);
 	object3ds_[1]->SetTranslate({ 1,0,0 });
 	object3ds_[1]->SetRotate({ 0,3.14f,0 });
 	object3ds_[2]->SetModel("human/walk.gltf");
 	object3ds_[2]->SetAnimation("human/walk.gltf", true);
 	object3ds_[2]->SetTranslate({ 0,0,0 });
-	object3ds_[2]->SetRotate({ 0,3.14f,0 });
+	object3ds_[2]->SetRotate({ 0,3.14f,0 });*/
 	//
 	isAccelerationField = false;
 	accelerationField_.reset(new AccelerationField);
@@ -425,9 +437,9 @@ void GameScene::Update(){
 void GameScene::Draw(){
 	//Object3dの描画
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
-		//object3d->Draw();
+		object3d->Draw();
 	}
-	object3ds_[0]->Draw();
+	//object3ds_[0]->Draw();
 	//当たり判定の表示
 	collisionManager_->Draw();
 	

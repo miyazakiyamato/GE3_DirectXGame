@@ -6,6 +6,7 @@
 #include "ParticleSystem.h"
 #include "CollisionManager.h"
 #include "AccelerationField.h"
+#include "LevelDataManager.h"
 
 class GameScene : public BaseScene {
 public://メンバ関数
@@ -31,5 +32,6 @@ private://メンバ変数
 	std::vector< std::unique_ptr<Sprite>> sprites_;
 
 	std::unique_ptr<ParticleSystem> particleSystem_ = nullptr;
+	std::unique_ptr<LevelDataManager> levelDataManager_ = nullptr;
 };
 
