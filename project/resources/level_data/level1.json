@@ -21,6 +21,7 @@
                     0.010000000707805157
                 ]
             },
+            "file_name": "",
             "children": [
                 {
                     "type": "MESH",
@@ -41,7 +42,8 @@
                             1.0,
                             1.0
                         ]
-                    }
+                    },
+                    "file_name": "human/walk.gltf"
                 }
             ]
         },
@@ -50,7 +52,7 @@
             "name": "Armature.001",
             "transform": {
                 "translation": [
-                    0.0,
+                    1.5984541177749634,
                     0.0,
                     0.0
                 ],
@@ -85,7 +87,8 @@
                             1.0,
                             1.0
                         ]
-                    }
+                    },
+                    "file_name": "human/sneakWalk.gltf"
                 }
             ]
         },
@@ -108,7 +111,8 @@
                     0.9999999403953552,
                     1.0
                 ]
-            }
+            },
+            "file_name": "terrain/terrain.obj"
         },
         {
             "type": "CAMERA",
@@ -177,6 +181,27 @@
         {
             "type": "MESH",
             "name": "ICO球.001",
+            "transform": {
+                "translation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "MESH",
+            "name": "ICO球.002",
             "transform": {
                 "translation": [
                     0.0,

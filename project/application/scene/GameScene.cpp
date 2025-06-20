@@ -58,16 +58,32 @@ void GameScene::Initialize(){
 	//レベルデータの読み込み取得
 	levelDataManager_->LoadJsonFile("level1"); 
 	LevelDataManager::LevelData* levelData = levelDataManager_->GetObjectData("level1");
-	for (const ObjectData& objectData : *levelData) {
-		std::unique_ptr<Object3d> object3d(new Object3d);
-		object3d->Initialize();
-		object3d->SetScale(objectData.scaling);
-		object3d->SetRotate(objectData.rotation);
-		object3d->SetTranslate(objectData.translation);
-		if (!objectData.fileName.empty()) {
-			object3d->SetModel(objectData.fileName);
+	for (const std::unique_ptr<ObjectData>& objectData : *levelData) {
+		if (objectData->typeName == "MESH") {
+			std::unique_ptr<Object3d> object3d(new Object3d);
+			object3d->Initialize();
+			object3d->SetScale(objectData->scaling);
+			object3d->SetRotate(objectData->rotation);
+			object3d->SetTranslate(objectData->translation);
+			if (!objectData->fileName.empty()) {
+				object3d->SetModel(objectData->fileName);
+			}
+			object3ds_.push_back(std::move(object3d));
 		}
-		object3ds_.push_back(std::move(object3d));
+		if (objectData->typeName == "ARMATURE") {
+			for (const std::unique_ptr<ObjectData>&childData : objectData->children) {
+				if (childData->typeName == "MESH") {
+					std::unique_ptr<Object3d> object3d(new Object3d);
+					object3d->Initialize();
+					object3d->SetTranslate(objectData->translation);
+					if (!childData->fileName.empty()) {
+						object3d->SetModel(childData->fileName);
+						object3d->SetAnimation(childData->fileName, true);
+					}
+					object3ds_.push_back(std::move(object3d));
+				}
+			}
+		}
 	}
 
 

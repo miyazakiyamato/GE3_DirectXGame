@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <cassert>
-#include <json.hpp>
 
 void LevelDataManager::LoadJsonFile(const std::string& filePath){
 	std::string fullpath = kDirectoryFilePath + filePath + kExtension;
@@ -32,32 +31,47 @@ void LevelDataManager::LoadJsonFile(const std::string& filePath){
 	std::unique_ptr<LevelData> levelData = std::make_unique<LevelData>();
 	levelData->reserve(100);
 	for (nlohmann::json& object : deserialized["objects"]) {
-		assert(object.contains("type"));
-		std::string type = object["type"].get<std::string>();
-
-		if (type.compare("MESH") == 0) {
-			levelData->emplace_back(ObjectData{});
-			ObjectData& objectData = levelData->back();
-
-			nlohmann::json& transform = object["transform"];
-			objectData.translation.x = (float)transform["translation"][0];
-			objectData.translation.y = (float)transform["translation"][2];
-			objectData.translation.z = (float)transform["translation"][1];
-
-			objectData.rotation.x = -(float)transform["rotation"][0];
-			objectData.rotation.y = -(float)transform["rotation"][2];
-			objectData.rotation.z = -(float)transform["rotation"][1];
-
-			objectData.scaling.x = (float)transform["scaling"][0];
-			objectData.scaling.y = (float)transform["scaling"][2];
-			objectData.scaling.z = (float)transform["scaling"][1];
-			if (object.contains("file_name")) {
-				objectData.fileName = object["file_name"];
-			}
-			if (object.contains("children")) {
-
-			}
-		}
+		levelData->push_back(std::move(LoadObjectData(object)));
 	}
 	levelDates_[filePath] = std::move(levelData);
+}
+
+std::unique_ptr<ObjectData> LevelDataManager::LoadObjectData(const nlohmann::json& object){
+	//assert(object.contains("type"));
+	if (!object.contains("type")) {
+		return nullptr; // typeが存在しない場合はnullptrを返す
+	}
+	std::string type = object["type"].get<std::string>();
+	
+	std::unique_ptr<ObjectData> objectData = std::make_unique<ObjectData>();
+
+	objectData->typeName = type;
+	if (object.contains("transform")) {
+		const nlohmann::json& transform = object["transform"];
+		//位置
+		objectData->translation.x = (float)transform["translation"][0];
+		objectData->translation.y = (float)transform["translation"][2];
+		objectData->translation.z = (float)transform["translation"][1];
+		//回転
+		objectData->rotation.x = -(float)transform["rotation"][0];
+		objectData->rotation.y = -(float)transform["rotation"][2];
+		objectData->rotation.z = -(float)transform["rotation"][1];
+		//大きさ
+		objectData->scaling.x = (float)transform["scaling"][0];
+		objectData->scaling.y = (float)transform["scaling"][2];
+		objectData->scaling.z = (float)transform["scaling"][1];
+		if (object.contains("file_name")) {
+			objectData->fileName = object["file_name"];
+		}
+		if (object.contains("children")) {
+			for (const auto& childJson : object["children"]) {
+				auto child = LoadObjectData(childJson);
+				if (child) {
+					objectData->children.push_back(std::move(child));
+				}
+			}
+		}
+		return std::move(objectData);
+	}
+	return nullptr;
 }
