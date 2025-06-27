@@ -12,181 +12,237 @@
         "\u0003ParticleType1": "plane",
         "\u0003ParticleType2": "cylinder",
         "\u0003ParticleType3": "plane",
-        "\u0004RandomScaleMax0": [
+        "\u0004RandomTransformMax0": {
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "\u0004RandomTransformMax1": {
+            "scale": [
+                0.05000000074505806,
+                0.05000000074505806,
+                1.0
+            ],
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "\u0004RandomTransformMax2": {
+            "scale": [
+                0.05000000074505806,
+                3.0,
+                0.05000000074505806
+            ],
+            "rotate": [
+                0.0,
+                0.0,
+                6.28000020980835
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "\u0004RandomTransformMax3": {
+            "scale": [
+                0.10000000149011612,
+                0.10000000149011612,
+                1.0
+            ],
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "\u0005RandomTransformMin0": {
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "\u0005RandomTransformMin1": {
+            "scale": [
+                0.05000000074505806,
+                0.05000000074505806,
+                1.0
+            ],
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "\u0005RandomTransformMin2": {
+            "scale": [
+                0.05000000074505806,
+                0.5,
+                0.05000000074505806
+            ],
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "\u0005RandomTransformMin3": {
+            "scale": [
+                0.10000000149011612,
+                0.10000000149011612,
+                1.0
+            ],
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "\u0006RandomVelocityMax0": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "\u0006RandomVelocityMax1": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "\u0006RandomVelocityMax2": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "\u0006RandomVelocityMax3": [
             1.0,
             1.0,
             1.0
         ],
-        "\u0004RandomScaleMax1": [
-            0.05000000074505806,
-            0.05000000074505806,
-            1.0
-        ],
-        "\u0004RandomScaleMax2": [
-            0.05000000074505806,
-            3.0,
-            0.05000000074505806
-        ],
-        "\u0004RandomScaleMax3": [
-            0.10000000149011612,
-            0.10000000149011612,
-            1.0
-        ],
-        "\u0005RandomScaleMin0": [
-            1.0,
-            1.0,
-            1.0
-        ],
-        "\u0005RandomScaleMin1": [
-            0.05000000074505806,
-            0.05000000074505806,
-            1.0
-        ],
-        "\u0005RandomScaleMin2": [
-            0.05000000074505806,
-            0.5,
-            0.05000000074505806
-        ],
-        "\u0005RandomScaleMin3": [
-            0.10000000149011612,
-            0.10000000149011612,
-            1.0
-        ],
-        "\u0006RandomRotateMax0": [
+        "\u0007RandomVelocityMin0": [
             0.0,
             0.0,
             0.0
         ],
-        "\u0006RandomRotateMax1": [
+        "\u0007RandomVelocityMin1": [
             0.0,
             0.0,
             0.0
         ],
-        "\u0006RandomRotateMax2": [
-            0.0,
-            0.0,
-            6.28000020980835
-        ],
-        "\u0006RandomRotateMax3": [
+        "\u0007RandomVelocityMin2": [
             0.0,
             0.0,
             0.0
         ],
-        "\u0007RandomRotateMin0": [
-            0.0,
-            0.0,
-            0.0
-        ],
-        "\u0007RandomRotateMin1": [
-            0.0,
-            0.0,
-            0.0
-        ],
-        "\u0007RandomRotateMin2": [
-            0.0,
-            0.0,
-            0.0
-        ],
-        "\u0007RandomRotateMin3": [
-            0.0,
-            0.0,
-            0.0
-        ],
-        "\bRandomVelocityMax0": [
-            0.0,
-            0.0,
-            0.0
-        ],
-        "\bRandomVelocityMax1": [
-            0.0,
-            0.0,
-            0.0
-        ],
-        "\bRandomVelocityMax2": [
-            0.0,
-            0.0,
-            0.0
-        ],
-        "\bRandomVelocityMax3": [
-            1.0,
-            1.0,
-            1.0
-        ],
-        "\tRandomVelocityMin0": [
-            0.0,
-            0.0,
-            0.0
-        ],
-        "\tRandomVelocityMin1": [
-            0.0,
-            0.0,
-            0.0
-        ],
-        "\tRandomVelocityMin2": [
-            0.0,
-            0.0,
-            0.0
-        ],
-        "\tRandomVelocityMin3": [
+        "\u0007RandomVelocityMin3": [
             -1.0,
             -1.0,
             -1.0
         ],
-        "\nRandomColorMax0": [
+        "\u0008RandomColorMax0": [
             1.0,
             1.0,
             0.19607843458652496,
             1.0
         ],
-        "\nRandomColorMax1": [
+        "\u0008RandomColorMax1": [
             1.0,
             1.0,
             0.3921568691730499,
             1.0
         ],
-        "\nRandomColorMax2": [
+        "\u0008RandomColorMax2": [
             0.8941176533699036,
             0.8941176533699036,
             0.03921568766236305,
             1.0
         ],
-        "\nRandomColorMax3": [
+        "\u0008RandomColorMax3": [
             1.0,
             1.0,
             1.0,
             1.0
         ],
-        "\u000bRandomColorMin0": [
+        "\u0009RandomColorMin0": [
             1.0,
             1.0,
             0.19607841968536377,
             1.0
         ],
-        "\u000bRandomColorMin1": [
+        "\u0009RandomColorMin1": [
             1.0,
             1.0,
             0.3921568691730499,
             1.0
         ],
-        "\u000bRandomColorMin2": [
+        "\u0009RandomColorMin2": [
             0.8941176533699036,
             0.8941176533699036,
             0.03921568766236305,
             1.0
         ],
-        "\u000bRandomColorMin3": [
+        "\u0009RandomColorMin3": [
             0.0,
             0.0,
             0.0,
             1.0
         ],
-        "\fLifeTime0": 0.800000011920929,
-        "\fLifeTime1": 1.0,
-        "\fLifeTime2": 0.5,
-        "\fLifeTime3": 0.5,
-        "\rIsBillboard0": true,
-        "\rIsBillboard1": true,
-        "\rIsBillboard2": false,
-        "\rIsBillboard3": true
+        "\u000ALifeTime0": 0.800000011920929,
+        "\u000ALifeTime1": 1.0,
+        "\u000ALifeTime2": 0.5,
+        "\u000ALifeTime3": 0.5,
+        "\u000BIsBillboard0": true,
+        "\u000BIsBillboard1": true,
+        "\u000BIsBillboard2": false,
+        "\u000BIsBillboard3": true
     }
 }

@@ -46,7 +46,7 @@ private:
 	GlobalVariables& operator=(const GlobalVariables& obj) = delete;
 	
 	using json = nlohmann::json;
-	using Item = std::variant<bool, int32_t, float, Vector2, Vector3, Vector4, std::string>;
+	using Item = std::variant<bool, int32_t, float, Vector2, Vector3, Vector4, std::string, Transform>;
 	using Group = std::map<std::string, Item>;
 	// 全データ
 	std::map<std::string, Group> datas_;

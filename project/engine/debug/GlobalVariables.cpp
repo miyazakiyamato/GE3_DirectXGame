@@ -74,6 +74,17 @@ void GlobalVariables::Update() {
 			else if (std::holds_alternative<std::string>(item)) {
 				std::string* ptr = std::get_if<std::string>(&item);
 				ImGui::Text((displayName + " " + *ptr).c_str());
+			} 
+			// Transform型の値を保持していれば
+			else if (std::holds_alternative<Transform>(item)) {
+				Transform* ptr = std::get_if<Transform>(&item);
+				if (ptr) {
+					ImGui::DragFloat3((displayName + ".Scale").c_str(), &ptr->scale.x, 0.01f);
+					ImGui::SliderAngle((displayName + ".Rotate.x").c_str(), &ptr->rotate.x);
+					ImGui::SliderAngle((displayName + ".Rotate.y").c_str(), &ptr->rotate.y);
+					ImGui::SliderAngle((displayName + ".Rotate.z").c_str(), &ptr->rotate.z);
+					ImGui::DragFloat3((displayName + ".Translate").c_str(), &ptr->translate.x, 0.01f);
+				}
 			}
 		}
 
@@ -185,6 +196,15 @@ void GlobalVariables::SaveFile(const std::string& groupName) {
 		else if (std::holds_alternative<std::string>(item)) {
 			// std::string型の値を登録
 			root[groupName][itemName] = std::get<std::string>(item);
+		}
+		// Transform型の値を保持していれば
+		else if (std::holds_alternative<Transform>(item)) {
+			Transform value = std::get<Transform>(item);
+			root[groupName][itemName] = json::object({
+				{"scale", {value.scale.x, value.scale.y, value.scale.z}},
+				{"rotate", {value.rotate.x, value.rotate.y, value.rotate.z}},
+				{"translate", {value.translate.x, value.translate.y, value.translate.z}}
+			});
 		}
 	}
 	
@@ -308,6 +328,17 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 			Vector4 value = { itItem->at(0), itItem->at(1), itItem->at(2),itItem->at(3) };
 			SetValue(groupName, itemName, value);
 		}
+		// Transform型の値を保持していれば
+		else if (itItem->is_object() && itItem->contains("scale") && itItem->contains("rotate") && itItem->contains("translate")) {
+			Transform value;
+			auto scaleArr = (*itItem)["scale"];
+			auto rotateArr = (*itItem)["rotate"];
+			auto translateArr = (*itItem)["translate"];
+			value.scale = { scaleArr[0], scaleArr[1], scaleArr[2] };
+			value.rotate = { rotateArr[0], rotateArr[1], rotateArr[2] };
+			value.translate = { translateArr[0], translateArr[1], translateArr[2] };
+			SetValue(groupName, itemName, value);
+		}
 		// std::string型の値を保持していれば
 		else if (itItem->is_string()) {
 			// std::string型の値を登録
@@ -333,6 +364,7 @@ template void GlobalVariables::SetValue<Vector2>(const std::string&, const std::
 template void GlobalVariables::SetValue<Vector3>(const std::string&, const std::string&, Vector3);
 template void GlobalVariables::SetValue<Vector4>(const std::string&, const std::string&, Vector4);
 template void GlobalVariables::SetValue<std::string>(const std::string&, const std::string&, std::string);
+template void GlobalVariables::SetValue<Transform>(const std::string&, const std::string&, Transform);
 
 template<typename T>
 void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, T value) {
@@ -356,6 +388,7 @@ template void GlobalVariables::AddItem<Vector2>(const std::string&, const std::s
 template void GlobalVariables::AddItem<Vector3>(const std::string&, const std::string&, Vector3);
 template void GlobalVariables::AddItem<Vector4>(const std::string&, const std::string&, Vector4);
 template void GlobalVariables::AddItem<std::string>(const std::string&, const std::string&, std::string);
+template void GlobalVariables::AddItem<Transform>(const std::string&, const std::string&, Transform);
 
 template<typename T>
 T GlobalVariables::GetValue(const std::string& groupName, const std::string& key) const{
@@ -378,3 +411,4 @@ template Vector2 GlobalVariables::GetValue<Vector2>(const std::string&, const st
 template Vector3 GlobalVariables::GetValue<Vector3>(const std::string&, const std::string&) const;
 template Vector4 GlobalVariables::GetValue<Vector4>(const std::string&, const std::string&) const;
 template std::string GlobalVariables::GetValue<std::string>(const std::string&, const std::string&) const;
+template Transform GlobalVariables::GetValue<Transform>(const std::string&, const std::string&) const;
