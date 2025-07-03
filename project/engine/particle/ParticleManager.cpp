@@ -440,8 +440,9 @@ void ParticleManager::InitializeGlobalVariables(){
 	// グループを追加
 	globalVariables->CreateGroup(groupName);
 	uint32_t objectIDIndex = 0;
-	while (globalVariables->GetValue<std::string>(groupName, "\x01Name" + std::to_string(objectIDIndex)) != "") {
-		std::string name = globalVariables->GetValue<std::string>(groupName, "\x01Name" + std::to_string(objectIDIndex));
+
+	while (globalVariables->GetValue<std::string>(groupName, "Name" + std::to_string(objectIDIndex)) != "") {
+		std::string name = globalVariables->GetValue<std::string>(groupName, "Name" + std::to_string(objectIDIndex));
 		if (particleGroups.count(name) == 0) {
 			particleGroupCreateDates_[name] = std::make_unique<ParticleGroupCreateData>();
 		}
@@ -449,17 +450,20 @@ void ParticleManager::InitializeGlobalVariables(){
 	}
 	objectIDIndex = 0;
 	for (auto& [name, group] : particleGroupCreateDates_) {
-		globalVariables->AddItem(groupName, "\x01Name" + std::to_string(objectIDIndex), name);
-		globalVariables->AddItem(groupName, "\x02TextureFilePath" + std::to_string(objectIDIndex), group->textureFilePath);
-		globalVariables->AddItem(groupName, "\x03ParticleType" + std::to_string(objectIDIndex), group->particleType);
-		globalVariables->AddItem(groupName, "\x04RandomTransformMax" + std::to_string(objectIDIndex), group->particleInitData.randomTransformMax);
-		globalVariables->AddItem(groupName, "\x05RandomTransformMin" + std::to_string(objectIDIndex), group->particleInitData.randomTransformMin);
-		globalVariables->AddItem(groupName, "\x06RandomVelocityMax" + std::to_string(objectIDIndex), group->particleInitData.randomVelocityMax);
-		globalVariables->AddItem(groupName, "\x07RandomVelocityMin" + std::to_string(objectIDIndex), group->particleInitData.randomVelocityMin);
-		globalVariables->AddItem(groupName, "\x08RandomColorMax" + std::to_string(objectIDIndex), group->particleInitData.randomColorMax);
-		globalVariables->AddItem(groupName, "\x09RandomColorMin" + std::to_string(objectIDIndex), group->particleInitData.randomColorMin);
-		globalVariables->AddItem(groupName, "\x0ALifeTime" + std::to_string(objectIDIndex), group->particleInitData.lifeTime);
-		globalVariables->AddItem(groupName, "\x0BIsBillboard" + std::to_string(objectIDIndex), group->particleInitData.isBillboard);
+		// まとめてヘッダーグループを設定
+		globalVariables->SetHeaderGroup(groupName, name);
+		globalVariables->AddItem(groupName, "Name" + std::to_string(objectIDIndex), name);
+		globalVariables->AddItem(groupName, "TextureFilePath" + std::to_string(objectIDIndex), group->textureFilePath);
+		globalVariables->AddItem(groupName, "ParticleType" + std::to_string(objectIDIndex), group->particleType);
+		globalVariables->AddItem(groupName, "RandomTransformMax" + std::to_string(objectIDIndex), group->particleInitData.randomTransformMax);
+		globalVariables->AddItem(groupName, "RandomTransformMin" + std::to_string(objectIDIndex), group->particleInitData.randomTransformMin);
+		globalVariables->AddItem(groupName, "RandomVelocityMax" + std::to_string(objectIDIndex), group->particleInitData.randomVelocityMax);
+		globalVariables->AddItem(groupName, "RandomVelocityMin" + std::to_string(objectIDIndex), group->particleInitData.randomVelocityMin);
+		globalVariables->AddItem(groupName, "RandomColorMax" + std::to_string(objectIDIndex), group->particleInitData.randomColorMax);
+		globalVariables->AddItem(groupName, "RandomColorMin" + std::to_string(objectIDIndex), group->particleInitData.randomColorMin);
+		globalVariables->AddItem(groupName, "LifeTime" + std::to_string(objectIDIndex), group->particleInitData.lifeTime);
+		globalVariables->AddItem(groupName, "IsBillboard" + std::to_string(objectIDIndex), group->particleInitData.isBillboard);
+		globalVariables->EndHeaderGroup(groupName);
 		++objectIDIndex;
 	}
 }
@@ -470,17 +474,17 @@ void ParticleManager::ApplyGlobalVariables() {
 	std::string groupName = "Particle";
 	uint32_t objectIDIndex = 0;
 	for (auto& [name, group] : particleGroupCreateDates_) {
-		group->name = globalVariables->GetValue<std::string>(groupName, "\x01Name" + std::to_string(objectIDIndex));
-		group->textureFilePath = globalVariables->GetValue<std::string>(groupName, "\x02TextureFilePath" + std::to_string(objectIDIndex));
-		group->particleType = globalVariables->GetValue<std::string>(groupName, "\x03ParticleType" + std::to_string(objectIDIndex));
-		group->particleInitData.randomTransformMax = globalVariables->GetValue<Transform>(groupName, "\x04RandomTransformMax" + std::to_string(objectIDIndex));
-		group->particleInitData.randomTransformMin = globalVariables->GetValue<Transform>(groupName, "\x05RandomTransformMin" + std::to_string(objectIDIndex));
-		group->particleInitData.randomVelocityMax = globalVariables->GetValue<Vector3>(groupName, "\x06RandomVelocityMax" + std::to_string(objectIDIndex));
-		group->particleInitData.randomVelocityMin = globalVariables->GetValue<Vector3>(groupName, "\x07RandomVelocityMin" + std::to_string(objectIDIndex));
-		group->particleInitData.randomColorMax = globalVariables->GetValue<Vector4>(groupName, "\x08RandomColorMax" + std::to_string(objectIDIndex));
-		group->particleInitData.randomColorMin = globalVariables->GetValue<Vector4>(groupName, "\x09RandomColorMin" + std::to_string(objectIDIndex));
-		group->particleInitData.lifeTime = globalVariables->GetValue<float>(groupName, "\x0ALifeTime" + std::to_string(objectIDIndex));
-		group->particleInitData.isBillboard = globalVariables->GetValue<bool>(groupName, "\x0BIsBillboard" + std::to_string(objectIDIndex));
+		group->name = globalVariables->GetValue<std::string>(groupName, "Name" + std::to_string(objectIDIndex));
+		group->textureFilePath = globalVariables->GetValue<std::string>(groupName, "TextureFilePath" + std::to_string(objectIDIndex));
+		group->particleType = globalVariables->GetValue<std::string>(groupName, "ParticleType" + std::to_string(objectIDIndex));
+		group->particleInitData.randomTransformMax = globalVariables->GetValue<Transform>(groupName, "RandomTransformMax" + std::to_string(objectIDIndex));
+		group->particleInitData.randomTransformMin = globalVariables->GetValue<Transform>(groupName, "RandomTransformMin" + std::to_string(objectIDIndex));
+		group->particleInitData.randomVelocityMax = globalVariables->GetValue<Vector3>(groupName, "RandomVelocityMax" + std::to_string(objectIDIndex));
+		group->particleInitData.randomVelocityMin = globalVariables->GetValue<Vector3>(groupName, "RandomVelocityMin" + std::to_string(objectIDIndex));
+		group->particleInitData.randomColorMax = globalVariables->GetValue<Vector4>(groupName, "RandomColorMax" + std::to_string(objectIDIndex));
+		group->particleInitData.randomColorMin = globalVariables->GetValue<Vector4>(groupName, "RandomColorMin" + std::to_string(objectIDIndex));
+		group->particleInitData.lifeTime = globalVariables->GetValue<float>(groupName, "LifeTime" + std::to_string(objectIDIndex));
+		group->particleInitData.isBillboard = globalVariables->GetValue<bool>(groupName, "IsBillboard" + std::to_string(objectIDIndex));
 		++objectIDIndex;
 	}
 }
@@ -571,7 +575,7 @@ void ParticleManager::UpdateGlobalVariables() {
 							it->second->materialData.textureFilePath = textureState[i];
 
 							group->textureFilePath = textureState[i];
-							globalVariables->SetValue(groupName, "\x02TextureFilePath" + std::to_string(objectIDIndex), group->textureFilePath);
+							globalVariables->SetValue(groupName, "TextureFilePath" + std::to_string(objectIDIndex), group->textureFilePath);
 						}
 						if (isSelected) {
 							ImGui::SetItemDefaultFocus();
@@ -579,7 +583,7 @@ void ParticleManager::UpdateGlobalVariables() {
 					}
 					ImGui::EndCombo();
 				}
-				globalVariables->SetValue(groupName, "\x03ParticleType" + std::to_string(objectIDIndex), group->particleType);
+				globalVariables->SetValue(groupName, "ParticleType" + std::to_string(objectIDIndex), group->particleType);
 			}
 			//パーティクルの発生
 			if (ImGui::Button(std::string(name + ": Emit").c_str())) {

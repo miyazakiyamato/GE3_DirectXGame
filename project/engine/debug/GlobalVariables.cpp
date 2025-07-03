@@ -3,6 +3,7 @@
 #include <WinApp.h>
 #include <iostream>
 #include <fstream>
+#include <set>
 
 GlobalVariables* GlobalVariables::GetInstance() { 
 	static GlobalVariables instance;
@@ -21,72 +22,87 @@ void GlobalVariables::Update() {
 	if (!ImGui::BeginMenuBar()) {return;}
 	//各グループについて
 	for (std::map<std::string, Group>::iterator itGroup = datas_.begin(); itGroup != datas_.end();++itGroup) {
-		//グループ名を取得
 		const std::string& groupName = itGroup->first;
-		//グループの参照を取得
 		Group& group = itGroup->second;
 
 		if (!ImGui::BeginMenu(groupName.c_str())) {continue;}
-		//各項目について
-		for (std::map<std::string, Item>::iterator itItem = group.begin(); itItem != group.end();++itItem) {
-			//各項目を取得
-			const std::string& itemName = itItem->first;
-			//項目の参照を取得
-			Item& item = itItem->second;
 
-			// 制御文字を削除した表示用の名前を生成
-			std::string displayName = itemName;
-			displayName.erase(std::remove_if(displayName.begin(), displayName.end(),
-				[](unsigned char c) { return std::iscntrl(c); }),
-				displayName.end());
+		// --- CollapsingHeaderグループ分け ---
+		// 1. ヘッダーごとにアイテムをまとめる
+		std::map<std::string, std::vector<std::string>> headerToItems;
+		const std::vector<std::string>& order = GetDisplayOrder(groupName);
+		for (const std::string& itemName : order) {
+			std::string header = GetHeaderGroup(groupName, itemName);
+			headerToItems[header].push_back(itemName);
+		}
+		// 2. 描画済み管理
+		std::set<std::string> drawn;
+		// 3. 各ヘッダーで描画
+		static std::map<std::string, bool> headerOpenStates;
+		for (auto& [header, items] : headerToItems) {
+			// 空文字列ヘッダーはグループ化しない
+			bool useHeader = !header.empty();
+			bool open = true;
+			std::string headerKey = groupName + "/" + header;
+			if (useHeader) {
+				// ImGui::CollapsingHeaderの戻り値で開閉状態を管理
+				open = ImGui::CollapsingHeader(header.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+				headerOpenStates[headerKey] = open;
+			}
+			if (open) {
+				for (const std::string& itemName : items) {
+					auto itItem = group.find(itemName);
+					if (itItem == group.end()) continue;
+					drawn.insert(itemName);
+					Item& item = itItem->second;
 
-			// bool型の値を保持していれば
-			if (std::holds_alternative<bool>(item)) {
-				bool* ptr = std::get_if<bool>(&item);
-				ImGui::Checkbox(displayName.c_str(), ptr);
-			}
-			//int32_t型の値を保持していれば
-			if (std::holds_alternative<int32_t>(item)) {
-				int32_t* ptr = std::get_if<int32_t>(&item);
-				ImGui::DragInt(displayName.c_str(), ptr, 1.0f);
-			}
-			// float型の値を保持していれば
-			else if (std::holds_alternative<float>(item)) {
-				float* ptr = std::get_if<float>(&item);
-				ImGui::DragFloat(displayName.c_str(), ptr,0.01f);
-			}
-			//Vector2型の値を保持していれば
-			else if (std::holds_alternative<Vector2>(item)) {
-				Vector2* ptr = std::get_if<Vector2>(&item);
-				ImGui::DragFloat2(displayName.c_str(), reinterpret_cast<float*>(ptr),0.01f);
-			}
-			//Vector3型の値を保持していれば
-			else if (std::holds_alternative<Vector3>(item)) {
-				Vector3* ptr = std::get_if<Vector3>(&item);
-				ImGui::DragFloat3(displayName.c_str(), reinterpret_cast<float*>(ptr),0.01f);
-			}
-			//Vector4型の値を保持していれば
-			else if (std::holds_alternative<Vector4>(item)) {
-				Vector4* ptr = std::get_if<Vector4>(&item);
-				ImGui::ColorEdit4(displayName.c_str(), reinterpret_cast<float*>(ptr));
-			}
-			//std::string型の値を保持していれば
-			else if (std::holds_alternative<std::string>(item)) {
-				std::string* ptr = std::get_if<std::string>(&item);
-				ImGui::Text((displayName + " " + *ptr).c_str());
-			} 
-			// Transform型の値を保持していれば
-			else if (std::holds_alternative<Transform>(item)) {
-				Transform* ptr = std::get_if<Transform>(&item);
-				if (ptr) {
-					ImGui::DragFloat3((displayName + ".Scale").c_str(), &ptr->scale.x, 0.01f);
-					ImGui::SliderAngle((displayName + ".Rotate.x").c_str(), &ptr->rotate.x);
-					ImGui::SliderAngle((displayName + ".Rotate.y").c_str(), &ptr->rotate.y);
-					ImGui::SliderAngle((displayName + ".Rotate.z").c_str(), &ptr->rotate.z);
-					ImGui::DragFloat3((displayName + ".Translate").c_str(), &ptr->translate.x, 0.01f);
+					std::string displayName = itemName;
+					displayName.erase(std::remove_if(displayName.begin(), displayName.end(),
+						[](unsigned char c) { return std::iscntrl(c); }),
+						displayName.end());
+
+					if (std::holds_alternative<bool>(item)) {
+						bool* ptr = std::get_if<bool>(&item);
+						ImGui::Checkbox(displayName.c_str(), ptr);
+					}
+					if (std::holds_alternative<int32_t>(item)) {
+						int32_t* ptr = std::get_if<int32_t>(&item);
+						ImGui::DragInt(displayName.c_str(), ptr, 1.0f);
+					}
+					else if (std::holds_alternative<float>(item)) {
+						float* ptr = std::get_if<float>(&item);
+						ImGui::DragFloat(displayName.c_str(), ptr,0.01f);
+					}
+					else if (std::holds_alternative<Vector2>(item)) {
+						Vector2* ptr = std::get_if<Vector2>(&item);
+						ImGui::DragFloat2(displayName.c_str(), reinterpret_cast<float*>(ptr),0.01f);
+					}
+					else if (std::holds_alternative<Vector3>(item)) {
+						Vector3* ptr = std::get_if<Vector3>(&item);
+						ImGui::DragFloat3(displayName.c_str(), reinterpret_cast<float*>(ptr),0.01f);
+					}
+					else if (std::holds_alternative<Vector4>(item)) {
+						Vector4* ptr = std::get_if<Vector4>(&item);
+						ImGui::ColorEdit4(displayName.c_str(), reinterpret_cast<float*>(ptr));
+					}
+					else if (std::holds_alternative<std::string>(item)) {
+						std::string* ptr = std::get_if<std::string>(&item);
+						ImGui::Text((displayName + " " + *ptr).c_str());
+					} 
+					else if (std::holds_alternative<Transform>(item)) {
+						Transform* ptr = std::get_if<Transform>(&item);
+						if (ptr) {
+							ImGui::DragFloat3((displayName + ".Scale").c_str(), &ptr->scale.x, 0.01f);
+							ImGui::SliderAngle((displayName + ".Rotate.x").c_str(), &ptr->rotate.x);
+							ImGui::SliderAngle((displayName + ".Rotate.y").c_str(), &ptr->rotate.y);
+							ImGui::SliderAngle((displayName + ".Rotate.z").c_str(), &ptr->rotate.z);
+							ImGui::DragFloat3((displayName + ".Translate").c_str(), &ptr->translate.x, 0.01f);
+						}
+					}
 				}
 			}
 		}
+		// --- CollapsingHeaderグループ分けここまで ---
 
 		ImGui::Text("\n");
 
@@ -102,6 +118,7 @@ void GlobalVariables::Update() {
 	ImGui::EndMenuBar();
 	ImGui::End();
 }
+
 void GlobalVariables::ShowCombo(const std::string& label, const std::vector<std::string>& items,
 	int& selectedIndex, std::function<void(const std::string&)> onSelect) {
 	if (items.empty()) return;
@@ -208,6 +225,15 @@ void GlobalVariables::SaveFile(const std::string& groupName) {
 		}
 	}
 	
+	// 表示順序も保存
+	if (displayOrders_.count(groupName)) {
+		root[groupName + "_DisplayOrder"] = displayOrders_[groupName];
+	}
+	// CollapsingHeaderグループも保存
+	if (headerGroups_.count(groupName)) {
+		root[groupName + "_HeaderGroups"] = headerGroups_[groupName];
+	}
+
 	//ディレクトリがなければ作成する
 	std::filesystem::path dir(kDirectoryPath);
 	if (!std::filesystem::exists(dir)) {
@@ -346,6 +372,23 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 			SetValue(groupName, itemName, static_cast<std::string>(value));
 		}
 	}
+
+	// 表示順序の復元
+	std::string orderKey = groupName + "_DisplayOrder";
+	if (root.contains(orderKey) && root[orderKey].is_array()) {
+		std::vector<std::string> order;
+		for (const auto& v : root[orderKey]) {
+			order.push_back(v.get<std::string>());
+		}
+		displayOrders_[groupName] = order;
+	}
+	// CollapsingHeaderグループの復元
+	std::string headerKey = groupName + "_HeaderGroups";
+	if (root.contains(headerKey) && root[headerKey].is_object()) {
+		for (auto it = root[headerKey].begin(); it != root[headerKey].end(); ++it) {
+			headerGroups_[groupName][it.key()] = it.value().get<std::string>();
+		}
+	}
 }
 
 template<typename T>
@@ -374,10 +417,19 @@ void GlobalVariables::AddItem(const std::string& groupName, const std::string& k
 	// 未登録チェック
 	assert(itGroup != datas_.end());
 	
-	std::map<std::string, Item>::iterator itItem = itGroup->second.begin();
-
+	// 既に存在しなければ追加
 	if (!itGroup->second.contains(key)) {
 		SetValue(groupName, key, value);
+		// 順序記録
+		auto& order = displayOrders_[groupName];
+		if (std::find(order.begin(), order.end(), key) == order.end()) {
+			order.push_back(key);
+		}
+		// 現在のヘッダーグループがあれば自動で割り当て
+		auto itHeader = currentHeaderGroup_.find(groupName);
+		if (itHeader != currentHeaderGroup_.end() && !itHeader->second.empty()) {
+			headerGroups_[groupName][key] = itHeader->second;
+		}
 	}
 }
 // 明示的インスタンス化
@@ -412,3 +464,39 @@ template Vector3 GlobalVariables::GetValue<Vector3>(const std::string&, const st
 template Vector4 GlobalVariables::GetValue<Vector4>(const std::string&, const std::string&) const;
 template std::string GlobalVariables::GetValue<std::string>(const std::string&, const std::string&) const;
 template Transform GlobalVariables::GetValue<Transform>(const std::string&, const std::string&) const;
+
+void GlobalVariables::SetDisplayOrder(const std::string& groupName, const std::vector<std::string>& order) {
+	displayOrders_[groupName] = order;
+}
+
+const std::vector<std::string>& GlobalVariables::GetDisplayOrder(const std::string& groupName) const {
+	static const std::vector<std::string> empty;
+	auto it = displayOrders_.find(groupName);
+	if (it != displayOrders_.end()) {
+		return it->second;
+	}
+	return empty;
+}
+
+void GlobalVariables::SetHeaderGroup(const std::string& groupName, const std::string& itemKey, const std::string& headerName) {
+	headerGroups_[groupName][itemKey] = headerName;
+}
+
+void GlobalVariables::SetHeaderGroup(const std::string& groupName, const std::string& headerName) {
+	currentHeaderGroup_[groupName] = headerName;
+}
+
+void GlobalVariables::EndHeaderGroup(const std::string& groupName) {
+	currentHeaderGroup_[groupName].clear();
+}
+
+std::string GlobalVariables::GetHeaderGroup(const std::string& groupName, const std::string& itemKey) const {
+	auto itGroup = headerGroups_.find(groupName);
+	if (itGroup != headerGroups_.end()) {
+		auto itItem = itGroup->second.find(itemKey);
+		if (itItem != itGroup->second.end()) {
+			return itItem->second;
+		}
+	}
+	return "";
+}
