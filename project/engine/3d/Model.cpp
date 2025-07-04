@@ -7,9 +7,10 @@
 
 void Model::Initialize(DirectXCommon* dxCommon, const std::string& directoryPath, const std::string& filename){
 	dxCommon_ = dxCommon;
-
-	//モデルの読み込み
-	LoadObjFile(directoryPath,"model/" + filename);
+	if (!IsPrimitive(filename)) {
+		//モデルの読み込み
+		LoadFile(directoryPath, "model/" + filename);
+	}
 	//頂点リソースを作る
 	vertexResource = dxCommon_->CreateBufferResource(sizeof(VertexData) * modelData.vertices.size());
 	//頂点バッファビューを作成する
@@ -39,6 +40,11 @@ void Model::Initialize(DirectXCommon* dxCommon, const std::string& directoryPath
 	std::memcpy(indexData, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size());//頂点データをリソースにコピー
 
 	//.objの参照しているテクスチャファイル読み込み
+	if (modelData.material.textureFilePath.empty()) {
+		//mtlファイルがない場合は、白いテクスチャを設定
+		modelData.material.textureFilePath = "white.png";
+	} 
+	//テクスチャマネージャーに読み込みを依頼
 	TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
 }
 
@@ -48,13 +54,11 @@ void Model::Draw(){
 
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView); //VBVを設定
 	commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
-	//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
-	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData.material.textureFilePath));
 	//描画！(DrawCall/ドローコール)3頂点で1つのインスタンス。インスタンスについては
 	commandList->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 }
 
-void Model::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
+void Model::LoadFile(const std::string& directoryPath, const std::string& filename) {
 	Assimp::Importer importer;
 	std::string filePath = directoryPath + "/" + filename;
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
@@ -162,4 +166,48 @@ Vector4 Model::LoadColor()
 	//	}
 	//}
 	return color;
+}
+
+bool Model::IsPrimitive(const std::string& filename){
+	if (filename == "skybox") {
+		ModelDataSkybox();
+		return true;
+	}
+	return false;
+}
+
+void Model::ModelDataSkybox(){
+	Vector3 points[8]{};
+	Vector3 min = { -1.0f,-1.0f,-1.0f };
+	Vector3 max = { 1.0f,1.0f,1.0f };
+	points[0] = max;
+	points[1] = { max.x,max.y,min.z };
+	points[2] = { max.x,min.y,max.z };
+	points[3] = { max.x,min.y,min.z };
+
+	points[4] = { min.x,max.y,min.z };
+	points[5] = { min.x,max.y,max.z };
+	points[6] = { min.x,min.y,max.z };
+	points[7] = min;
+	for (int32_t index = 0; index < 8; ++index) {
+		modelData.vertices.push_back({
+			{ points[index].x,points[index].y,points[index].z,1.0f }, // position
+			{ 0.0f,0.0f }, // texcoord
+			{ 0.0f,0.0f,-1.0f } // normal
+			});
+	}
+	modelData.indices = {
+		0, 1, 2, 2, 1, 3,
+		4, 5, 7, 7, 5, 6,
+		5, 0, 6, 6, 0, 2,
+		1, 4, 3, 3, 4, 7,
+		0, 5, 1, 1, 5, 4,
+		2, 3, 6, 6, 3, 7,
+	};
+	modelData.rootNode = Node{
+		{ { 1.0f,1.0f,1.0f },{0.0f,0.0f,0.0f,1.0f},{0.0f,0.0f,0.0f}},
+		Matrix4x4::MakeIdentity4x4(),
+		"skybox",
+		{}
+	};
 }

@@ -35,6 +35,7 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("axis/axis.obj");
 	ModelManager::GetInstance()->LoadModel("sphere/sphere.obj");*/
 	ModelManager::GetInstance()->LoadModel("terrain/terrain.obj");
+	ModelManager::GetInstance()->LoadModel("skybox");
 	/*ModelManager::GetInstance()->LoadModel("plane/plane.gltf");*/
 
 	ModelManager::GetInstance()->LoadModel("AnimatedCube/AnimatedCube.gltf");
@@ -48,10 +49,19 @@ void GameScene::Initialize(){
 
 	TextureManager::GetInstance()->LoadTexture("circle2.png");
 	TextureManager::GetInstance()->LoadTexture("gradationLine.png");
+	TextureManager::GetInstance()->LoadTexture("rostock_laage_airport_4k.dds");
 
 	//衝突マネージャの生成
 	collisionManager_ = std::make_unique<CollisionManager>();
 	collisionManager_->Initialize();
+
+	//skybox
+	std::unique_ptr<Object3d> object3d(new Object3d);
+	object3d->Initialize();
+	object3d->SetScale({ 1000.0f,1000.0f,1000.0f });
+	object3d->SetModel("skybox");
+	object3d->SetTexture("rostock_laage_airport_4k.dds");
+	object3ds_.push_back(std::move(object3d));
 
 	//レベルデータマネージャの生成
 	levelDataManager_ = std::make_unique<LevelDataManager>();
@@ -85,7 +95,7 @@ void GameScene::Initialize(){
 			}
 		}
 	}
-
+	
 
 	/*object3ds_[0]->SetModel("AnimatedCube/AnimatedCube.gltf");
 	object3ds_[0]->SetAnimation("AnimatedCube/AnimatedCube.gltf",true);*/
@@ -257,46 +267,47 @@ void GameScene::Update(){
 				
 				size_t object3dCount = 0;
 				for (std::unique_ptr<Object3d>& object3d : object3ds_) {
-					int Object3dItem_selected_idx = static_cast<int>(object3d->GetBlendMode());
-					const char* currentItem = blendState[Object3dItem_selected_idx].c_str();
-					if (ImGui::BeginCombo((blendName + std::to_string(object3dCount)).c_str(), currentItem)) {
-						for (int i = 0; i < blendState.size(); ++i) {
-							bool isSelected = (Object3dItem_selected_idx == i);
-							if (ImGui::Selectable(blendState[i].c_str(), isSelected)) {
-								Object3dItem_selected_idx = i;
-								object3d->SetBlendMode(static_cast<BlendMode>(i));
+					if (ImGui::CollapsingHeader(("Object3d" + std::to_string(object3dCount)).c_str())) {
+						int Object3dItem_selected_idx = static_cast<int>(object3d->GetBlendMode());
+						const char* currentItem = blendState[Object3dItem_selected_idx].c_str();
+						if (ImGui::BeginCombo((blendName + std::to_string(object3dCount)).c_str(), currentItem)) {
+							for (int i = 0; i < blendState.size(); ++i) {
+								bool isSelected = (Object3dItem_selected_idx == i);
+								if (ImGui::Selectable(blendState[i].c_str(), isSelected)) {
+									Object3dItem_selected_idx = i;
+									object3d->SetBlendMode(static_cast<BlendMode>(i));
+								}
+								if (isSelected) {
+									ImGui::SetItemDefaultFocus();
+								}
 							}
-							if (isSelected) {
-								ImGui::SetItemDefaultFocus();
-							}
+							ImGui::EndCombo();
 						}
-						ImGui::EndCombo();
+
+						Vector3 translate = object3d->GetTranslate();
+						ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Translate").c_str(), &translate.x, 0.1f);
+
+						Vector3 rotate = object3d->GetRotate();
+						ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.x").c_str(), &rotate.x);
+						ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.y").c_str(), &rotate.y);
+						ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.z").c_str(), &rotate.z);
+
+						Vector3 scale = object3d->GetScale();
+						ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Scale").c_str(), &scale.x, 0.1f);
+
+						Vector4 color = object3d->GetColor();
+						ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".Color").c_str(), &color.x);
+
+						Vector4 highLightColor = object3d->GetHighLightColor();
+						ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".HighLightColor").c_str(), &highLightColor.x);
+
+						object3d->SetTranslate(translate);
+						object3d->SetRotate(rotate);
+						object3d->SetScale(scale);
+						object3d->SetColor(color);
+						object3d->SetHighLightColor(highLightColor);
+
 					}
-
-					Vector3 translate = object3d->GetTranslate();
-					ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Translate").c_str(), &translate.x, 0.1f);
-
-					Vector3 rotate = object3d->GetRotate();
-					ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.x").c_str(), &rotate.x);
-					ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.y").c_str(), &rotate.y);
-					ImGui::SliderAngle(("Object3d " + std::to_string(object3dCount) + ".Transform.Rotate.z").c_str(), &rotate.z);
-
-					Vector3 scale = object3d->GetScale();
-					ImGui::DragFloat3(("Object3d " + std::to_string(object3dCount) + ".Transform.Scale").c_str(), &scale.x, 0.1f);
-
-					Vector4 color = object3d->GetColor();
-					ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".Color").c_str(), &color.x);
-
-					Vector4 highLightColor = object3d->GetHighLightColor();
-					ImGui::ColorEdit4(("Object3d " + std::to_string(object3dCount) + ".HighLightColor").c_str(), &highLightColor.x);
-
-					object3d->SetTranslate(translate);
-					object3d->SetRotate(rotate);
-					object3d->SetScale(scale);
-					object3d->SetColor(color);
-					object3d->SetHighLightColor(highLightColor);
-					
-					ImGui::Text("\n");
 					object3dCount++;
 				}
 				ImGui::EndMenu();

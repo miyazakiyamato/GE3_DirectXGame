@@ -4,6 +4,7 @@
 #include "PipelineManager.h"
 #include "TimeManager.h"
 #include "Line3D.h"
+#include "TextureManager.h"
 #include <numbers>
 
 void Object3d::Initialize(){
@@ -108,16 +109,19 @@ void Object3d::Draw(){
 		if (skinClusterData_) {
 			skinClusterData_->Draw();
 		} 
-
-		//wvp用のCBufferの場所を設定
-		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 		//マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
-		//カメラCBufferの場所を設定
-		commandList->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
+		//wvp用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
+		//テクスチャを設定
+		commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureFilePath_));
+		if (!isSkybox_) {
+			//カメラCBufferの場所を設定
+			commandList->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
+			//ライトマネージャーのデータを設定
+			lightManager_->Draw();
+		}
 		
-		lightManager_->Draw();
-
 		model_->Draw();
 
 		//Skeleton
@@ -131,6 +135,16 @@ void Object3d::Draw(){
 void Object3d::SetModel(const std::string& filePath){
 	//モデルを検索してセット
 	model_ = ModelManager::GetInstance()->FindModel(filePath);
+	textureFilePath_ = model_->GetModelData().material.textureFilePath;
+	if (filePath == "skybox") {
+		//パイプラインを設定
+		PipelineState pipelineState;
+		pipelineState.shaderName = "Skybox";
+		pipelineState.depthMode = DepthMode::kReadOnly; //深度テストを読み取り専用にする
+		pipelineState.blendMode = blendMode_;
+		pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
+		isSkybox_ = true;
+	}
 	//マテリアルデータの初期値を書き込む
 	materialData->color = model_->LoadColor();//色を書き込む
 	materialData->enableLighting = true;//Lightingを有効にする
@@ -165,6 +179,9 @@ void Object3d::SetBlendMode(BlendMode blendMode){
 	PipelineState pipelineState;
 	if (skinClusterData_) {
 		pipelineState.shaderName = "SkinningObject3d";
+	} else if (isSkybox_) {
+		pipelineState.shaderName = "Skybox";
+		pipelineState.depthMode = DepthMode::kReadOnly;
 	} else {
 		pipelineState.shaderName = "Object3d";
 	}

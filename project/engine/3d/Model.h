@@ -36,7 +36,6 @@ public:
 		std::vector<Node> children;
 	};
 	struct MaterialData {
-		std::string mtlFilePath;
 		std::string textureFilePath;
 	};
 	struct VertexWeightData {
@@ -60,13 +59,16 @@ public://メンバ関数
 	void Initialize(DirectXCommon* dxCommon, const std::string& directoryPath, const std::string& filename);
 	//描画
 	void Draw();
-	//.objファイルの読み取り
-	void LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	//ファイルの読み取り
+	void LoadFile(const std::string& directoryPath, const std::string& filename);
 	//Node解析
 	Node ReadNode(aiNode* node);
 	//カラー
 	Vector4 LoadColor();
 private:
+	bool IsPrimitive(const std::string& filename);
+	void ModelDataSkybox();
+private://メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	//Objファイルのデータ
 	ModelData modelData;
