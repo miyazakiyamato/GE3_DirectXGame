@@ -15,17 +15,42 @@ bl_info = {
 # メニュー項目描画
 def draw_menu_manual(self, context):
     self.layout.operator("wm.url_open_preset", text = "Manual", icon = 'HELP')
+#オペレータ 頂点を伸ばす
+class MYADDON_OT_stretch_vertex(bpy.types.Operator):
+    bl_idname = "myaddon.myaddon_ot_stretch_vertex"     #Blenderがクラスを識別する為の固有の文字列
+    bl_label = "頂点を伸ばす"                            #メニューのラベルとして表示される文字列
+    bl_description = "頂点座標を引っ張って伸ばします"      #説明表示用の文字列
+    bl_options = {'REGISTER','UNDO'}                     #REDO,UNDO可能オプション
+    #メニューを実行したときに呼ばれるコールバック関数
+    def execute(self,context):
+        bpy.data.objects["Cube"].data.vertices[0].co.x += 1.0
+        print("頂点を伸ばしました。")
+        #オペレータの命令終了を通知
+        return {'FINISHED'}
+#オペレータ ICO球生成
+class MYADDON_OT_create_ico_sphere(bpy.types.Operator):
+    bl_idname = "myaddon.myaddon_ot_create_object"     #Blenderがクラスを識別する為の固有の文字列
+    bl_label = "ICO球生成"                              #メニューのラベルとして表示される文字列
+    bl_description = "ICO球を生成します"                 #説明表示用の文字列
+    bl_options = {'REGISTER','UNDO'}                    #REDO,UNDO可能オプション
+    #メニューを実行したときに呼ばれるコールバック関数
+    def execute(self,context):
+        bpy.ops.mesh.primitive_ico_sphere_add()
+        print("ICO球を生成しました。")
+        #オペレータの命令終了を通知
+        return {'FINISHED'}
 # トップバーの拡張メニュー
 class TOPBAR_MT_my_menu(bpy.types.Menu):
-    #Blenderがクラスを識別する為の固有の文字列
-    bl_idname = "TOPBAR_MT_my_menu"
-    #メニューのラベルとして表示される文字列
-    bl_label = "MyMenu"
-    #著者表示用の文字列
-    bl_description = "拡張メニュー by " + bl_info["author"]
+    bl_idname = "TOPBAR_MT_my_menu"                        #Blenderがクラスを識別する為の固有の文字列
+    bl_label = "MyMenu"                                    #メニューのラベルとして表示される文字列
+    bl_description = "拡張メニュー by " + bl_info["author"] #著者表示用の文字列
     # サブメニューの描画
     def draw(self,context):
         # トップバーの「エディターメニュー」に項目（オペレーター）を追加
+        self.layout.operator(MYADDON_OT_stretch_vertex.bl_idname,
+                             text = MYADDON_OT_stretch_vertex.bl_label)
+        self.layout.operator(MYADDON_OT_create_ico_sphere.bl_idname,
+                             text = MYADDON_OT_create_ico_sphere.bl_label)
         self.layout.operator("wm.url_open_preset",text = "Manual",icon = 'HELP')
     # 既存のメニューにサブメニューを追加
     def submenu(self,context):
@@ -33,6 +58,8 @@ class TOPBAR_MT_my_menu(bpy.types.Menu):
         self.layout.menu(TOPBAR_MT_my_menu.bl_idname)
 #Blenderに登録するクラスリスト
 classes = (
+    MYADDON_OT_stretch_vertex,
+    MYADDON_OT_create_ico_sphere,
     TOPBAR_MT_my_menu,
 )
 # Add-On有効化時コールバック
