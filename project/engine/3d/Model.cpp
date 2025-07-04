@@ -204,4 +204,10 @@ void Model::ModelDataSkybox(){
 		0, 5, 1, 1, 5, 4,
 		2, 3, 6, 6, 3, 7,
 	};
+	modelData.rootNode = Node{
+		{ { 1.0f,1.0f,1.0f },{0.0f,0.0f,0.0f,1.0f},{0.0f,0.0f,0.0f}},
+		Matrix4x4::MakeIdentity4x4(),
+		"skybox",
+		{}
+	};
 }
