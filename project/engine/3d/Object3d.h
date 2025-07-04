@@ -46,6 +46,7 @@ private://メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 
 	Model* model_ = nullptr;
+	std::string textureFilePath_ = "";
 	BlendMode blendMode_ = BlendMode::kNormal;
 	std::string pipelineStateName_ = "";
 	//バッファリソース
@@ -67,6 +68,7 @@ private://メンバ変数
 
 	Object3d* parent_ = nullptr;
 
+	bool isSkybox_ = false; //!< SkyBoxかどうか
 public://ゲッターセッター
 	const BlendMode& GetBlendMode() { return blendMode_; }
 	const Vector3& GetScale() const { return transform.scale; }
@@ -77,6 +79,7 @@ public://ゲッターセッター
 	Vector3 GetCenterPosition() const;
 	const Matrix4x4& GetWorldMatrix() const { return wvpData->World; }
 
+	void SetTexture(std::string textureFilePath) { textureFilePath_ = textureFilePath; }
 	void SetModel(const std::string& filePath);
 	void SetAnimation(const std::string& filePath,bool isLoop);
 	void SetBlendMode(BlendMode blendMode);

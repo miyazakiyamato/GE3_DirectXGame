@@ -291,6 +291,9 @@
     <ClCompile Include="engine\base\TimeManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
+    <ClCompile Include="engine\3d\SkyboxPipeline.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -419,12 +422,6 @@
     <ClInclude Include="engine\3d\Line3DPipeline.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Skeleton.h">
-      <Filter>ソース ファイル\engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\3d\Animation.h">
-      <Filter>ソース ファイル\engine\3d</Filter>
-    </ClInclude>
     <ClInclude Include="engine\3d\SkinCluster.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
@@ -467,6 +464,15 @@
     <ClInclude Include="engine\base\TimeManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
+    <ClInclude Include="engine\3d\Animation.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\Skeleton.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\SkyboxPipeline.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Object3d.hlsli">
@@ -498,6 +504,9 @@
     </None>
     <None Include="resources\shaders\OffScreen\Vignette.hlsli">
       <Filter>シェーダーファイル\OffScreen</Filter>
+    </None>
+    <None Include="resources\shaders\Skybox.hlsli">
+      <Filter>シェーダーファイル</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -560,6 +569,12 @@
     </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\Vignette.VS.hlsl">
       <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\Skybox.PS.hlsl">
+      <Filter>シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\Skybox.VS.hlsl">
+      <Filter>シェーダーファイル</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
