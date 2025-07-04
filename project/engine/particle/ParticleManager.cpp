@@ -422,7 +422,7 @@ void ParticleManager::Emit(const std::string name, const Vector3& position, uint
 		// Transformの各要素をランダム化
 		particle.transform.scale = Vector3::Random(randomEngine_, group.particleInitData.randomTransformMin.scale, group.particleInitData.randomTransformMax.scale);
 		particle.transform.rotate = Vector3::Random(randomEngine_, group.particleInitData.randomTransformMin.rotate, group.particleInitData.randomTransformMax.rotate);
-		particle.transform.translate = position;
+		particle.transform.translate = Vector3(position) + Vector3::Random(randomEngine_, group.particleInitData.randomTransformMin.translate, group.particleInitData.randomTransformMax.translate);
 		particle.uvTransform.scale = {1.0f,1.0f,1.0f};
 		particle.uvTransform.rotate = { 0.0f,0.0f,0.0f };
 		particle.uvTransform.translate = {0.0f,0.0f,0.0f};
