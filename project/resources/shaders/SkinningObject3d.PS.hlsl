@@ -6,6 +6,8 @@ struct Material{
     float32_t4x4 uvTransform;
     int32_t enableLighting;
     float32_t shininess;
+    int32_t enableEnvironmentMap; // 環境マップを使用するかどうか
+    float32_t environmentCoefficient; // 環境マップの寄与度
 };
 ConstantBuffer<Material> gMaterial : register(b0);
 
@@ -26,6 +28,7 @@ ConstantBuffer<Camera> gCamera : register(b2);
 
 Texture2D<float32_t4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
+TextureCube<float4> gEnvironmentTexture : register(t3); // 環境マップ用テクスチャ
 
 struct PointLight{
     float32_t4 color; //!<ライトの色
@@ -121,19 +124,20 @@ PixelShaderOutput main(VertexShaderOutput input){
     if (textureColor.a <= 0.5){ discard;}
     
     //outputカラー
-    if (gMaterial.enableLighting != 0){ //Lightingする場合
+    if (gMaterial.enableLighting != 0)
+    { //Lightingする場合
         //DirectionalLight
         //拡散反射
         float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
         float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
         float32_t3 diffuse = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
         //鏡面反射
-        float32_t3 specular = Specular(input,gDirectionalLight.direction,gDirectionalLight.color.rgb * gDirectionalLight.intensity);
+        float32_t3 specular = Specular(input, gDirectionalLight.direction, gDirectionalLight.color.rgb * gDirectionalLight.intensity);
         
         float32_t3 directionalLightCollor = diffuse + specular;
         
         //PointLight
-        float32_t3 pointLightColor = float32_t3(0.0f,0.0f,0.0f);
+        float32_t3 pointLightColor = float32_t3(0.0f, 0.0f, 0.0f);
         for (uint32_t i = 0; i < gDirectionalLight.PointLightCount; ++i)
         {
             pointLightColor += MakePointLightColor(input, textureColor, gPointLight[i]);
@@ -149,6 +153,13 @@ PixelShaderOutput main(VertexShaderOutput input){
         //拡散反射・鏡面反射
         output.color.rgb = directionalLightCollor + pointLightColor + spotLightColor;
         output.color.a = gMaterial.color.a * textureColor.a;
+        if (gMaterial.enableEnvironmentMap){
+            //環境マップ
+            float32_t3 cameraToPosition = normalize(input.worldPosition - gCamera.worldPosition);
+            float32_t3 reflectedVector = reflect(cameraToPosition, normalize(input.normal));
+            float32_t4 environmentColor = gEnvironmentTexture.Sample(gSampler, reflectedVector);
+            output.color.rgb += environmentColor.rgb * gMaterial.environmentCoefficient;
+        }
     }
     else{
         output.color = gMaterial.color * textureColor;

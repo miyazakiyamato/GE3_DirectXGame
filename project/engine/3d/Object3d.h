@@ -21,9 +21,10 @@ private:
 		Vector4 color{1,1,1,1};
 		Vector4 highLightColor{ 1,1,1,1 };
 		Matrix4x4 uvTransform;
-		int enableLighting;
-		float shininess;
-		float padding[2];
+		int enableLighting; // ライティングを有効にするかどうか
+		float shininess; // シェーダーの光沢度
+		int enableEnvironmentMap; // 環境マップを有効にするかどうか
+		float environmentCoefficient; // 環境マップの寄与度
 	};
 	struct CameraForGpu {
 		Vector3 worldPosition;
@@ -68,7 +69,9 @@ private://メンバ変数
 
 	Object3d* parent_ = nullptr;
 
+	bool isDrawSkeleton_ = false; //!< Skeletonを描画するかどうか
 	bool isSkybox_ = false; //!< SkyBoxかどうか
+	std::string environmentTextureFilePath_ = "";
 public://ゲッターセッター
 	const BlendMode& GetBlendMode() { return blendMode_; }
 	const Vector3& GetScale() const { return transform.scale; }
@@ -78,8 +81,14 @@ public://ゲッターセッター
 	const Vector4& GetHighLightColor() const { return materialData->highLightColor; }
 	Vector3 GetCenterPosition() const;
 	const Matrix4x4& GetWorldMatrix() const { return wvpData->World; }
+	bool GetEnableLighting() const { return materialData->enableLighting; }
+	float GetShininess() const { return materialData->shininess; }
+	bool GetEnableEnvironmentMap() const { return materialData->enableEnvironmentMap; }
+	float GetEnvironmentCoefficient() const { return materialData->environmentCoefficient; }
 
+	void SetParent(Object3d* parent) { parent_ = parent; }
 	void SetTexture(std::string textureFilePath) { textureFilePath_ = textureFilePath; }
+	void SetEnvironmentTexture(const std::string& cubeTextureFilePath);
 	void SetModel(const std::string& filePath);
 	void SetAnimation(const std::string& filePath,bool isLoop);
 	void SetBlendMode(BlendMode blendMode);
@@ -88,6 +97,10 @@ public://ゲッターセッター
 	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
 	void SetColor(const Vector4& color) { materialData->color = color; }
 	void SetHighLightColor(const Vector4& color) { materialData->highLightColor = color; }
-	void SetParent(Object3d* parent) { parent_ = parent; }
+	void SetEnableLighting(bool enable) { materialData->enableLighting = enable; }
+	void SetShininess(float shininess) { materialData->shininess = shininess; }
+	void SetEnableEnvironmentMap(bool enable) { materialData->enableEnvironmentMap = enable; }
+	void SetEnvironmentCoefficient(float coefficient) {materialData->environmentCoefficient = coefficient;}
+	void SetDrawSkeleton(bool isDraw) { isDrawSkeleton_ = isDraw; }
 };
 

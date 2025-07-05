@@ -6,16 +6,17 @@ using namespace Logger;
 
 std::vector<D3D12_DESCRIPTOR_RANGE> SkinningObject3dPipeline::DescriptorRanges() {
 	std::vector<D3D12_DESCRIPTOR_RANGE> descriptorRanges = {};
-	descriptorRanges.resize(3);
+	descriptorRanges.resize(4);
 	descriptorRanges[0] = CreateDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1);//テクスチャ
-	descriptorRanges[1] = CreateDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);//DirectionalLight
-	descriptorRanges[2] = CreateDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1);//PointLight
+	descriptorRanges[1] = CreateDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);//PointLight
+	descriptorRanges[2] = CreateDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1);//SpotLight
+	descriptorRanges[3] = CreateDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 1);//環境マップ
 	return descriptorRanges;
 }
 
 std::vector<D3D12_ROOT_PARAMETER> SkinningObject3dPipeline::RootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges) {
 	std::vector<D3D12_ROOT_PARAMETER> rootParameters = {};
-	rootParameters.resize(8);
+	rootParameters.resize(9);
 	rootParameters[0] = CreateRootParameterCBV(D3D12_SHADER_VISIBILITY_PIXEL, 0);//マテリアル
 	rootParameters[1] = CreateRootParameterCBV(D3D12_SHADER_VISIBILITY_VERTEX, 0);//wvp
 	rootParameters[2] = CreateRootParameterTable(D3D12_SHADER_VISIBILITY_PIXEL, descriptorRanges[0], 1);//テクスチャ
@@ -23,7 +24,8 @@ std::vector<D3D12_ROOT_PARAMETER> SkinningObject3dPipeline::RootParameters(const
 	rootParameters[4] = CreateRootParameterCBV(D3D12_SHADER_VISIBILITY_PIXEL, 2);//camera
 	rootParameters[5] = CreateRootParameterTable(D3D12_SHADER_VISIBILITY_PIXEL, descriptorRanges[1], 1);//PointLight
 	rootParameters[6] = CreateRootParameterTable(D3D12_SHADER_VISIBILITY_PIXEL, descriptorRanges[2], 1);//SpotLight
-	rootParameters[7] = CreateRootParameterTable(D3D12_SHADER_VISIBILITY_VERTEX, descriptorRanges[0], 1);//MatrixPalette
+	rootParameters[7] = CreateRootParameterTable(D3D12_SHADER_VISIBILITY_PIXEL, descriptorRanges[3], 1);//環境マップ
+	rootParameters[8] = CreateRootParameterTable(D3D12_SHADER_VISIBILITY_VERTEX, descriptorRanges[0], 1);//MatrixPalette
 	return rootParameters;
 }
 

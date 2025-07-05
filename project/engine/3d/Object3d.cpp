@@ -120,16 +120,25 @@ void Object3d::Draw(){
 			commandList->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
 			//ライトマネージャーのデータを設定
 			lightManager_->Draw();
+			if (materialData->enableEnvironmentMap) {
+				//環境マップテクスチャを設定
+				commandList->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvHandleGPU(environmentTextureFilePath_));
+			}
 		}
-		
+
 		model_->Draw();
 
 		//Skeleton
-		if (skeletonData_) {
+		if (skeletonData_ && isDrawSkeleton_) {
 			skeletonData_->Draw(wvpData->World);
 		}
 	}
 
+}
+
+void Object3d::SetEnvironmentTexture(const std::string& cubeTextureFilePath) {
+	environmentTextureFilePath_ = cubeTextureFilePath;
+	materialData->enableEnvironmentMap = true; // 環境マップを有効にする
 }
 
 void Object3d::SetModel(const std::string& filePath){
@@ -151,6 +160,8 @@ void Object3d::SetModel(const std::string& filePath){
 	materialData->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
 	materialData->shininess = 40.0f;
 	materialData->highLightColor = { 1.0f,1.0f,1.0f,1.0f };
+	materialData->enableEnvironmentMap = false; // 環境マップを無効にする
+	materialData->environmentCoefficient = 1.0f; // 環境マップの寄与度を初期化
 }
 
 void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
@@ -199,3 +210,4 @@ Vector3 Object3d::GetCenterPosition() const
 
 	return worldPos;
 }
+
