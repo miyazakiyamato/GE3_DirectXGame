@@ -63,5 +63,5 @@ void SkinCluster::Update(Skeleton* skeleton){
 void SkinCluster::Draw(){
 	ID3D12GraphicsCommandList* commandList = ModelManager::GetInstance()->GetDirectXCommon()->GetCommandList();
 	commandList->IASetVertexBuffers(1, 1, &influenceBufferView_);//VBVを設定
-	commandList->SetGraphicsRootDescriptorTable(7, paletteSrvHandle_.second);
+	commandList->SetGraphicsRootDescriptorTable(8, paletteSrvHandle_.second);
 }
