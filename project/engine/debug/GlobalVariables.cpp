@@ -46,7 +46,7 @@ void GlobalVariables::Update() {
 			std::string headerKey = groupName + "/" + header;
 			if (useHeader) {
 				// ImGui::CollapsingHeaderの戻り値で開閉状態を管理
-				open = ImGui::CollapsingHeader(header.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+				open = ImGui::CollapsingHeader(header.c_str());
 				headerOpenStates[headerKey] = open;
 			}
 			if (open) {

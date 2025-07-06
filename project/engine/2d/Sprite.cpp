@@ -1,6 +1,7 @@
 #include "Sprite.h"
 #include "PipelineManager.h"
 #include "TextureManager.h"
+#include <imgui.h>
 
 void Sprite::Initialize(std::string textureFilePath){
 	textureFilePath_ = textureFilePath;
@@ -134,6 +135,76 @@ void Sprite::Draw(){
 	//描画！(DrawColl/ドローコール)
 	//commandList->DrawInstanced(6, 1, 0, 0);
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+}
+
+void Sprite::ImGuiUpdate(const std::string& name){
+
+	std::string groupName = "Sprite";
+	if (ImGui::BeginMenu(groupName.c_str())) {
+		if (ImGui::CollapsingHeader(name.c_str())) {
+			std::string blendName = ":Now Blend";
+			std::vector<std::string> blendState{
+				"None",      //!< ブレンドなし
+				"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
+				"Add",       //!< 加算。Src * SrcA + Dest * 1
+				"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
+				"Multiply",  //!< 乗算。Src * 0 + Dest * Src
+				"Screen", };
+			int SpriteItem_selected_idx = static_cast<int>(blendMode_);
+			const char* currentItem = blendState[SpriteItem_selected_idx].c_str();
+			if (ImGui::BeginCombo((name + blendName).c_str(), currentItem)) {
+				for (int i = 0; i < blendState.size(); ++i) {
+					bool isSelected = (SpriteItem_selected_idx == i);
+					if (ImGui::Selectable(blendState[i].c_str(), isSelected)) {
+						SpriteItem_selected_idx = i;
+						SetBlendMode(static_cast<BlendMode>(i));
+					}
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndCombo();
+			}
+			//テクスチャのキーを取得
+			std::string textureName = name + ": Now Texture";
+			std::vector<std::string> textureState = TextureManager::GetInstance()->GetKeys();
+			//テクスチャ選択
+			std::string textureItem_selected_idx = textureFilePath_;
+			currentItem = textureItem_selected_idx.c_str();
+			if (ImGui::BeginCombo((textureName + name).c_str(), currentItem)) {
+				for (int i = 0; i < textureState.size(); ++i) {
+					bool isSelected = (textureItem_selected_idx == textureState[i]);
+					if (ImGui::Selectable(textureState[i].c_str(), isSelected)) {
+						textureFilePath_ = textureState[i];
+					}
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::DragFloat2((name + ".Translate").c_str(), &position_.x, 1.0f, 0.0f, 1280.0f, "%.1f");
+			if (position_.y > 720.0f) {
+				position_.y = 720.0f;
+			}
+
+			ImGui::SliderAngle((name + ".Rotate").c_str(), &rotation_);
+
+			ImGui::DragFloat2((name + ".Scale").c_str(), &size_.x, 1.0f, 0.0f, 1280.0f, "%.1f");
+			if (size_.y > 720.0f) {
+				size_.y = 720.0f;
+			}
+
+			ImGui::ColorEdit4((name + ".Color").c_str(), &materialData->color.x);
+
+			ImGui::Checkbox((name + ".FlipX").c_str(), &isFlipX_);
+			ImGui::Checkbox((name + ".FlipY").c_str(), &isFlipY_);
+			ImGui::DragFloat2((name + ".AnchorPoint").c_str(), &anchorPoint_.x, 0.01f, 0.0f, 1.0f, "%.2f");
+
+		}
+		ImGui::EndMenu();
+	}
 }
 
 void Sprite::AdjustTextureSize(){

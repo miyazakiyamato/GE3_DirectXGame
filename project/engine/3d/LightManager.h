@@ -48,7 +48,8 @@ public://メンバ関数
 	void Draw();
 	//終了
 	void Finalize();
-
+	//ImGuiでの編集用
+	void ImGuiUpdate();
 private://シングルインスタンス
 	static LightManager* instance;
 

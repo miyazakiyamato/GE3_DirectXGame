@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include "Camera.h"
 
 class CameraManager{
@@ -11,7 +11,8 @@ public:
 	void Initialize();
 	//終了
 	void Finalize();
-
+	//ImGuiでの編集用
+	void ImGuiUpdate();
 	//カメラの生成
 	void SetCamera(const std::string& cameraName);
 	//カメラの検索
@@ -25,7 +26,7 @@ private:
 	CameraManager& operator=(CameraManager&) = delete;
 private:
 	//カメラデータ
-	std::map<std::string, std::unique_ptr<Camera>> cameras;
+	std::unordered_map<std::string, std::unique_ptr<Camera>> cameras;
 
 	std::string nowCameraName_ = "";
 	Camera* camera_ = nullptr;

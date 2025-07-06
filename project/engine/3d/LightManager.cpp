@@ -3,6 +3,7 @@
 #include <numbers>
 #include "DirectXCommon.h"
 #include "SrvManager.h"
+#include <imgui.h>
 
 LightManager* LightManager::instance = nullptr;
 
@@ -77,6 +78,58 @@ void LightManager::Draw(){
 void LightManager::Finalize() {
 	delete instance;
 	instance = nullptr;
+}
+
+void LightManager::ImGuiUpdate(){
+	std::string groupName = "Light";
+	if (ImGui::BeginMenu(groupName.c_str())) {
+		ImGui::ColorEdit4("DirectionalLight.Color", &directionalLightData_->color.x);
+		ImGui::DragFloat3("DirectionalLight.Direction", &directionalLightData_->direction.x, 0.01f);
+		directionalLightData_->direction = directionalLightData_->direction.Normalize();
+		ImGui::DragFloat("DirectionalLight.Intensity", &directionalLightData_->intensity, 0.01f);
+		bool IsBlinnPhong = (bool)directionalLightData_->isBlinnPhong;
+		ImGui::Checkbox("IsBlinnPhong", &IsBlinnPhong);
+		directionalLightData_->isBlinnPhong = IsBlinnPhong;
+
+		ImGui::SliderInt("PointLightCount", &directionalLightData_->pointLightCount, 0, 10);
+		ImGui::SliderInt("SpotLightCount", &directionalLightData_->spotLightCount, 0, 10);
+
+		ImGui::Text("\n");
+		uint32_t idIndex = 0;
+		for (uint32_t index = 0; index < LightManager::GetInstance()->GetPointLightCount(); index++) {
+			std::string name = "PointLight" + std::to_string(index);
+			if (ImGui::CollapsingHeader(name.c_str())) {
+				ImGui::PushID(idIndex);
+				ImGui::ColorEdit4("PointLight.Color", &pointLightData_[index].color.x);
+				ImGui::DragFloat3("PointLight.Position", &pointLightData_[index].position.x, 0.01f);
+				ImGui::DragFloat("PointLight.Intensity", &pointLightData_[index].intensity, 0.01f);
+				ImGui::DragFloat("PointLight.Radius", &pointLightData_[index].radius, 0.01f);
+				ImGui::DragFloat("PointLight.Decay", &pointLightData_[index].decay, 0.01f);
+				ImGui::PopID();
+			}
+			++idIndex;
+		}
+		ImGui::Text("\n");
+		idIndex = 0;
+		for (uint32_t index = 0; index < LightManager::GetInstance()->GetSpotLightCount(); index++) {
+			std::string name = "SpotLight" + std::to_string(index);
+			if (ImGui::CollapsingHeader(name.c_str())) {
+				ImGui::PushID(idIndex);
+				ImGui::ColorEdit4("SpotLight.Color", &spotLightData_[index].color.x);
+				ImGui::DragFloat3("SpotLight.Position", &spotLightData_[index].position.x, 0.01f);
+				ImGui::DragFloat("SpotLight.Intensity", &spotLightData_[index].intensity, 0.01f);
+				ImGui::DragFloat3("SpotLight.Direction", &spotLightData_[index].direction.x, 0.01f);
+				spotLightData_[index].direction = spotLightData_[index].direction.Normalize();
+				ImGui::DragFloat("SpotLight.Distance", &spotLightData_[index].distance, 0.01f);
+				ImGui::DragFloat("SpotLight.Decay", &spotLightData_[index].decay, 0.01f);
+				ImGui::DragFloat("SpotLight.CosAngle", &spotLightData_[index].cosAngle, 0.01f);
+				ImGui::DragFloat("SpotLight.CosFalloff", &spotLightData_[index].cosFalloffStart, 0.01f);
+				ImGui::PopID();
+			}
+			++idIndex;
+		}
+		ImGui::EndMenu();
+	}
 }
 
 void LightManager::SetDirectionalLight(const DirectionalLight& directionalLight){
