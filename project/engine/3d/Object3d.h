@@ -17,15 +17,6 @@ private:
 		Matrix4x4 World;
 		Matrix4x4 WorldInverseTranspose;
 	};
-	struct Material {
-		Vector4 color{1,1,1,1};
-		Vector4 highLightColor{ 1,1,1,1 };
-		Matrix4x4 uvTransform;
-		int enableLighting; // ライティングを有効にするかどうか
-		float shininess; // シェーダーの光沢度
-		int enableEnvironmentMap; // 環境マップを有効にするかどうか
-		float environmentCoefficient; // 環境マップの寄与度
-	};
 	struct CameraForGpu {
 		Vector3 worldPosition;
 		float padding;
@@ -35,7 +26,6 @@ private:
 		float time = 0.0f;
 		bool isLoop = false;
 	};
-
 public://メンバ関数
 	//初期化
 	void Initialize();
@@ -49,22 +39,19 @@ private://メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 
 	Model* model_ = nullptr;
-	std::string textureFilePath_ = "";
+	std::vector<Model::MaterialData> materialDates_;
 	BlendMode blendMode_ = BlendMode::kNormal;
 	std::string pipelineStateName_ = "";
 	//バッファリソース
 	ComPtr<ID3D12Resource> wvpResource;
-	ComPtr<ID3D12Resource> materialResource;
 	ComPtr<ID3D12Resource> cameraResource;
 	//バッファリソース内のデータを指すポインタ
 	TransformationMatrix* wvpData = nullptr;
-	Material* materialData = nullptr;
 	CameraForGpu* cameraData = nullptr;
 	LightManager* lightManager_ = nullptr;
 
 	//Transform変数を作る。
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	Transform uvTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	std::unique_ptr<AnimationData> animationData_ = nullptr;
 	std::unique_ptr<Skeleton> skeletonData_ = nullptr;
 	std::unique_ptr<SkinCluster> skinClusterData_ = nullptr;
@@ -79,20 +66,21 @@ public://ゲッターセッター
 	const Vector3& GetScale() const { return transform.scale; }
 	const Vector3& GetRotate() const { return transform.rotate; }
 	const Vector3& GetTranslate() const { return transform.translate; }
-	const Vector3& GetUvScale() const { return uvTransform.scale; }
-	const Vector3& GetUvRotate() const { return uvTransform.rotate; }
-	const Vector3& GetUvTranslate() const { return uvTransform.translate; }
-	const Vector4& GetColor() const { return materialData->color; }
-	const Vector4& GetHighLightColor() const { return materialData->highLightColor; }
+	const Vector3& GetUvScale(uint32_t num) const { return materialDates_[num].uvTransform.scale; }
+	const Vector3& GetUvRotate(uint32_t num) const { return materialDates_[num].uvTransform.rotate; }
+	const Vector3& GetUvTranslate(uint32_t num) const { return materialDates_[num].uvTransform.translate; }
+	const Vector4& GetColor(uint32_t num) const { return materialDates_[num].material->color; }
+	const Vector4& GetHighLightColor(uint32_t num) const { return materialDates_[num].material->highLightColor; }
 	Vector3 GetCenterPosition() const;
 	const Matrix4x4& GetWorldMatrix() const { return wvpData->World; }
-	bool GetEnableLighting() const { return materialData->enableLighting; }
-	float GetShininess() const { return materialData->shininess; }
-	bool GetEnableEnvironmentMap() const { return materialData->enableEnvironmentMap; }
-	float GetEnvironmentCoefficient() const { return materialData->environmentCoefficient; }
+	bool GetEnableLighting(uint32_t num) const { return materialDates_[num].material->enableLighting; }
+	float GetShininess(uint32_t num) const { return materialDates_[num].material->shininess; }
+	bool GetEnableEnvironmentMap(uint32_t num) const { return materialDates_[num].material->enableEnvironmentMap; }
+	float GetEnvironmentCoefficient(uint32_t num) const { return materialDates_[num].material->environmentCoefficient; }
 
 	void SetParent(Object3d* parent) { parent_ = parent; }
-	void SetTexture(std::string textureFilePath) { textureFilePath_ = textureFilePath; }
+	void SetTexture(std::string textureFilePath) { materialDates_[0].textureFilePath_ = textureFilePath; }
+	void SetTexture(std::string textureFilePath, uint32_t num) { materialDates_[num].textureFilePath_ = textureFilePath; }
 	void SetEnvironmentTexture(const std::string& cubeTextureFilePath);
 	void SetModel(const std::string& filePath);
 	void SetAnimation(const std::string& filePath,bool isLoop);
@@ -100,15 +88,15 @@ public://ゲッターセッター
 	void SetScale(const Vector3& scale) { transform.scale = scale; }
 	void SetRotate(const Vector3& rotate) { transform.rotate = rotate; }
 	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
-	void SetUvScale(const Vector3& scale) { uvTransform.scale = scale; }
-	void SetUvRotate(const Vector3& rotate) { uvTransform.rotate = rotate; }
-	void SetUvTranslate(const Vector3& translate) { uvTransform.translate = translate; }
-	void SetColor(const Vector4& color) { materialData->color = color; }
-	void SetHighLightColor(const Vector4& color) { materialData->highLightColor = color; }
-	void SetEnableLighting(bool enable) { materialData->enableLighting = enable; }
-	void SetShininess(float shininess) { materialData->shininess = shininess; }
-	void SetEnableEnvironmentMap(bool enable) { materialData->enableEnvironmentMap = enable; }
-	void SetEnvironmentCoefficient(float coefficient) {materialData->environmentCoefficient = coefficient;}
+	void SetUvScale(const Vector3& scale, uint32_t num) { materialDates_[num].uvTransform.scale = scale; }
+	void SetUvRotate(const Vector3& rotate, uint32_t num) { materialDates_[num].uvTransform.rotate = rotate; }
+	void SetUvTranslate(const Vector3& translate, uint32_t num) { materialDates_[num].uvTransform.translate = translate; }
+	void SetColor(const Vector4& color, uint32_t num) { materialDates_[num].material->color = color; }
+	void SetHighLightColor(const Vector4& color, uint32_t num) { materialDates_[num].material->highLightColor = color; }
+	void SetEnableLighting(bool enable, uint32_t num) { materialDates_[num].material->enableLighting = enable; }
+	void SetShininess(float shininess, uint32_t num) { materialDates_[num].material->shininess = shininess; }
+	void SetEnableEnvironmentMap(bool enable, uint32_t num) { materialDates_[num].material->enableEnvironmentMap = enable; }
+	void SetEnvironmentCoefficient(float coefficient, uint32_t num) {materialDates_[num].material->environmentCoefficient = coefficient;}
 	void SetDrawSkeleton(bool isDraw) { isDrawSkeleton_ = isDraw; }
 };
 

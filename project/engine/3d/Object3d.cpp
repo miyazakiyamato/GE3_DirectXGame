@@ -21,12 +21,6 @@ void Object3d::Initialize(){
 	wvpData->World = Matrix4x4::MakeIdentity4x4();
 	wvpData->WorldInverseTranspose = Matrix4x4::MakeIdentity4x4();
 
-	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	materialResource = dxCommon_->CreateBufferResource(sizeof(Material));
-	//マテリアルにデータを書き込む
-	//書き込むためのアドレスを取得
-	materialResource.Get()->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-
 	//カメラ用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	cameraResource = dxCommon_->CreateBufferResource(sizeof(CameraForGpu));
 	//カメラのデータを書き込む
@@ -88,11 +82,16 @@ void Object3d::Update(){
 			}
 		}
 		else {
-			wvpData->WVP = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldViewProjectionMatrix;
-			wvpData->World = (Matrix4x4)model_->GetModelData().rootNode.localMatrix * worldMatrix;
+			wvpData->WVP = (Matrix4x4)model_->GetNode().localMatrix * worldViewProjectionMatrix;
+			wvpData->World = (Matrix4x4)model_->GetNode().localMatrix * worldMatrix;
 			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
 		}
-		materialData->uvTransform = Matrix4x4::MakeAffineMatrix(uvTransform.scale, uvTransform.rotate, uvTransform.translate);
+		for (Model::MaterialData materialData : materialDates_) {
+			materialData.material->uvTransform = Matrix4x4::MakeAffineMatrix(
+				materialData.uvTransform.scale,
+				materialData.uvTransform.rotate,
+				materialData.uvTransform.translate);
+		}
 	} else {
 		wvpData->WVP = worldViewProjectionMatrix;
 		wvpData->World = worldMatrix;
@@ -111,24 +110,21 @@ void Object3d::Draw(){
 		if (skinClusterData_) {
 			skinClusterData_->Draw();
 		} 
-		//マテリアルCBufferの場所を設定
-		commandList->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 		//wvp用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
-		//テクスチャを設定
-		commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureFilePath_));
+		
 		if (!isSkybox_) {
 			//カメラCBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
 			//ライトマネージャーのデータを設定
 			lightManager_->Draw();
-			if (materialData->enableEnvironmentMap) {
+			if (environmentTextureFilePath_ != "") {
 				//環境マップテクスチャを設定
 				commandList->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvHandleGPU(environmentTextureFilePath_));
 			}
 		}
 
-		model_->Draw();
+		model_->Draw(materialDates_);
 
 		//Skeleton
 		if (skeletonData_ && isDrawSkeleton_) {
@@ -165,50 +161,59 @@ void Object3d::ImGuiUpdate(const std::string& name){
 				}
 				ImGui::EndCombo();
 			}
-			//テクスチャのキーを取得
-			std::string textureName = name + ": Now Texture";
-			std::vector<std::string> textureState = TextureManager::GetInstance()->GetKeys();
-			//テクスチャ選択
-			std::string textureItem_selected_idx = textureFilePath_;
-			currentItem = textureItem_selected_idx.c_str();
-			if (ImGui::BeginCombo((textureName + name).c_str(), currentItem)) {
-				for (int i = 0; i < textureState.size(); ++i) {
-					bool isSelected = (textureItem_selected_idx == textureState[i]);
-					if (ImGui::Selectable(textureState[i].c_str(), isSelected)) {
-						textureFilePath_ = textureState[i];
-					}
-					if (isSelected) {
-						ImGui::SetItemDefaultFocus();
-					}
-				}
-				ImGui::EndCombo();
-			}
 			//Transformの編集
 			ImGui::DragFloat3((name + ".Transform.Translate").c_str(), &transform.translate.x, 0.1f);
 			ImGui::SliderAngle((name + ".Transform.Rotate.x").c_str(), &transform.rotate.x);
 			ImGui::SliderAngle((name + ".Transform.Rotate.y").c_str(), &transform.rotate.y);
 			ImGui::SliderAngle((name + ".Transform.Rotate.z").c_str(), &transform.rotate.z);
 			ImGui::DragFloat3((name + ".Transform.Scale").c_str(), &transform.scale.x, 0.1f);
-			//UVTransformの編集
-			ImGui::DragFloat3((name + ".UVTransform.Translate").c_str(), &uvTransform.translate.x, 0.1f);
-			ImGui::SliderAngle((name + ".UVTransform.Rotate.x").c_str(), &uvTransform.rotate.x);
-			ImGui::SliderAngle((name + ".UVTransform.Rotate.y").c_str(), &uvTransform.rotate.y);
-			ImGui::SliderAngle((name + ".UVTransform.Rotate.z").c_str(), &uvTransform.rotate.z);
-			ImGui::DragFloat3((name + ".UVTransform.Scale").c_str(), &uvTransform.scale.x, 0.1f);
-			//マテリアルの編集
-			ImGui::ColorEdit4((name + ".Color").c_str(), &materialData->color.x);
-			ImGui::ColorEdit4((name + ".HighLightColor").c_str(), &materialData->highLightColor.x);
-			bool isDrawSkeleton = isDrawSkeleton_;
-			ImGui::Checkbox((name + ".IsDrawSkeleton").c_str(), &isDrawSkeleton);
-			bool enableLighting = (bool)materialData->enableLighting;
-			ImGui::Checkbox((name + ".EnableLighting").c_str(), &enableLighting);
-			materialData->enableLighting = enableLighting; // bool型に変換して保存
-			isDrawSkeleton_ = isDrawSkeleton; // bool型に変換して保存
-			bool enableEnvironmentMap = materialData->enableEnvironmentMap;
-			ImGui::Checkbox((name + ".EnableEnvironmentMap").c_str(), &enableEnvironmentMap);
-			materialData->enableEnvironmentMap = enableEnvironmentMap; // bool型に変換して保存
-			ImGui::DragFloat((name + ".EnvironmentCoefficient").c_str(), &materialData->environmentCoefficient, 0.01f, 0.0f, 1.0f);
-
+			//テクスチャのキーを取得
+			std::vector<std::string> textureState = TextureManager::GetInstance()->GetKeys();
+			uint32_t idIndex = 0;
+			for (Model::MaterialData& materialData : materialDates_) {
+				ImGui::PushID(idIndex);
+				if (ImGui::CollapsingHeader((name + "Material").c_str())) {
+					//テクスチャ選択
+					std::string textureName = name + ": Now Texture";
+					std::string textureItem_selected_idx = materialData.textureFilePath_;
+					currentItem = textureItem_selected_idx.c_str();
+					if (ImGui::BeginCombo((textureName + name).c_str(), currentItem)) {
+						for (int i = 0; i < textureState.size(); ++i) {
+							bool isSelected = (textureItem_selected_idx == textureState[i]);
+							if (ImGui::Selectable(textureState[i].c_str(), isSelected)) {
+								materialData.textureFilePath_ = textureState[i];
+							}
+							if (isSelected) {
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+						ImGui::EndCombo();
+					}
+					//UVTransformの編集
+					ImGui::DragFloat3((name + ".UVTransform.Translate").c_str(), &materialData.uvTransform.translate.x, 0.1f);
+					ImGui::SliderAngle((name + ".UVTransform.Rotate.x").c_str(), &materialData.uvTransform.rotate.x);
+					ImGui::SliderAngle((name + ".UVTransform.Rotate.y").c_str(), &materialData.uvTransform.rotate.y);
+					ImGui::SliderAngle((name + ".UVTransform.Rotate.z").c_str(), &materialData.uvTransform.rotate.z);
+					ImGui::DragFloat3((name + ".UVTransform.Scale").c_str(), &materialData.uvTransform.scale.x, 0.1f);
+					//マテリアルの編集
+					ImGui::ColorEdit4((name + ".Color").c_str(), &materialData.material->color.x);
+					ImGui::ColorEdit4((name + ".HighLightColor").c_str(), &materialData.material->highLightColor.x);
+					bool isDrawSkeleton = isDrawSkeleton_;
+					ImGui::Checkbox((name + ".IsDrawSkeleton").c_str(), &isDrawSkeleton);
+					bool enableLighting = (bool)materialData.material->enableLighting;
+					ImGui::Checkbox((name + ".EnableLighting").c_str(), &enableLighting);
+					materialData.material->enableLighting = enableLighting; // bool型に変換して保存
+					isDrawSkeleton_ = isDrawSkeleton; // bool型に変換して保存
+					if (environmentTextureFilePath_ != "") {
+						bool enableEnvironmentMap = materialData.material->enableEnvironmentMap;
+						ImGui::Checkbox((name + ".EnableEnvironmentMap").c_str(), &enableEnvironmentMap);
+						materialData.material->enableEnvironmentMap = enableEnvironmentMap; // bool型に変換して保存
+					}
+					ImGui::DragFloat((name + ".EnvironmentCoefficient").c_str(), &materialData.material->environmentCoefficient, 0.01f, 0.0f, 1.0f);
+				}
+				ImGui::PopID();
+				idIndex++;
+			}
 		}
 		ImGui::EndMenu();
 	}
@@ -216,13 +221,14 @@ void Object3d::ImGuiUpdate(const std::string& name){
 
 void Object3d::SetEnvironmentTexture(const std::string& cubeTextureFilePath) {
 	environmentTextureFilePath_ = cubeTextureFilePath;
-	materialData->enableEnvironmentMap = true; // 環境マップを有効にする
+	for (Model::MaterialData materialData : materialDates_) {
+		materialData.material->enableEnvironmentMap = true; // 環境マップを有効にする
+	}
 }
 
 void Object3d::SetModel(const std::string& filePath){
 	//モデルを検索してセット
 	model_ = ModelManager::GetInstance()->FindModel(filePath);
-	textureFilePath_ = model_->GetModelData().material.textureFilePath;
 	if (filePath == "skybox") {
 		//パイプラインを設定
 		PipelineState pipelineState;
@@ -232,14 +238,25 @@ void Object3d::SetModel(const std::string& filePath){
 		pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
 		isSkybox_ = true;
 	}
-	//マテリアルデータの初期値を書き込む
-	materialData->color = model_->LoadColor();//色を書き込む
-	materialData->enableLighting = true;//Lightingを有効にする
-	materialData->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
-	materialData->shininess = 40.0f;
-	materialData->highLightColor = { 1.0f,1.0f,1.0f,1.0f };
-	materialData->enableEnvironmentMap = false; // 環境マップを無効にする
-	materialData->environmentCoefficient = 1.0f; // 環境マップの寄与度を初期化
+	materialDates_.resize(model_->GetMeshData().size());
+	for (uint32_t meshIndex = 0; meshIndex < model_->GetMeshData().size();meshIndex++) {
+		//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
+		materialDates_[meshIndex].materialResource = dxCommon_->CreateBufferResource(sizeof(Model::Material));
+		// マップしてポインタ取得
+		void* mappedPtr = nullptr;
+		materialDates_[meshIndex].materialResource->Map(0, nullptr, &mappedPtr);
+		materialDates_[meshIndex].material = reinterpret_cast<Model::Material*>(mappedPtr);
+
+		materialDates_[meshIndex].textureFilePath_ = model_->GetMeshData()[meshIndex].material.textureFilePath;
+		//マテリアルデータの初期値を書き込む
+		materialDates_[meshIndex].material->color = model_->GetMeshData()[meshIndex].material.color;//色を書き込む
+		materialDates_[meshIndex].material->enableLighting = true;//Lightingを有効にする
+		materialDates_[meshIndex].material->uvTransform = Matrix4x4::MakeIdentity4x4();//UVTransform単位行列で初期化
+		materialDates_[meshIndex].material->shininess = 40.0f;
+		materialDates_[meshIndex].material->highLightColor = { 1.0f,1.0f,1.0f,1.0f };
+		materialDates_[meshIndex].material->enableEnvironmentMap = false; // 環境マップを無効にする
+		materialDates_[meshIndex].material->environmentCoefficient = 1.0f; // 環境マップの寄与度を初期化
+	}
 }
 
 void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
@@ -250,11 +267,11 @@ void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
 	animationData_->isLoop = isLoop;
 	//スケルトン
 	skeletonData_ = std::make_unique<Skeleton>();
-	skeletonData_->CreateSkeleton(model_->GetModelData().rootNode);
+	skeletonData_->CreateSkeleton(model_->GetNode());
 
 	//スキンクラスタ
 	skinClusterData_ = std::make_unique<SkinCluster>();
-	skinClusterData_->CreateSkinCluster(skeletonData_.get(), model_->GetModelData());
+	skinClusterData_->CreateSkinCluster(skeletonData_.get(), model_->GetMeshData()[0]);
 
 	//パイプラインを設定
 	PipelineState pipelineState;

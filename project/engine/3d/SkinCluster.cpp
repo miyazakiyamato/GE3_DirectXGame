@@ -3,7 +3,7 @@
 #include "SrvManager.h"
 #include "Skeleton.h"
 
-void SkinCluster::CreateSkinCluster(Skeleton* skeleton, const Model::ModelData& modelData) {
+void SkinCluster::CreateSkinCluster(Skeleton* skeleton, const Model::Mesh& modelData) {
 	//palette用のリソースを確保
 	paletteResource_ = ModelManager::GetInstance()->GetDirectXCommon()->CreateBufferResource(sizeof(WellForGPU) * (UINT)skeleton->GetJoints().size());
 	WellForGPU* palette = nullptr;

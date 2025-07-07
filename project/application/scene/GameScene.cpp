@@ -36,6 +36,8 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("sphere/sphere.obj");*/
 	ModelManager::GetInstance()->LoadModel("terrain/terrain.obj");
 	ModelManager::GetInstance()->LoadModel("skybox");
+	ModelManager::GetInstance()->LoadModel("ground/ground.obj");
+	ModelManager::GetInstance()->LoadModel("multiMesh/multiMesh.obj");
 	/*ModelManager::GetInstance()->LoadModel("plane/plane.gltf");*/
 
 	ModelManager::GetInstance()->LoadModel("AnimatedCube/AnimatedCube.gltf");
@@ -76,12 +78,13 @@ void GameScene::Initialize(){
 			object3d->SetRotate(objectData->rotation);
 			object3d->SetTranslate(objectData->translation);
 			if (!objectData->fileName.empty()) {
-				object3d->SetModel(objectData->fileName);
+				//object3d->SetModel(objectData->fileName);
+				object3d->SetModel("multiMesh/multiMesh.obj");
 				object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
 			}
 			object3ds_.push_back(std::move(object3d));
 		}
-		if (objectData->typeName == "ARMATURE") {
+		/*if (objectData->typeName == "ARMATURE") {
 			for (const std::unique_ptr<ObjectData>&childData : objectData->children) {
 				if (childData->typeName == "MESH") {
 					std::unique_ptr<Object3d> object3d(new Object3d);
@@ -95,7 +98,7 @@ void GameScene::Initialize(){
 					object3ds_.push_back(std::move(object3d));
 				}
 			}
-		}
+		}*/
 	}
 	
 

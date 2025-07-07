@@ -19,7 +19,7 @@ public://構造体
 	};
 public://メンバ関数
 	//SkinClusterの生成
-	void CreateSkinCluster(Skeleton* skeleton, const Model::ModelData& modelData);
+	void CreateSkinCluster(Skeleton* skeleton, const Model::Mesh& modelData);
 	//更新
 	void Update(Skeleton* skeleton);
 	//描画
