@@ -63,27 +63,12 @@ public:
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 		D3D12_INDEX_BUFFER_VIEW indexBufferView;
 	};
-	struct Material {
-		Vector4 color{ 1,1,1,1 };
-		Vector4 highLightColor{ 1,1,1,1 };
-		Matrix4x4 uvTransform;
-		int enableLighting; // ライティングを有効にするかどうか
-		float shininess; // シェーダーの光沢度
-		int enableEnvironmentMap; // 環境マップを有効にするかどうか
-		float environmentCoefficient; // 環境マップの寄与度
-	};
-	struct MaterialData {
-		std::string textureFilePath_ = "";
-		Transform uvTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-		Material* material = nullptr;
-		Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
-	};
 
 public://メンバ関数
 	//初期化
 	void Initialize(DirectXCommon* dxCommon, const std::string& directoryPath, const std::string& filename);
 	//描画
-	void Draw(std::vector<MaterialData> materialDates);
+	void Draw(size_t meshIndex);
 	//ファイルの読み取り
 	void LoadFile(const std::string& directoryPath, const std::string& filename);
 	//Node解析

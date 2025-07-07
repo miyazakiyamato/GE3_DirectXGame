@@ -48,6 +48,8 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadAnimation("human/sneakWalk.gltf");
 	ModelManager::GetInstance()->LoadModel("human/walk.gltf");
 	ModelManager::GetInstance()->LoadAnimation("human/walk.gltf");
+	ModelManager::GetInstance()->LoadModel("BrainStem/BrainStem.gltf");
+	ModelManager::GetInstance()->LoadAnimation("BrainStem/BrainStem.gltf");
 
 	TextureManager::GetInstance()->LoadTexture("circle2.png");
 	TextureManager::GetInstance()->LoadTexture("gradationLine.png");
@@ -64,7 +66,13 @@ void GameScene::Initialize(){
 	object3d->SetModel("skybox");
 	object3d->SetTexture("rostock_laage_airport_4k.dds");
 	object3ds_.push_back(std::move(object3d));
-
+	std::unique_ptr<Object3d> object3d2(new Object3d);
+	object3d2->Initialize();
+	object3d2->SetTranslate({-1.0f,0.0f,0.0f});
+	object3d2->SetModel("BrainStem/BrainStem.gltf");
+	object3d2->SetAnimation("BrainStem/BrainStem.gltf", true);
+	//object3d2->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
+	object3ds_.push_back(std::move(object3d2));
 	//レベルデータマネージャの生成
 	levelDataManager_ = std::make_unique<LevelDataManager>();
 	//レベルデータの読み込み取得
@@ -84,7 +92,7 @@ void GameScene::Initialize(){
 			}
 			object3ds_.push_back(std::move(object3d));
 		}
-		/*if (objectData->typeName == "ARMATURE") {
+		if (objectData->typeName == "ARMATURE") {
 			for (const std::unique_ptr<ObjectData>&childData : objectData->children) {
 				if (childData->typeName == "MESH") {
 					std::unique_ptr<Object3d> object3d(new Object3d);
@@ -98,7 +106,7 @@ void GameScene::Initialize(){
 					object3ds_.push_back(std::move(object3d));
 				}
 			}
-		}*/
+		}
 	}
 	
 

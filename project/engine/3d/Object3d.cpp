@@ -86,7 +86,7 @@ void Object3d::Update(){
 			wvpData->World = (Matrix4x4)model_->GetNode().localMatrix * worldMatrix;
 			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
 		}
-		for (Model::MaterialData materialData : materialDates_) {
+		for (MaterialData materialData : materialDates_) {
 			materialData.material->uvTransform = Matrix4x4::MakeAffineMatrix(
 				materialData.uvTransform.scale,
 				materialData.uvTransform.rotate,
@@ -107,25 +107,29 @@ void Object3d::Draw(){
 		
 		PipelineManager::GetInstance()->DrawSetting(pipelineStateName_);
 		
-		if (skinClusterData_) {
-			skinClusterData_->Draw();
-		} 
-		//wvp用のCBufferの場所を設定
-		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
-		
-		if (!isSkybox_) {
-			//カメラCBufferの場所を設定
-			commandList->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
-			//ライトマネージャーのデータを設定
-			lightManager_->Draw();
-			if (environmentTextureFilePath_ != "") {
-				//環境マップテクスチャを設定
-				commandList->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvHandleGPU(environmentTextureFilePath_));
+		for (uint32_t meshIndex = 0; meshIndex < model_->GetMeshData().size(); meshIndex++) {
+			if (skinClusterData_) {
+				skinClusterData_->Draw(meshIndex);
 			}
+			//wvp用のCBufferの場所を設定
+			commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
+			//マテリアルCBufferの場所を設定
+			commandList->SetGraphicsRootConstantBufferView(0, materialDates_[meshIndex].materialResource.Get()->GetGPUVirtualAddress());
+			//テクスチャを設定
+			commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(materialDates_[meshIndex].textureFilePath_));
+			if (!isSkybox_) {
+				//カメラCBufferの場所を設定
+				commandList->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
+				//ライトマネージャーのデータを設定
+				lightManager_->Draw();
+				if (environmentTextureFilePath_ != "") {
+					//環境マップテクスチャを設定
+					commandList->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvHandleGPU(environmentTextureFilePath_));
+				}
+			}
+
+			model_->Draw(meshIndex);
 		}
-
-		model_->Draw(materialDates_);
-
 		//Skeleton
 		if (skeletonData_ && isDrawSkeleton_) {
 			skeletonData_->Draw(wvpData->World);
@@ -170,7 +174,8 @@ void Object3d::ImGuiUpdate(const std::string& name){
 			//テクスチャのキーを取得
 			std::vector<std::string> textureState = TextureManager::GetInstance()->GetKeys();
 			uint32_t idIndex = 0;
-			for (Model::MaterialData& materialData : materialDates_) {
+			ImGui::Indent();
+			for (MaterialData& materialData : materialDates_) {
 				ImGui::PushID(idIndex);
 				if (ImGui::CollapsingHeader((name + "Material").c_str())) {
 					//テクスチャ選択
@@ -214,6 +219,7 @@ void Object3d::ImGuiUpdate(const std::string& name){
 				ImGui::PopID();
 				idIndex++;
 			}
+			ImGui::Unindent();
 		}
 		ImGui::EndMenu();
 	}
@@ -221,7 +227,7 @@ void Object3d::ImGuiUpdate(const std::string& name){
 
 void Object3d::SetEnvironmentTexture(const std::string& cubeTextureFilePath) {
 	environmentTextureFilePath_ = cubeTextureFilePath;
-	for (Model::MaterialData materialData : materialDates_) {
+	for (MaterialData materialData : materialDates_) {
 		materialData.material->enableEnvironmentMap = true; // 環境マップを有効にする
 	}
 }
@@ -241,11 +247,11 @@ void Object3d::SetModel(const std::string& filePath){
 	materialDates_.resize(model_->GetMeshData().size());
 	for (uint32_t meshIndex = 0; meshIndex < model_->GetMeshData().size();meshIndex++) {
 		//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-		materialDates_[meshIndex].materialResource = dxCommon_->CreateBufferResource(sizeof(Model::Material));
+		materialDates_[meshIndex].materialResource = dxCommon_->CreateBufferResource(sizeof(Material));
 		// マップしてポインタ取得
 		void* mappedPtr = nullptr;
 		materialDates_[meshIndex].materialResource->Map(0, nullptr, &mappedPtr);
-		materialDates_[meshIndex].material = reinterpret_cast<Model::Material*>(mappedPtr);
+		materialDates_[meshIndex].material = reinterpret_cast<Material*>(mappedPtr);
 
 		materialDates_[meshIndex].textureFilePath_ = model_->GetMeshData()[meshIndex].material.textureFilePath;
 		//マテリアルデータの初期値を書き込む
@@ -271,7 +277,7 @@ void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
 
 	//スキンクラスタ
 	skinClusterData_ = std::make_unique<SkinCluster>();
-	skinClusterData_->CreateSkinCluster(skeletonData_.get(), model_->GetMeshData()[0]);
+	skinClusterData_->CreateSkinCluster(skeletonData_.get(), model_->GetMeshData());
 
 	//パイプラインを設定
 	PipelineState pipelineState;

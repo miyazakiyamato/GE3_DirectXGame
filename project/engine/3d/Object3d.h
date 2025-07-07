@@ -26,6 +26,21 @@ private:
 		float time = 0.0f;
 		bool isLoop = false;
 	};
+	struct Material {
+		Vector4 color{ 1,1,1,1 };
+		Vector4 highLightColor{ 1,1,1,1 };
+		Matrix4x4 uvTransform;
+		int enableLighting; // ライティングを有効にするかどうか
+		float shininess; // シェーダーの光沢度
+		int enableEnvironmentMap; // 環境マップを有効にするかどうか
+		float environmentCoefficient; // 環境マップの寄与度
+	};
+	struct MaterialData {
+		std::string textureFilePath_ = "";
+		Transform uvTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+		Material* material = nullptr;
+		Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
+	};
 public://メンバ関数
 	//初期化
 	void Initialize();
@@ -39,7 +54,7 @@ private://メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 
 	Model* model_ = nullptr;
-	std::vector<Model::MaterialData> materialDates_;
+	std::vector<MaterialData> materialDates_;
 	BlendMode blendMode_ = BlendMode::kNormal;
 	std::string pipelineStateName_ = "";
 	//バッファリソース

@@ -50,22 +50,14 @@ void Model::Initialize(DirectXCommon* dxCommon, const std::string& directoryPath
 	}
 }
 
-void Model::Draw(std::vector<MaterialData> materialDates){
+void Model::Draw(size_t meshIndex){
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-	size_t meshCount = 0;
-	for (Mesh& meshData : meshDates_) {
-		commandList->IASetVertexBuffers(0, 1, &meshData.vertexBufferView); //VBVを設定
-		commandList->IASetIndexBuffer(&meshData.indexBufferView);//IBVを設定
 
-		//マテリアルCBufferの場所を設定
-		commandList->SetGraphicsRootConstantBufferView(0, materialDates[meshCount].materialResource.Get()->GetGPUVirtualAddress());
-		//テクスチャを設定
-		commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(materialDates[meshCount].textureFilePath_));
-		//描画！(DrawCall/ドローコール)3頂点で1つのインスタンス。インスタンスについては
-		commandList->DrawIndexedInstanced(UINT(meshData.indices.size()), 1, 0, 0, 0);
-		meshCount++;
-	}
+	commandList->IASetVertexBuffers(0, 1, &meshDates_[meshIndex].vertexBufferView); //VBVを設定
+	commandList->IASetIndexBuffer(&meshDates_[meshIndex].indexBufferView);//IBVを設定
+	//描画！(DrawCall/ドローコール)3頂点で1つのインスタンス。インスタンスについては
+	commandList->DrawIndexedInstanced(UINT(meshDates_[meshIndex].indices.size()), 1, 0, 0, 0);
 }
 
 void Model::LoadFile(const std::string& directoryPath, const std::string& filename) {
@@ -77,14 +69,19 @@ void Model::LoadFile(const std::string& directoryPath, const std::string& filena
 	meshDates_.resize(meshCount_);//読み込み前に初期化
 	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
-		assert(mesh->HasNormals());//法線がないMeshは今回は非対応
-		assert(mesh->HasTextureCoords(0));//TexcoordがないMeshは今回は非対応
 		meshDates_[meshIndex].vertices.resize(mesh->mNumVertices);//頂点数のメモリだけ確保
 		for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices;++vertexIndex) {
 			aiVector3D& position = mesh->mVertices[vertexIndex];
-			aiVector3D& normal = mesh->mNormals[vertexIndex];
-			aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
-
+			Vector3 normal = { 0.0f, 0.0f, -1.0f }; // 法線のデフォルト
+			if (mesh->HasNormals()) {
+				aiVector3D& n = mesh->mNormals[vertexIndex];
+				normal = { -n.x, n.y, n.z };
+			}
+			Vector2 texcoord = { 0.0f, 0.0f }; // デフォルト値
+			if (mesh->HasTextureCoords(0)) {
+				aiVector3D& tex = mesh->mTextureCoords[0][vertexIndex];
+				texcoord = { tex.x, tex.y };
+			}
 			meshDates_[meshIndex].vertices[vertexIndex].position = { -position.x,position.y,position.z,1.0f };
 			meshDates_[meshIndex].vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
 			meshDates_[meshIndex].vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
@@ -159,11 +156,15 @@ void Model::LoadColor(Mesh& mesh,aiMaterial* material){
 	
 	//マテリアルの色を取得
 	aiColor3D color(1.0f, 1.0f, 1.0f);
-	if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
+	aiColor4D baseColorFactor;
+	if (material->Get("$mat.gltf.pbrMetallicRoughness.baseColorFactor", 0, 0, baseColorFactor) == AI_SUCCESS) {
+		mesh.material.color = { baseColorFactor.r, baseColorFactor.g, baseColorFactor.b, baseColorFactor.a };
+	} else if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
 		mesh.material.color = { color.r,color.g,color.b,1.0f };
-	} else {
-		mesh.material.color = {1.0f,1.0f,1.0f,1.0f};//mtlファイルがある場合はmtlファイルから色を読み込む
+	}else  {
+		mesh.material.color = {1.0f,1.0f,1.0f,1.0f};
 	}
+	
 	if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
 		aiString textureFilePath;
 		material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);

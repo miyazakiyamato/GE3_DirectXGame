@@ -3,7 +3,7 @@
 #include "SrvManager.h"
 #include "Skeleton.h"
 
-void SkinCluster::CreateSkinCluster(Skeleton* skeleton, const Model::Mesh& modelData) {
+void SkinCluster::CreateSkinCluster(Skeleton* skeleton,std::vector<Model::Mesh> modelData) {
 	//palette用のリソースを確保
 	paletteResource_ = ModelManager::GetInstance()->GetDirectXCommon()->CreateBufferResource(sizeof(WellForGPU) * (UINT)skeleton->GetJoints().size());
 	WellForGPU* palette = nullptr;
@@ -16,36 +16,42 @@ void SkinCluster::CreateSkinCluster(Skeleton* skeleton, const Model::Mesh& model
 	paletteSrvHandle_.first = ModelManager::GetInstance()->GetSrvManager()->GetCPUDescriptorHandle(srvIndex);
 	paletteSrvHandle_.second = ModelManager::GetInstance()->GetSrvManager()->GetGPUDescriptorHandle(srvIndex);
 
-	//influence用のリソースを確保
-	influenceResource_ = ModelManager::GetInstance()->GetDirectXCommon()->CreateBufferResource(sizeof(VertexInfluence) * (UINT)modelData.vertices.size());
-	VertexInfluence* mappedInfluence = nullptr;
-	influenceResource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluence));
-	std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * (UINT)modelData.vertices.size());
-	mappedInfluence_ = { mappedInfluence, modelData.vertices.size() };
+	skinClusterDates_.resize(modelData.size());//モデルのメッシュ数分だけSkinClusterDataを確保
+	for (uint32_t meshIndex = 0; meshIndex < modelData.size(); meshIndex++) {
+		//influence用のリソースを確保
+		skinClusterDates_[meshIndex].influenceResource = ModelManager::GetInstance()->GetDirectXCommon()->CreateBufferResource(sizeof(VertexInfluence) * (UINT)modelData[meshIndex].vertices.size());
+		VertexInfluence* mappedInfluence = nullptr;
+		skinClusterDates_[meshIndex].influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluence));
+		std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * (UINT)modelData[meshIndex].vertices.size());
+		skinClusterDates_[meshIndex].mappedInfluence = { mappedInfluence, modelData[meshIndex].vertices.size() };
 
-	//influenceのVBVを生成
-	influenceBufferView_.BufferLocation = influenceResource_->GetGPUVirtualAddress();
-	influenceBufferView_.SizeInBytes = sizeof(VertexInfluence) * (UINT)modelData.vertices.size();
-	influenceBufferView_.StrideInBytes = sizeof(VertexInfluence);
+		//influenceのVBVを生成
+		skinClusterDates_[meshIndex].influenceBufferView.BufferLocation = skinClusterDates_[meshIndex].influenceResource->GetGPUVirtualAddress();
+		skinClusterDates_[meshIndex].influenceBufferView.SizeInBytes = sizeof(VertexInfluence) * (UINT)modelData[meshIndex].vertices.size();
+		skinClusterDates_[meshIndex].influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
+	}
+	
 
 	//inverseBindPoseMatrixを格納する場所を作成
 	inverseBindPoseMatrices_.resize(skeleton->GetJoints().size());
 	std::generate(inverseBindPoseMatrices_.begin(), inverseBindPoseMatrices_.end(), []() {return Matrix4x4::MakeIdentity4x4();});
 
 	//modelのskinClusterDataを解析
-	for (const auto& jointWeight : modelData.skinClusterData) {
-		auto it = skeleton->GetJointMap().find(jointWeight.first);
-		if (it == skeleton->GetJointMap().end()) {//Jointが見つからなかった場合
-			continue;
-		}
-		inverseBindPoseMatrices_[(*it).second] = jointWeight.second.inverseBindPoseMatrix;
-		for (const auto& vertexWeight : jointWeight.second.vertexWeights) {
-			auto& currentInfluence = mappedInfluence[vertexWeight.vertexIndex];
-			for (uint32_t index = 0; index < kNumMaxInfluence; index++) {
-				if (currentInfluence.weights[index] == 0.0f) {
-					currentInfluence.weights[index] = vertexWeight.weight;
-					currentInfluence.jointIndices[index] = (*it).second;
-					break;
+	for (uint32_t meshIndex = 0; meshIndex < modelData.size(); meshIndex++) {
+		for (const auto& jointWeight : modelData[meshIndex].skinClusterData) {
+			auto it = skeleton->GetJointMap().find(jointWeight.first);
+			if (it == skeleton->GetJointMap().end()) {//Jointが見つからなかった場合
+				continue;
+			}
+			inverseBindPoseMatrices_[(*it).second] = jointWeight.second.inverseBindPoseMatrix;
+			for (const auto& vertexWeight : jointWeight.second.vertexWeights) {
+				auto& currentInfluence = skinClusterDates_[meshIndex].mappedInfluence[vertexWeight.vertexIndex];
+				for (uint32_t index = 0; index < kNumMaxInfluence; index++) {
+					if (currentInfluence.weights[index] == 0.0f) {
+						currentInfluence.weights[index] = vertexWeight.weight;
+						currentInfluence.jointIndices[index] = (*it).second;
+						break;
+					}
 				}
 			}
 		}
@@ -60,8 +66,8 @@ void SkinCluster::Update(Skeleton* skeleton){
 	}
 }
 
-void SkinCluster::Draw(){
+void SkinCluster::Draw(size_t meshIndex){
 	ID3D12GraphicsCommandList* commandList = ModelManager::GetInstance()->GetDirectXCommon()->GetCommandList();
-	commandList->IASetVertexBuffers(1, 1, &influenceBufferView_);//VBVを設定
+	commandList->IASetVertexBuffers(1, 1, &skinClusterDates_[meshIndex].influenceBufferView);//VBVを設定
 	commandList->SetGraphicsRootDescriptorTable(8, paletteSrvHandle_.second);
 }
