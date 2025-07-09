@@ -71,7 +71,7 @@ void GameScene::Initialize(){
 	object3d2->SetTranslate({-1.0f,0.0f,0.0f});
 	object3d2->SetModel("BrainStem/BrainStem.gltf");
 	object3d2->SetAnimation("BrainStem/BrainStem.gltf", true);
-	//object3d2->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
+	object3d2->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
 	object3ds_.push_back(std::move(object3d2));
 	//レベルデータマネージャの生成
 	levelDataManager_ = std::make_unique<LevelDataManager>();
@@ -86,8 +86,8 @@ void GameScene::Initialize(){
 			object3d->SetRotate(objectData->rotation);
 			object3d->SetTranslate(objectData->translation);
 			if (!objectData->fileName.empty()) {
-				//object3d->SetModel(objectData->fileName);
-				object3d->SetModel("multiMesh/multiMesh.obj");
+				object3d->SetModel(objectData->fileName);
+				//object3d->SetModel("multiMesh/multiMesh.obj");
 				object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
 			}
 			object3ds_.push_back(std::move(object3d));
@@ -167,13 +167,6 @@ void GameScene::Finalize(){
 void GameScene::Update(){
 	BaseScene::Update();
 
-	if (input_->TriggerKey(DIK_SPACE)) {
-		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
-		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
-		//ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
-		particleSystem_->Emit("hitEffect");
-	}
-
 #ifdef _DEBUG
 	//// ウインドウフラグに NoResize を指定
 	//ImGui::Begin("Settings", NULL, ImGuiWindowFlags_NoResize);
@@ -183,6 +176,7 @@ void GameScene::Update(){
 	std::string groupName = "";
 	if (ImGui::Begin("Global Variables", nullptr, ImGuiWindowFlags_MenuBar)) {
 		if (ImGui::BeginMenuBar()) {
+			input_->ImGuiUpdate();
 			CameraManager::GetInstance()->ImGuiUpdate();
 
 			LightManager::GetInstance()->ImGuiUpdate();
@@ -216,6 +210,39 @@ void GameScene::Update(){
 	collisionManager_->UpdateWorldTransform();
 #endif //_DEBUG
 
+	if (input_->TriggerKey(DIK_SPACE)) {
+		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
+		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
+		//ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
+		particleSystem_->Emit("hitEffect");
+	}
+	//player
+	static bool isSneak = false;
+	if (input_->PushControllerButton(XINPUT_GAMEPAD_B)) {
+		isSneak = !isSneak;
+		if (isSneak) {
+			object3ds_[2]->SetAnimation("human/sneakWalk.gltf", true);
+		} else {
+			object3ds_[2]->SetAnimation("human/walk.gltf", true);
+		}
+
+		particleSystem_->Emit("hitEffect");
+	}
+	if (input_->PushControllerButton(XINPUT_GAMEPAD_A)) {
+		particleSystem_->Emit("hitEffect");
+	}
+	Vector3 velocity = { 0.0f,0.0f,0.0f };
+	float speed = 0.1f;
+	if (input_->GetControllerStickX() != 0.0f ||
+		input_->GetControllerStickY() != 0.0f) {
+		velocity.x += input_->GetControllerStickX();
+		velocity.z += input_->GetControllerStickY();
+
+		velocity = velocity.Normalize() * speed;
+
+		object3ds_[2]->SetTranslate((Vector3)object3ds_[2]->GetTranslate() + velocity);
+	}
+
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		object3d->Update();
 	}
@@ -237,7 +264,7 @@ void GameScene::Update(){
 			}
 		}
 	}
-
+	
 	particleSystem_->Update();
 
 	for (std::unique_ptr<Sprite>& sprite : sprites_) {
