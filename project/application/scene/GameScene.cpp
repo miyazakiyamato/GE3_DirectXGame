@@ -87,8 +87,7 @@ void GameScene::Initialize(){
 			object3d->SetRotate(objectData->rotation);
 			object3d->SetTranslate(objectData->translation);
 			if (!objectData->fileName.empty()) {
-				//object3d->SetModel(objectData->fileName);
-				object3d->SetModel("multiMaterial/multiMaterial.obj");
+				object3d->SetModel(objectData->fileName);
 				object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
 			}
 			object3ds_.push_back(std::move(object3d));
@@ -101,7 +100,7 @@ void GameScene::Initialize(){
 					object3d->SetTranslate(objectData->translation);
 					if (!childData->fileName.empty()) {
 						object3d->SetModel(childData->fileName);
-						//object3d->SetAnimation(childData->fileName, true);
+						object3d->SetAnimation(childData->fileName, true);
 						object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
 					}
 					object3ds_.push_back(std::move(object3d));

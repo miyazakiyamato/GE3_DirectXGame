@@ -61,43 +61,16 @@ void Object3d::Update(){
 			} else if (animationData_->time > animationData_->animation->GetDuration()) {
 				animationData_->time = animationData_->animation->GetDuration();
 			}
-			/*Matrix4x4 localMatrix = animationData_->animation->MakeLocalMatrix(model_->GetModelData().rootNode.name,animationData_->time);
-			wvpData->WVP = localMatrix * worldViewProjectionMatrix;
-			wvpData->World = localMatrix * worldMatrix;
-			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));*/
-
-			wvpData->WVP = worldViewProjectionMatrix;
-			wvpData->World = worldMatrix;
-			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
-
-			//スケルトンの更新
-			if (skeletonData_) {
-				skeletonData_->ApplyAnimation(animationData_->animation, animationData_->time);
-				skeletonData_->Update();
-
-				//スキンクラスタの更新
-				if (skinClusterData_) {
-					skinClusterData_->Update(skeletonData_.get());
-				}
-			}
+			skeletonData_->ApplyAnimation(animationData_->animation, animationData_->time);
 		}
-		else {
-			/*wvpData->WVP = (Matrix4x4)model_->GetNode().localMatrix * worldViewProjectionMatrix;
-			wvpData->World = (Matrix4x4)model_->GetNode().localMatrix * worldMatrix;
-			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));*/
-			wvpData->WVP = worldViewProjectionMatrix;
-			wvpData->World = worldMatrix;
-			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
-			//スケルトンの更新
-			if (skeletonData_) {
-				skeletonData_->Update();
+		wvpData->WVP = worldViewProjectionMatrix;
+		wvpData->World = worldMatrix;
+		wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
 
-				//スキンクラスタの更新
-				if (skinClusterData_) {
-					skinClusterData_->Update(skeletonData_.get());
-				}
-			}
-		}
+		//スケルトンの更新
+		skeletonData_->Update();
+		//スキンクラスタの更新
+		skinClusterData_->Update(skeletonData_.get());
 		for (MaterialData materialData : materialDates_) {
 			materialData.material->uvTransform = Matrix4x4::MakeAffineMatrix(
 				materialData.uvTransform.scale,
