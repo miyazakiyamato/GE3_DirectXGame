@@ -80,3 +80,18 @@ Matrix4x4 Animation::MakeLocalMatrix(std::string rootNodeName,float time){
 
 	return localMatrix;
 }
+
+Matrix4x4 Animation::MakeLocalMatrix(std::string rootNodeName, const NodeAnimation& nextNodeAnimation, float time){
+	Matrix4x4 localMatrix;
+	NodeAnimation& rootNodeAnimation = nodeAnimations[rootNodeName];
+	Vector3 translate = CalculateValue(rootNodeAnimation.translate, time);
+	Quaternion rotate = CalculateValue(rootNodeAnimation.rotate, time);
+	Vector3 scale = CalculateValue(rootNodeAnimation.scale, time);
+	// 次のアニメーションの値を適用
+	translate = Vector3::Lerp(translate, CalculateValue(nextNodeAnimation.translate,time),time);
+	rotate = Quaternion::Slerp(rotate, CalculateValue(nextNodeAnimation.rotate, time),time);
+	scale = Vector3::Lerp(scale,CalculateValue(nextNodeAnimation.scale,time),time);
+
+	localMatrix = Quaternion::MakeAffineMatrix(scale, rotate, translate);
+	return localMatrix;
+}

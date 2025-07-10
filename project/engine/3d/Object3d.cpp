@@ -61,7 +61,19 @@ void Object3d::Update(){
 			} else if (animationData_->time > animationData_->animation->GetDuration()) {
 				animationData_->time = animationData_->animation->GetDuration();
 			}
-			skeletonData_->ApplyAnimation(animationData_->animation, animationData_->time);
+			if (nextAnimationData_) {
+				nextAnimationData_->time += TimeManager::GetInstance()->deltaTime_;
+				skeletonData_->ApplyAnimation(animationData_->animation,nextAnimationData_->animation, nextAnimationData_->time / lerpTime_);
+				if (nextAnimationData_->time > lerpTime_) {
+					animationData_->animation = nextAnimationData_->animation; 
+					animationData_->time = 0.0f;
+					animationData_->isLoop = nextAnimationData_->isLoop;
+					nextAnimationData_.reset(); // 次のアニメーションデータを解放
+					skeletonData_->ApplyAnimation(animationData_->animation, animationData_->time);
+				}
+			} else {
+				skeletonData_->ApplyAnimation(animationData_->animation, animationData_->time);
+			}
 		}
 		wvpData->WVP = worldViewProjectionMatrix;
 		wvpData->World = worldMatrix;
@@ -156,6 +168,8 @@ void Object3d::ImGuiUpdate(const std::string& name){
 			ImGui::SliderAngle((name + ".Transform.Rotate.y").c_str(), &transform.rotate.y);
 			ImGui::SliderAngle((name + ".Transform.Rotate.z").c_str(), &transform.rotate.z);
 			ImGui::DragFloat3((name + ".Transform.Scale").c_str(), &transform.scale.x, 0.1f);
+			//アニメーションの編集
+			ImGui::DragFloat((name + ".LerpTime").c_str(), &lerpTime_, 0.01f, 0.0f);
 			//テクスチャのキーを取得
 			std::vector<std::string> textureState = TextureManager::GetInstance()->GetKeys();
 			uint32_t idIndex = 0;
@@ -260,10 +274,24 @@ void Object3d::SetModel(const std::string& filePath){
 
 void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
 	//アニメーション
-	animationData_ = std::make_unique<AnimationData>();
-	animationData_->animation = ModelManager::GetInstance()->FindAnimation(filePath);
-	animationData_->time = 0.0f;
-	animationData_->isLoop = isLoop;
+	if (nextAnimationData_) {
+		animationData_->animation = nextAnimationData_->animation;
+		animationData_->isLoop = nextAnimationData_->isLoop;
+		nextAnimationData_->animation = ModelManager::GetInstance()->FindAnimation(filePath);
+		nextAnimationData_->time = lerpTime_ - nextAnimationData_->time;
+		nextAnimationData_->isLoop = isLoop;
+	}else if (animationData_) {
+		nextAnimationData_ = std::make_unique<AnimationData>();
+		nextAnimationData_->animation = ModelManager::GetInstance()->FindAnimation(filePath);
+		nextAnimationData_->time = 0.0f;
+		nextAnimationData_->isLoop = isLoop;
+	} else {
+		animationData_ = std::make_unique<AnimationData>();
+		animationData_->animation = ModelManager::GetInstance()->FindAnimation(filePath);
+		animationData_->time = 0.0f;
+		animationData_->isLoop = isLoop;
+	}
+	
 
 	//パイプラインを設定
 	PipelineState pipelineState;

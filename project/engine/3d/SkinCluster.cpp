@@ -55,6 +55,12 @@ void SkinCluster::CreateSkinCluster(Skeleton* skeleton,std::vector<Model::Mesh> 
 				}
 			}
 		}
+		if (modelData[meshIndex].skinClusterData.empty() || skinClusterDates_[meshIndex].mappedInfluence.empty()) {
+			for (size_t i = 0; i < modelData[meshIndex].vertices.size(); ++i) {
+				skinClusterDates_[meshIndex].mappedInfluence[i].weights[0] = 1.0f;
+				skinClusterDates_[meshIndex].mappedInfluence[i].jointIndices[0] = 0; // ジョイント0
+			}
+		}
 	}
 }
 

@@ -31,6 +31,7 @@ public://メンバ関数
 	Quaternion CalculateValue(const AnimationCurve<Quaternion>& curve, float time);
 
 	Matrix4x4 MakeLocalMatrix(std::string rootNodeName,float time);
+	Matrix4x4 MakeLocalMatrix(std::string rootNodeName,const NodeAnimation& nextNodeAnimation,float time);
 private://メンバ変数
 	std::string directoryPath = "./resources/model/";//!<ディレクトリパス
 

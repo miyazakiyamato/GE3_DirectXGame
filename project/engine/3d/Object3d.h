@@ -68,8 +68,10 @@ private://メンバ変数
 	//Transform変数を作る。
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	std::unique_ptr<AnimationData> animationData_ = nullptr;
+	std::unique_ptr<AnimationData> nextAnimationData_ = nullptr;
 	std::unique_ptr<Skeleton> skeletonData_ = nullptr;
 	std::unique_ptr<SkinCluster> skinClusterData_ = nullptr;
+	float lerpTime_ = 0.1f; //!< アニメーションを何秒で補間するか
 
 	Object3d* parent_ = nullptr;
 
