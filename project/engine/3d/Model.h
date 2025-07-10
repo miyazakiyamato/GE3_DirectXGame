@@ -74,7 +74,7 @@ public://メンバ関数
 	//Node解析
 	Node ReadNode(aiNode* node);
 	//カラー
-	void LoadColor(Mesh& mesh,aiMaterial* material);
+	void LoadColor(Mesh& mesh,aiMaterial* aiMeshMaterial);
 private:
 	bool IsPrimitive(const std::string& filename);
 	void ModelDataSkybox();

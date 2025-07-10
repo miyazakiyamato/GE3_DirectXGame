@@ -117,11 +117,8 @@ void Model::LoadFile(const std::string& directoryPath, const std::string& filena
 				jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight,bone->mWeights[weightIndex].mVertexId });
 			}
 		}
-
-		for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
-			aiMaterial* material = scene->mMaterials[materialIndex];
-			LoadColor(meshDates_[meshIndex],material);
-		}
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		LoadColor(meshDates_[meshIndex], material);
 	}
 	rootNode_ = ReadNode(scene->mRootNode);
 }
@@ -164,7 +161,6 @@ void Model::LoadColor(Mesh& mesh,aiMaterial* material){
 	}else  {
 		mesh.material.color = {1.0f,1.0f,1.0f,1.0f};
 	}
-	
 	if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
 		aiString textureFilePath;
 		material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);

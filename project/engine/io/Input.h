@@ -84,6 +84,9 @@ private:
     Vector2 rightBottom_ = {1280.0f,720.0f + 30.0f};
     // コントローラー状態
 	ControllerState controller_ = {};
+	Vector2 deadZone_ = { 3000.0f, 3000.0f }; // スティックのデッドゾーン
+    //std::array<ControllerState, XUSER_MAX_COUNT> controllers_ = {};
+	
 public:
     float GetMouseX();
     float GetMouseY();

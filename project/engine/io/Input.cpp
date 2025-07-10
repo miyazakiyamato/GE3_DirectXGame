@@ -92,11 +92,19 @@ bool Input::TriggerControllerButton(WORD button) {
 }
 
 float Input::GetControllerStickX() {
-    return controller_.nowState.Gamepad.sThumbLX / 32767.0f;
+	float thumbLX = controller_.nowState.Gamepad.sThumbLX;
+	if (fabs(thumbLX) <= deadZone_.x) {
+        return 0.0f;
+	}
+    return thumbLX / 32767.0f;
 }
 
 float Input::GetControllerStickY() {
-    return controller_.nowState.Gamepad.sThumbLY / 32767.0f;
+    float thumbLY = controller_.nowState.Gamepad.sThumbLY;
+    if (fabs(thumbLY) <= deadZone_.y) {
+        return 0.0f;
+    }
+    return thumbLY / 32767.0f;
 }
 
 bool Input::PushMouseButton(int button) {

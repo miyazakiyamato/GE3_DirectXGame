@@ -38,6 +38,7 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("skybox");
 	ModelManager::GetInstance()->LoadModel("ground/ground.obj");
 	ModelManager::GetInstance()->LoadModel("multiMesh/multiMesh.obj");
+	ModelManager::GetInstance()->LoadModel("multiMaterial/multiMaterial.obj");
 	/*ModelManager::GetInstance()->LoadModel("plane/plane.gltf");*/
 
 	ModelManager::GetInstance()->LoadModel("AnimatedCube/AnimatedCube.gltf");
@@ -86,8 +87,8 @@ void GameScene::Initialize(){
 			object3d->SetRotate(objectData->rotation);
 			object3d->SetTranslate(objectData->translation);
 			if (!objectData->fileName.empty()) {
-				object3d->SetModel(objectData->fileName);
-				//object3d->SetModel("multiMesh/multiMesh.obj");
+				//object3d->SetModel(objectData->fileName);
+				object3d->SetModel("multiMaterial/multiMaterial.obj");
 				object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
 			}
 			object3ds_.push_back(std::move(object3d));
@@ -100,7 +101,7 @@ void GameScene::Initialize(){
 					object3d->SetTranslate(objectData->translation);
 					if (!childData->fileName.empty()) {
 						object3d->SetModel(childData->fileName);
-						object3d->SetAnimation(childData->fileName, true);
+						//object3d->SetAnimation(childData->fileName, true);
 						object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
 					}
 					object3ds_.push_back(std::move(object3d));
@@ -214,33 +215,54 @@ void GameScene::Update(){
 		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
 		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
 		//ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
-		particleSystem_->Emit("hitEffect");
+		//particleSystem_->Emit("hitEffect");
 	}
 	//player
 	static bool isSneak = false;
-	if (input_->PushControllerButton(XINPUT_GAMEPAD_B)) {
+	
+	if (input_->TriggerControllerButton(XINPUT_GAMEPAD_B) || input_->TriggerKey(DIK_SPACE)) {
 		isSneak = !isSneak;
 		if (isSneak) {
 			object3ds_[2]->SetAnimation("human/sneakWalk.gltf", true);
 		} else {
 			object3ds_[2]->SetAnimation("human/walk.gltf", true);
 		}
-
-		particleSystem_->Emit("hitEffect");
 	}
-	if (input_->PushControllerButton(XINPUT_GAMEPAD_A)) {
+	if (input_->TriggerControllerButton(XINPUT_GAMEPAD_A)) {
 		particleSystem_->Emit("hitEffect");
 	}
 	Vector3 velocity = { 0.0f,0.0f,0.0f };
 	float speed = 0.1f;
+	if (isSneak) {
+		speed = 0.05f;
+	}
+	if (input_->PushKey(DIK_W)) {
+		velocity.z += speed;
+	}else if (input_->PushKey(DIK_S)) {
+		velocity.z -= speed;
+	}
+	if (input_->PushKey(DIK_A)) {
+		velocity.x -= speed;
+	} else if (input_->PushKey(DIK_D)) {
+		velocity.x += speed;
+	}
 	if (input_->GetControllerStickX() != 0.0f ||
 		input_->GetControllerStickY() != 0.0f) {
+		velocity = {};
 		velocity.x += input_->GetControllerStickX();
 		velocity.z += input_->GetControllerStickY();
-
+	}
+	if(velocity.Length() != 0.0f){
 		velocity = velocity.Normalize() * speed;
 
 		object3ds_[2]->SetTranslate((Vector3)object3ds_[2]->GetTranslate() + velocity);
+		Vector3 rotate{};
+		rotate.y = std::atan2f(velocity.x, velocity.z);
+		Vector3 velocityZ = Matrix4x4::Transform(velocity, Matrix4x4::MakeRotateYMatrix(-rotate.y));
+		rotate.x = std::atan2f(-velocityZ.y, velocityZ.z);
+
+		rotate.y += 3.14f; // 180度回転
+		object3ds_[2]->SetRotate(rotate);
 	}
 
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {

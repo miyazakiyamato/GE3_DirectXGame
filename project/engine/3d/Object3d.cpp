@@ -82,9 +82,21 @@ void Object3d::Update(){
 			}
 		}
 		else {
-			wvpData->WVP = (Matrix4x4)model_->GetNode().localMatrix * worldViewProjectionMatrix;
+			/*wvpData->WVP = (Matrix4x4)model_->GetNode().localMatrix * worldViewProjectionMatrix;
 			wvpData->World = (Matrix4x4)model_->GetNode().localMatrix * worldMatrix;
+			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));*/
+			wvpData->WVP = worldViewProjectionMatrix;
+			wvpData->World = worldMatrix;
 			wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
+			//スケルトンの更新
+			if (skeletonData_) {
+				skeletonData_->Update();
+
+				//スキンクラスタの更新
+				if (skinClusterData_) {
+					skinClusterData_->Update(skeletonData_.get());
+				}
+			}
 		}
 		for (MaterialData materialData : materialDates_) {
 			materialData.material->uvTransform = Matrix4x4::MakeAffineMatrix(
@@ -108,7 +120,7 @@ void Object3d::Draw(){
 		PipelineManager::GetInstance()->DrawSetting(pipelineStateName_);
 		
 		for (uint32_t meshIndex = 0; meshIndex < model_->GetMeshData().size(); meshIndex++) {
-			if (skinClusterData_) {
+			if (animationData_) {
 				skinClusterData_->Draw(meshIndex);
 			}
 			//wvp用のCBufferの場所を設定
@@ -244,6 +256,14 @@ void Object3d::SetModel(const std::string& filePath){
 		pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
 		isSkybox_ = true;
 	}
+	//スケルトン
+	skeletonData_ = std::make_unique<Skeleton>();
+	skeletonData_->CreateSkeleton(model_->GetNode());
+
+	//スキンクラスタ
+	skinClusterData_ = std::make_unique<SkinCluster>();
+	skinClusterData_->CreateSkinCluster(skeletonData_.get(), model_->GetMeshData());
+	//マテリアルデータの初期化
 	materialDates_.resize(model_->GetMeshData().size());
 	for (uint32_t meshIndex = 0; meshIndex < model_->GetMeshData().size();meshIndex++) {
 		//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
@@ -271,13 +291,6 @@ void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
 	animationData_->animation = ModelManager::GetInstance()->FindAnimation(filePath);
 	animationData_->time = 0.0f;
 	animationData_->isLoop = isLoop;
-	//スケルトン
-	skeletonData_ = std::make_unique<Skeleton>();
-	skeletonData_->CreateSkeleton(model_->GetNode());
-
-	//スキンクラスタ
-	skinClusterData_ = std::make_unique<SkinCluster>();
-	skinClusterData_->CreateSkinCluster(skeletonData_.get(), model_->GetMeshData());
 
 	//パイプラインを設定
 	PipelineState pipelineState;
