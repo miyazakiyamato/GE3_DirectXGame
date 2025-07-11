@@ -68,6 +68,9 @@ class MYADDON_OT_export_scene(bpy.types.Operator,bpy_extras.io_utils.ExportHelpe
         transform["scaling"] = (scale.x,scale.y,scale.z)
         #まとめて1個分のjsonオブジェクトに登録
         json_object["transform"] = transform
+        #カスタムプロパティ'disabled'
+        if "disabled" in object:
+            json_object["disabled"] = object["disabled"]
         #カスタムプロパティ'file_name'
         if "file_name" in object:
             json_object["file_name"] = object["file_name"]

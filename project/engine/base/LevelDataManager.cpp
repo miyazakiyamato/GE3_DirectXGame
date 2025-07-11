@@ -31,7 +31,11 @@ void LevelDataManager::LoadJsonFile(const std::string& filePath){
 	std::unique_ptr<LevelData> levelData = std::make_unique<LevelData>();
 	levelData->reserve(100);
 	for (nlohmann::json& object : deserialized["objects"]) {
-		levelData->push_back(std::move(LoadObjectData(object)));
+		std::unique_ptr<ObjectData> objectData = LoadObjectData(object);
+		if (!objectData) {
+			continue; // nullptrが返された場合はスキップ
+		}
+		levelData->push_back(std::move(objectData));
 	}
 	levelDates_[filePath] = std::move(levelData);
 }
@@ -60,6 +64,12 @@ std::unique_ptr<ObjectData> LevelDataManager::LoadObjectData(const nlohmann::jso
 		objectData->scaling.x = (float)transform["scaling"][0];
 		objectData->scaling.y = (float)transform["scaling"][2];
 		objectData->scaling.z = (float)transform["scaling"][1];
+		if (object.contains("disabled")) {
+			bool disabled = object["disabled"];
+			if (disabled) {
+				return nullptr; // disabledがtrueの場合はnullptrを返す
+			}
+		}
 		if (object.contains("file_name")) {
 			objectData->fileName = object["file_name"];
 		}

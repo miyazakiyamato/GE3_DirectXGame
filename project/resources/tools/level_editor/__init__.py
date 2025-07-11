@@ -18,10 +18,14 @@ from .export_scene import MYADDON_OT_export_scene
 from .add_filename import MYADDON_OT_add_filename
 #オペレータ カスタムプロパティ['collider']追加
 from .add_collider import MYADDON_OT_add_collider
+#オペレータ カスタムプロパティ['disabled']追加
+from .disabled import MYADDON_OT_add_disabled
 #パネル ファイル名
 from .file_name import OBJECT_PT_file_name
 #パネル コライダー
 from .collider import OBJECT_PT_collider
+#パネル 無効フラグ
+from .disabled import OBJECT_PT_disabled
 #オペレータ 頂点を伸ばす
 from .stretch_vertex import MYADDON_OT_stretch_vertex
 #オペレータ ICO球生成
@@ -38,8 +42,10 @@ classes = (
     TOPBAR_MT_my_menu,
     MYADDON_OT_add_filename,
     MYADDON_OT_add_collider,
+    MYADDON_OT_add_disabled,
     OBJECT_PT_file_name,
     OBJECT_PT_collider,
+    OBJECT_PT_disabled,
 )
 # Add-On有効化時コールバック
 def register():

@@ -67,6 +67,7 @@
                     0.010000000707805157
                 ]
             },
+            "disabled": true,
             "children": [
                 {
                     "type": "MESH",
