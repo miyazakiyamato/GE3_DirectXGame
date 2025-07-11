@@ -39,6 +39,9 @@ void Object3d::Update(){
 	Matrix4x4 worldMatrix;
 	Matrix4x4 worldViewProjectionMatrix;
 	worldMatrix = Matrix4x4::MakeAffineMatrix(transform.scale, transform.rotate + Vector3(0.0f,std::numbers::pi_v<float>,0.0f), transform.translate);
+	if (worldMatrix_) {
+		worldMatrix = *worldMatrix_ ;
+	}
 	if (parent_) {
 		worldMatrix = worldMatrix * parent_->GetWorldMatrix();
 	}
@@ -222,6 +225,15 @@ void Object3d::ImGuiUpdate(const std::string& name){
 		}
 		ImGui::EndMenu();
 	}
+}
+
+Vector3 Object3d::GetJointsPosition(std::string jointName){
+	Vector3 position = { 0.0f,0.0f,0.0f };
+	Matrix4x4 jointWorldMatrix = (Matrix4x4)GetJoint(jointName).skeletonSpaceMatrix * wvpData->World;
+	position.x = jointWorldMatrix.m[3][0];
+	position.y = jointWorldMatrix.m[3][1];
+	position.z = jointWorldMatrix.m[3][2];
+	return position;
 }
 
 void Object3d::SetEnvironmentTexture(const std::string& cubeTextureFilePath) {

@@ -39,6 +39,7 @@ void GameScene::Initialize(){
 	ModelManager::GetInstance()->LoadModel("ground/ground.obj");
 	ModelManager::GetInstance()->LoadModel("multiMesh/multiMesh.obj");
 	ModelManager::GetInstance()->LoadModel("multiMaterial/multiMaterial.obj");
+	ModelManager::GetInstance()->LoadModel("sword/sword.obj");
 	/*ModelManager::GetInstance()->LoadModel("plane/plane.gltf");*/
 
 	ModelManager::GetInstance()->LoadModel("AnimatedCube/AnimatedCube.gltf");
@@ -70,9 +71,9 @@ void GameScene::Initialize(){
 	std::unique_ptr<Object3d> object3d2(new Object3d);
 	object3d2->Initialize();
 	object3d2->SetTranslate({-1.0f,0.0f,0.0f});
-	object3d2->SetModel("AnimatedCube/AnimatedCube.gltf");
-	object3d2->SetAnimation("AnimatedCube/AnimatedCube.gltf", true);
-	object3d2->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
+	object3d2->SetModel("BrainStem/BrainStem.gltf");
+	object3d2->SetAnimation("BrainStem/BrainStem.gltf", true);
+	//object3d2->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
 	object3ds_.push_back(std::move(object3d2));
 	//レベルデータマネージャの生成
 	levelDataManager_ = std::make_unique<LevelDataManager>();
@@ -88,7 +89,7 @@ void GameScene::Initialize(){
 			object3d->SetTranslate(objectData->translation);
 			if (!objectData->fileName.empty()) {
 				object3d->SetModel(objectData->fileName);
-				object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
+				//object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
 			}
 			object3ds_.push_back(std::move(object3d));
 		}
@@ -101,15 +102,25 @@ void GameScene::Initialize(){
 					if (!childData->fileName.empty()) {
 						object3d->SetModel(childData->fileName);
 						object3d->SetAnimation(childData->fileName, true);
-						object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
+						//object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
 					}
 					object3ds_.push_back(std::move(object3d));
 				}
 			}
 		}
 	}
-	
-
+	std::unique_ptr<Object3d> object3d3(new Object3d);
+	object3d3->Initialize();
+	object3d3->SetParent(object3ds_[2].get());
+	std::unique_ptr<Object3d> object3d4(new Object3d);
+	object3d4->Initialize();
+	object3d4->SetTranslate({ 0.0f,7.0f,2.0f });
+	object3d4->SetRotate({ 0.0f,0.0f,1.57f });
+	object3d4->SetScale({ 10.0f,10.0f,10.0f });
+	object3d4->SetModel("sword/sword.obj");
+	object3d4->SetParent(object3d3.get());
+	object3ds_.push_back(std::move(object3d3));
+	object3ds_.push_back(std::move(object3d4));
 	/*object3ds_[0]->SetModel("AnimatedCube/AnimatedCube.gltf");
 	object3ds_[0]->SetAnimation("AnimatedCube/AnimatedCube.gltf",true);*/
 	/*object3ds_[0]->SetModel("simpleSkin/simpleSkin.gltf");
@@ -219,7 +230,7 @@ void GameScene::Update(){
 	//player
 	static bool isSneak = false;
 	
-	if (input_->TriggerControllerButton(XINPUT_GAMEPAD_B) || input_->TriggerKey(DIK_SPACE)) {
+	if (input_->TriggerControllerButton(XINPUT_GAMEPAD_B) || input_->TriggerKey(DIK_LSHIFT)) {
 		isSneak = !isSneak;
 		if (isSneak) {
 			object3ds_[2]->SetAnimation("human/sneakWalk.gltf", true);
@@ -227,7 +238,13 @@ void GameScene::Update(){
 			object3ds_[2]->SetAnimation("human/walk.gltf", true);
 		}
 	}
-	if (input_->TriggerControllerButton(XINPUT_GAMEPAD_A)) {
+	if (input_->TriggerControllerButton(XINPUT_GAMEPAD_Y) || input_->TriggerKey(DIK_F)) {
+		object3ds_[2]->SetIsDrawSkeleton(!object3ds_[2]->GetIsDrawSkeleton());
+	}
+	if (input_->TriggerControllerButton(XINPUT_GAMEPAD_A) || input_->TriggerKey(DIK_SPACE)) {
+		Vector3 hitPosition = object3ds_[2]->GetJointsPosition("mixamorig:RightHand");
+		particleSystem_->FindEmitter("hitEffect")->SetPosition(hitPosition);
+
 		particleSystem_->Emit("hitEffect");
 	}
 	Vector3 velocity = { 0.0f,0.0f,0.0f };
@@ -263,7 +280,8 @@ void GameScene::Update(){
 		rotate.y += 3.14f; // 180度回転
 		object3ds_[2]->SetRotate(rotate);
 	}
-
+	Matrix4x4 rHandworldMatrix = object3ds_[2]->GetJoint("mixamorig:RightHand").skeletonSpaceMatrix;
+	object3ds_[7]->SetWorldMatrix(&rHandworldMatrix);
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		object3d->Update();
 	}
@@ -315,7 +333,7 @@ void GameScene::Draw(){
 
 	//Spriteの描画
 	for (std::unique_ptr<Sprite>& sprite : sprites_) {
-		sprite->Draw();
+		//sprite->Draw();
 	}
 }
 

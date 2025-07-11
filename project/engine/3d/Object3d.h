@@ -74,6 +74,7 @@ private://メンバ変数
 	float lerpTime_ = 0.1f; //!< アニメーションを何秒で補間するか
 
 	Object3d* parent_ = nullptr;
+	Matrix4x4* worldMatrix_;
 
 	bool isDrawSkeleton_ = false; //!< Skeletonを描画するかどうか
 	bool isSkybox_ = false; //!< SkyBoxかどうか
@@ -94,8 +95,12 @@ public://ゲッターセッター
 	float GetShininess(uint32_t num) const { return materialDates_[num].material->shininess; }
 	bool GetEnableEnvironmentMap(uint32_t num) const { return materialDates_[num].material->enableEnvironmentMap; }
 	float GetEnvironmentCoefficient(uint32_t num) const { return materialDates_[num].material->environmentCoefficient; }
+	bool GetIsDrawSkeleton() const { return isDrawSkeleton_; }
+	const Skeleton::Joint& GetJoint(std::string jointName) const { return skeletonData_->GetJoints()[skeletonData_->GetJointMap()[jointName]]; }
+	Vector3 GetJointsPosition(std::string jointName);
 
 	void SetParent(Object3d* parent) { parent_ = parent; }
+	void SetWorldMatrix(Matrix4x4* worldMatrix) { worldMatrix_ = worldMatrix; }
 	void SetTexture(std::string textureFilePath) { materialDates_[0].textureFilePath_ = textureFilePath; }
 	void SetTexture(std::string textureFilePath, uint32_t num) { materialDates_[num].textureFilePath_ = textureFilePath; }
 	void SetEnvironmentTexture(const std::string& cubeTextureFilePath);
@@ -114,6 +119,6 @@ public://ゲッターセッター
 	void SetShininess(float shininess, uint32_t num) { materialDates_[num].material->shininess = shininess; }
 	void SetEnableEnvironmentMap(bool enable, uint32_t num) { materialDates_[num].material->enableEnvironmentMap = enable; }
 	void SetEnvironmentCoefficient(float coefficient, uint32_t num) {materialDates_[num].material->environmentCoefficient = coefficient;}
-	void SetDrawSkeleton(bool isDraw) { isDrawSkeleton_ = isDraw; }
+	void SetIsDrawSkeleton(bool isDraw) { isDrawSkeleton_ = isDraw; }
 };
 
