@@ -91,13 +91,15 @@ void GlobalVariables::Update() {
 					} 
 					else if (std::holds_alternative<Transform>(item)) {
 						Transform* ptr = std::get_if<Transform>(&item);
-						if (ptr) {
+						ImGui::Indent();
+						if (ptr && ImGui::CollapsingHeader(displayName.c_str())) {
 							ImGui::DragFloat3((displayName + ".Scale").c_str(), &ptr->scale.x, 0.01f);
 							ImGui::SliderAngle((displayName + ".Rotate.x").c_str(), &ptr->rotate.x);
 							ImGui::SliderAngle((displayName + ".Rotate.y").c_str(), &ptr->rotate.y);
 							ImGui::SliderAngle((displayName + ".Rotate.z").c_str(), &ptr->rotate.z);
 							ImGui::DragFloat3((displayName + ".Translate").c_str(), &ptr->translate.x, 0.01f);
 						}
+						ImGui::Unindent();
 					}
 				}
 			}

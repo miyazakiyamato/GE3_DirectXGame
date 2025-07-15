@@ -199,8 +199,7 @@ void GameScene::Update(){
 
 				object3dCount++;
 			}
-			ParticleManager::GetInstance()->UpdateGlobalVariables();
-			groupName = "Particle";
+			particleSystem_->UpdateGlobalVariables();
 			
 			groupName = "Sprite";
 			uint32_t spriteIDIndex = 0;

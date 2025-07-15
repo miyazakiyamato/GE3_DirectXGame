@@ -18,7 +18,6 @@ public:
 	struct VertexData {
 		Vector4 position;
 		Vector2 texcoord;
-		//Vector3 normal;
 		Vector4 color;
 	};
 	struct MaterialData {
@@ -32,6 +31,7 @@ public:
 		Vector4 color;
 		float lifeTime;
 		float currentTime;
+		bool isBillboard;
 	};
 	struct ParticleForGPU {
 		Matrix4x4 WVP;
@@ -40,23 +40,25 @@ public:
 		Matrix4x4 uvTransform;
 	};
 	struct ParticleInitData {
+		std::string textureFilePath = "circle2.png";
+		std::string particleType = "plane";
 		Transform randomTransformMax;
 		Transform randomTransformMin;
-		Vector3 randomVelocityMax{1.0f,1.0f,1.0f};
-		Vector3 randomVelocityMin{-1.0f,-1.0f,-1.0f};
 		Vector4 randomColorMax{1.0f,1.0f,1.0f,1.0f};
 		Vector4 randomColorMin{0.0f,0.0f,0.0f,1.0f};
 		float lifeTime = 2.0f;
+		uint32_t count = 1;//発生数
 		bool isBillboard = true;
 	};
-	struct ParticleGroupCreateData {
-		std::string name = "";
-		std::string textureFilePath = "circle2.png";
-		std::string particleType = "plane";
-		ParticleInitData particleInitData;
+	struct ParticleUpdateData {
+		Transform randomVelocityMax{};
+		Transform randomVelocityMin{};
+		Transform randomUvVelocityMax{};
+		Transform randomUvVelocityMin{};
+		Vector4 randomColorVelocityMax{};
+		Vector4 randomColorVelocityMin{};
 	};
 	struct ParticleGroup {
-		ParticleInitData particleInitData;
 		std::list<Particle> particles;//パーティクルのリスト
 		MaterialData materialData;//マテリアルデータ
 		//インスタンスの数
@@ -100,15 +102,8 @@ public://メンバ関数
 	void CreateCylinderParticleGroup(const std::string name,
 		const uint32_t& kDivide, const float& kTopRadius, const float& kBottomRadius,const float& kHeight);
 	//パーティクルの発生
-	void Emit(const std::string name, const Vector3& position, uint32_t count);
+	void Emit(const std::string name, const Vector3& position, ParticleInitData particleInitData);
 
-	//調整項目の更新
-	void UpdateGlobalVariables();
-private://ローカル関数
-	//調整項目の初期化
-	void InitializeGlobalVariables();
-	// 調整項目の適用
-	void ApplyGlobalVariables();
 private://シングルインスタンス
 	static ParticleManager* instance;
 
@@ -126,13 +121,6 @@ private://メンバ変数
 	//ランダムエンジン
 	std::mt19937 randomEngine_;
 
-	std::string groupNameText = ""; // グループ名
-	char buffer[128] = ""; // 入力用のバッファ
-	std::string typeNameText = ""; // タイプ名
-	char buffer2[128] = ""; // 入力用のバッファ
-
-	//パーティクルグループを作るデータ
-	std::map<std::string, std::unique_ptr<ParticleGroupCreateData>> particleGroupCreateDates_;
 	//パーティクルデータ
 	std::map<std::string, std::unique_ptr<ParticleGroup>> particleGroups;
 public://ゲッターセッター

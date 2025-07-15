@@ -27,18 +27,6 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager
 	std::mt19937 randomEngine(seedGenerator());
 	randomEngine_ = randomEngine;
 
-	//調整項目の初期化
-	InitializeGlobalVariables();
-	ApplyGlobalVariables();
-	/*for (auto& [name, group] : particleGroupCreateDates_) {
-		if (group->particleType == "cylinder") {
-			CreateCylinderParticleGroup(name, group->textureFilePath, 32, 1.0f, 1.0f, 3.0f);
-		} else if (group->particleType == "ring") {
-			CreateRingParticleGroup(name, group->textureFilePath, 32, 1.0f, 0.2f);
-		} else {
-			CreateParticleGroup(name, group->textureFilePath);
-		}
-	}*/
 }
 
 void ParticleManager::Finalize() {
@@ -47,8 +35,6 @@ void ParticleManager::Finalize() {
 }
 
 void ParticleManager::Update() {
-	//調整項目の更新
-	ApplyGlobalVariables();
 
 	Matrix4x4 worldMatrix;
 	Matrix4x4 viewProjectionMatrix;
@@ -78,7 +64,7 @@ void ParticleManager::Update() {
 				group.kNumInstance--;
 				continue;
 			}
-			if (group.particleInitData.isBillboard) {
+			if (particle.isBillboard) {
 				worldMatrix = Matrix4x4::MakeScaleMatrix(particle.transform.scale) * billboardMatrix * Matrix4x4::MakeRotateZMatrix(particle.transform.rotate.z) * Matrix4x4::MakeTranslateMatrix(particle.transform.translate);
 			} else {
 				worldMatrix = Matrix4x4::MakeAffineMatrix(particle.transform.scale, particle.transform.rotate, particle.transform.translate);
@@ -103,6 +89,9 @@ void ParticleManager::Draw() {
 	for (auto& [name, group] : particleGroups) {
 		//パイプラインを設定
 		PipelineManager::GetInstance()->DrawSetting(group->pipelineStateName_);
+		if (group->kNumInstance == 0) {
+			continue; // インスタンスがない場合は描画しない
+		}
 
 		commandList->IASetVertexBuffers(0, 1, &group->vertexBufferView);// VBVを設定
 		commandList->IASetIndexBuffer(&group->indexBufferView);//IBVを設定
@@ -122,18 +111,6 @@ void ParticleManager::CreateParticleGroup(const std::string name) {
 	//assert(particleGroups.count(name) == 0 && "ParticleGroup with this name already exists.");
 	// パーティクルグループの作成と初期化
 	auto group = std::make_unique<ParticleGroup>();
-
-	auto it = particleGroupCreateDates_.find(name);
-	if (it != particleGroupCreateDates_.end() && it->second) {
-		group->particleInitData = it->second->particleInitData;
-		it->second->particleType = "plane";
-		//.objの参照しているテクスチャファイル読み込み
-		TextureManager::GetInstance()->LoadTexture(it->second->textureFilePath);
-		group->materialData.textureFilePath = it->second->textureFilePath;
-	}
-	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
-
-	
 
 	group->kNumInstance = 0;
 
@@ -214,15 +191,6 @@ void ParticleManager::CreateRingParticleGroup(const std::string name, const uint
 
 	// パーティクルグループの作成と初期化
 	auto group = std::make_unique<ParticleGroup>();
-
-	auto it = particleGroupCreateDates_.find(name);
-	if (it != particleGroupCreateDates_.end() && it->second) {
-		group->particleInitData = it->second->particleInitData;
-		it->second->particleType = "ring";
-		//.objの参照しているテクスチャファイル読み込み
-		TextureManager::GetInstance()->LoadTexture(it->second->textureFilePath);
-		group->materialData.textureFilePath = it->second->textureFilePath;
-	}
 
 	group->kNumInstance = 0;
 
@@ -318,16 +286,6 @@ void ParticleManager::CreateCylinderParticleGroup(const std::string name,const u
 	// パーティクルグループの作成と初期化
 	auto group = std::make_unique<ParticleGroup>();
 
-	auto it = particleGroupCreateDates_.find(name);
-	if (it != particleGroupCreateDates_.end() && it->second) {
-		group->particleInitData = it->second->particleInitData;
-		it->second->particleType = "cylinder";
-		//.objの参照しているテクスチャファイル読み込み
-		TextureManager::GetInstance()->LoadTexture(it->second->textureFilePath);
-		group->materialData.textureFilePath = it->second->textureFilePath;
-	}
-	//group->particleInitData = particleGroupCreateDates_.find(name)->second->particleInitData;
-
 	group->kNumInstance = 0;
 
 	group->kParticleVertexNum = 4 * kDivide;
@@ -377,9 +335,6 @@ void ParticleManager::CreateCylinderParticleGroup(const std::string name,const u
 	group->vertexResource->Unmap(0, nullptr);
 	group->indexResource->Unmap(0, nullptr);
 
-	// TextureManagerからGPUハンドルを取得
-	group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(group->materialData.textureFilePath);
-
 	//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	group->instancingResource = dxCommon_->CreateBufferResource(sizeof(ParticleForGPU) * kMaxInstance);
 	//データを書き込む
@@ -406,86 +361,34 @@ void ParticleManager::CreateCylinderParticleGroup(const std::string name,const u
 	particleGroups[name] = std::move(group);
 }
 
-void ParticleManager::Emit(const std::string name, const Vector3& position, uint32_t count) {
+void ParticleManager::Emit(const std::string name, const Vector3& position, ParticleInitData particleInitData){
 	if (particleGroups.count(name) == 0) {
 		return;
 	}
 	ParticleGroup& group = *particleGroups[name];
 
 	uint32_t nowInstance = group.kNumInstance;
-	group.kNumInstance += count;
-	if (group.kNumInstance + count >= kMaxInstance) {
+	group.kNumInstance += particleInitData.count;
+	if (group.kNumInstance >= kMaxInstance) {
 		group.kNumInstance = kMaxInstance;
 	}
+	// .objの参照しているテクスチャファイル読み込み
+	TextureManager::GetInstance()->LoadTexture(particleInitData.textureFilePath);
+	group.materialData.textureFilePath = particleInitData.textureFilePath;
+	// TextureManagerからGPUハンドルを取得
+	group.materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(group.materialData.textureFilePath);
 	for (uint32_t i = nowInstance; i < group.kNumInstance; ++i) {
 		Particle particle{};
 		// Transformの各要素をランダム化
-		particle.transform.scale = Vector3::Random(randomEngine_, group.particleInitData.randomTransformMin.scale, group.particleInitData.randomTransformMax.scale);
-		particle.transform.rotate = Vector3::Random(randomEngine_, group.particleInitData.randomTransformMin.rotate, group.particleInitData.randomTransformMax.rotate);
-		particle.transform.translate = Vector3(position) + Vector3::Random(randomEngine_, group.particleInitData.randomTransformMin.translate, group.particleInitData.randomTransformMax.translate);
-		particle.uvTransform.scale = {1.0f,1.0f,1.0f};
+		particle.transform.scale = Vector3::Random(randomEngine_, particleInitData.randomTransformMin.scale, particleInitData.randomTransformMax.scale);
+		particle.transform.rotate = Vector3::Random(randomEngine_, particleInitData.randomTransformMin.rotate, particleInitData.randomTransformMax.rotate);
+		particle.transform.translate = Vector3(position) + Vector3::Random(randomEngine_, particleInitData.randomTransformMin.translate, particleInitData.randomTransformMax.translate);
+		particle.uvTransform.scale = { 1.0f,1.0f,1.0f };
 		particle.uvTransform.rotate = { 0.0f,0.0f,0.0f };
-		particle.uvTransform.translate = {0.0f,0.0f,0.0f};
-		particle.velocity = Vector3::Random(randomEngine_, group.particleInitData.randomVelocityMin, group.particleInitData.randomVelocityMax);
-		particle.color = Vector4::Random(randomEngine_, group.particleInitData.randomColorMin, group.particleInitData.randomColorMax);
-		particle.lifeTime = group.particleInitData.lifeTime;
+		particle.uvTransform.translate = { 0.0f,0.0f,0.0f };
+		particle.color = Vector4::Random(randomEngine_, particleInitData.randomColorMin, particleInitData.randomColorMax);
+		particle.lifeTime = particleInitData.lifeTime;
 		group.particles.push_back(particle);
-	}
-}
-
-//調整項目の初期化
-void ParticleManager::InitializeGlobalVariables(){
-	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
-	const char* groupName = "Particle";
-	// グループを追加
-	globalVariables->CreateGroup(groupName);
-	uint32_t objectIDIndex = 0;
-
-	while (globalVariables->GetValue<std::string>(groupName, "Name" + std::to_string(objectIDIndex)) != "") {
-		std::string name = globalVariables->GetValue<std::string>(groupName, "Name" + std::to_string(objectIDIndex));
-		if (particleGroups.count(name) == 0) {
-			particleGroupCreateDates_[name] = std::make_unique<ParticleGroupCreateData>();
-		}
-		++objectIDIndex;
-	}
-	objectIDIndex = 0;
-	for (auto& [name, group] : particleGroupCreateDates_) {
-		// まとめてヘッダーグループを設定
-		globalVariables->SetHeaderGroup(groupName, name);
-		globalVariables->AddItem(groupName, "Name" + std::to_string(objectIDIndex), name);
-		globalVariables->AddItem(groupName, "TextureFilePath" + std::to_string(objectIDIndex), group->textureFilePath);
-		globalVariables->AddItem(groupName, "ParticleType" + std::to_string(objectIDIndex), group->particleType);
-		globalVariables->AddItem(groupName, "RandomTransformMax" + std::to_string(objectIDIndex), group->particleInitData.randomTransformMax);
-		globalVariables->AddItem(groupName, "RandomTransformMin" + std::to_string(objectIDIndex), group->particleInitData.randomTransformMin);
-		globalVariables->AddItem(groupName, "RandomVelocityMax" + std::to_string(objectIDIndex), group->particleInitData.randomVelocityMax);
-		globalVariables->AddItem(groupName, "RandomVelocityMin" + std::to_string(objectIDIndex), group->particleInitData.randomVelocityMin);
-		globalVariables->AddItem(groupName, "RandomColorMax" + std::to_string(objectIDIndex), group->particleInitData.randomColorMax);
-		globalVariables->AddItem(groupName, "RandomColorMin" + std::to_string(objectIDIndex), group->particleInitData.randomColorMin);
-		globalVariables->AddItem(groupName, "LifeTime" + std::to_string(objectIDIndex), group->particleInitData.lifeTime);
-		globalVariables->AddItem(groupName, "IsBillboard" + std::to_string(objectIDIndex), group->particleInitData.isBillboard);
-		globalVariables->EndHeaderGroup(groupName);
-		++objectIDIndex;
-	}
-}
-
-// 調整項目の適用
-void ParticleManager::ApplyGlobalVariables() {
-	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
-	std::string groupName = "Particle";
-	uint32_t objectIDIndex = 0;
-	for (auto& [name, group] : particleGroupCreateDates_) {
-		group->name = globalVariables->GetValue<std::string>(groupName, "Name" + std::to_string(objectIDIndex));
-		group->textureFilePath = globalVariables->GetValue<std::string>(groupName, "TextureFilePath" + std::to_string(objectIDIndex));
-		group->particleType = globalVariables->GetValue<std::string>(groupName, "ParticleType" + std::to_string(objectIDIndex));
-		group->particleInitData.randomTransformMax = globalVariables->GetValue<Transform>(groupName, "RandomTransformMax" + std::to_string(objectIDIndex));
-		group->particleInitData.randomTransformMin = globalVariables->GetValue<Transform>(groupName, "RandomTransformMin" + std::to_string(objectIDIndex));
-		group->particleInitData.randomVelocityMax = globalVariables->GetValue<Vector3>(groupName, "RandomVelocityMax" + std::to_string(objectIDIndex));
-		group->particleInitData.randomVelocityMin = globalVariables->GetValue<Vector3>(groupName, "RandomVelocityMin" + std::to_string(objectIDIndex));
-		group->particleInitData.randomColorMax = globalVariables->GetValue<Vector4>(groupName, "RandomColorMax" + std::to_string(objectIDIndex));
-		group->particleInitData.randomColorMin = globalVariables->GetValue<Vector4>(groupName, "RandomColorMin" + std::to_string(objectIDIndex));
-		group->particleInitData.lifeTime = globalVariables->GetValue<float>(groupName, "LifeTime" + std::to_string(objectIDIndex));
-		group->particleInitData.isBillboard = globalVariables->GetValue<bool>(groupName, "IsBillboard" + std::to_string(objectIDIndex));
-		++objectIDIndex;
 	}
 }
 
@@ -505,149 +408,4 @@ void ParticleManager::SetBlendMode(std::string name, BlendMode blendMode) {
 	pipelineState.depthMode = DepthMode::kReadOnly;//読み込み
 	pipelineState.staticSamplersMode = StaticSamplersMode::kclamp;
 	particleGroups[name]->pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
-}
-void ParticleManager::UpdateGlobalVariables() {
-	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
-	const char* groupName = "Particle";
-	//std::string blendName = "Now Blend";
-	//std::vector<std::string> blendState{
-	//	"None",      //!< ブレンドなし
-	//	"Normal",    //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
-	//	"Add",       //!< 加算。Src * SrcA + Dest * 1
-	//	"Subtract",  //!< 減算。Dest * 1 - Src * SrcA
-	//	"Multiply",  //!< 乗算。Src * 0 + Dest * Src
-	//	"Screen", };
-	if (ImGui::BeginMenu(groupName)) {
-		// テキスト入力ボックス
-		if (ImGui::InputText("Input GroupNameText", buffer, IM_ARRAYSIZE(buffer))) {
-			// 入力が変更された場合に反映
-			groupNameText = buffer;
-		}
-		if (ImGui::InputText("Input TypeNameText", buffer2, IM_ARRAYSIZE(buffer2))) {
-			// 入力が変更された場合に反映
-			typeNameText = buffer2;
-		}
-		bool isGroupCreate = false;
-		// 入力された文字列を表示
-		ImGui::Text("Reflected Text: %s", groupNameText.c_str());
-		if (groupNameText.empty()) {
-			ImGui::Text("Error: Group name cannot be empty.");
-		} else if (particleGroupCreateDates_.count(groupNameText) != 0) {
-			ImGui::Text("Error: Group name already exists.");
-		} else {
-			isGroupCreate = true;
-		}
-		// ボタンを押したときの処理
-		if (ImGui::Button("CreateGroup")) {
-			if (isGroupCreate) {
-				particleGroupCreateDates_[groupNameText] = std::make_unique<ParticleGroupCreateData>();
-				InitializeGlobalVariables();
-				if (typeNameText == "cylinder") {
-					CreateCylinderParticleGroup(groupNameText, 32, 1.0f, 1.0f,3.0f);
-				} else if (typeNameText == "ring") {
-					CreateRingParticleGroup(groupNameText,32,1.0f,0.2f);
-				} else {
-					CreateParticleGroup(groupNameText);
-				}
-			}
-		}
-		//パーティクル初期化データの更新
-		for (auto& [name, group] : particleGroups) {
-			auto it = particleGroupCreateDates_.find(name);
-			if (it != particleGroupCreateDates_.end() && it->second) {
-				group->particleInitData = it->second->particleInitData;
-			}
-		}
-		uint32_t objectIDIndex = 0;
-		for (auto& [name, group] : particleGroupCreateDates_) {
-			//テクスチャのキーを取得
-			std::string textureName = name + ": Now Texture";
-			std::vector<std::string> textureState = TextureManager::GetInstance()->GetKeys();
-			auto it = particleGroups.find(name);
-			if (it != particleGroups.end() && it->second) {
-				//テクスチャ選択
-				std::string textureItem_selected_idx = it->second->materialData.textureFilePath;
-				const char* currentItem = textureItem_selected_idx.c_str();
-				if (ImGui::BeginCombo((textureName + name).c_str(), currentItem)) {
-					for (int i = 0; i < textureState.size(); ++i) {
-						bool isSelected = (textureItem_selected_idx == textureState[i]);
-						if (ImGui::Selectable(textureState[i].c_str(), isSelected)) {
-							it->second->materialData.textureFilePath = textureState[i];
-
-							group->textureFilePath = textureState[i];
-							globalVariables->SetValue(groupName, "TextureFilePath" + std::to_string(objectIDIndex), group->textureFilePath);
-						}
-						if (isSelected) {
-							ImGui::SetItemDefaultFocus();
-						}
-					}
-					ImGui::EndCombo();
-				}
-				globalVariables->SetValue(groupName, "ParticleType" + std::to_string(objectIDIndex), group->particleType);
-			}
-			//パーティクルの発生
-			if (ImGui::Button(std::string(name + ": Emit").c_str())) {
-				if (particleGroupCreateDates_.count(name) == 0) {
-					ImGui::Text("Error: Group name is empty.");
-				} else {
-					Emit(name, Vector3(0.0f, 0.0f, 0.0f), 1);
-				}
-			}
-			++objectIDIndex;
-		}
-
-	//	int particleItem_selected_idx = static_cast<int>(ParticleManager::GetInstance()->GetBlendMode(particleEmitter_->GetName()));
-	//	const char* currentItem = blendState[particleItem_selected_idx].c_str();
-	//	if (ImGui::BeginCombo((blendName + particleEmitter_->GetName()).c_str(), currentItem)) {
-	//		for (int i = 0; i < blendState.size(); ++i) {
-	//			bool isSelected = (particleItem_selected_idx == i);
-	//			if (ImGui::Selectable(blendState[i].c_str(), isSelected)) {
-	//				particleItem_selected_idx = i;
-	//				ParticleManager::GetInstance()->SetBlendMode(particleEmitter_->GetName(), static_cast<BlendMode>(i));
-	//			}
-	//			if (isSelected) {
-	//				ImGui::SetItemDefaultFocus();
-	//			}
-	//		}
-	//		ImGui::EndCombo();
-	//	}
-
-	//	Vector3 position = particleEmitter_->GetPosition();
-	//	ImGui::DragFloat2("particleEmitter_.Translate", &position.x, 0.1f);
-	//	/*if (position.y > 640.0f) {
-	//		position.y = 640.0f;
-	//	}*/
-
-	//	//Vector3 rotation = particleEmitter_->GetRotation();
-	//	//ImGui::SliderAngle("particleEmitter_.Rotate", &rotation.x);
-
-	//	//Vector3 size = particleEmitter_->GetSize();
-	//	//ImGui::DragFloat2("particleEmitter_.Scale", &size.x, 0.1f);
-	//	//if (size.y > 360.0f) {
-	//	//	size.y = 360.0f;
-	//	//}
-
-	//	int count = particleEmitter_->GetCount();
-	//	ImGui::DragInt("particleEmitter_.count", &count, 1, 0, 1000);
-
-	//	float frequency = particleEmitter_->GetFrequency();
-	//	ImGui::DragFloat("particleEmitter_.frequency", &frequency, 0.1f);
-
-	//	if (ImGui::Button("ParticleEmit", { 100,50 })) {
-	//		particleEmitter_->Emit();
-	//	}
-
-	//	bool isEmitUpdate = particleEmitter_->GetIsEmitUpdate();
-	//	ImGui::Checkbox("IsEmitUpdate", &isEmitUpdate);
-
-	//	particleEmitter_->SetPosition(position);
-	//	//particleEmitter_->SetRotation(rotation);
-	//	//particleEmitter_->SetSize(size);
-	//	particleEmitter_->SetCount(count);
-	//	particleEmitter_->SetFrequency(frequency);
-	//	particleEmitter_->SetIsEmitUpdate(isEmitUpdate);
-
-	//	//ImGui::Checkbox("IsAccelerationField", &isAccelerationField);
-		ImGui::EndMenu();
-	}
 }

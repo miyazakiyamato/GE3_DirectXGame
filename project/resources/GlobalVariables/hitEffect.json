@@ -1,0 +1,343 @@
+{
+    "hitEffect": {
+        "Count0": 1,
+        "Count1": 4,
+        "Count2": 10,
+        "Count3": 10,
+        "Frequency0": 0.5,
+        "Frequency1": 0.5,
+        "Frequency2": 0.5,
+        "Frequency3": 0.5,
+        "IsBillboard0": true,
+        "IsBillboard1": true,
+        "IsBillboard2": false,
+        "IsBillboard3": true,
+        "IsEmitUpdate0": false,
+        "IsEmitUpdate1": false,
+        "IsEmitUpdate2": false,
+        "IsEmitUpdate3": false,
+        "LifeTime0": 0.800000011920929,
+        "LifeTime1": 1.0,
+        "LifeTime2": 0.5,
+        "LifeTime3": 0.5,
+        "Name0": "aRing",
+        "Name1": "bCross",
+        "Name2": "cCylinder",
+        "Name3": "dCircle",
+        "ParticleType0": "ring",
+        "ParticleType1": "plane",
+        "ParticleType2": "cylinder",
+        "ParticleType3": "plane",
+        "RandomColorMax0": [
+            1.0,
+            1.0,
+            0.19607843458652496,
+            1.0
+        ],
+        "RandomColorMax1": [
+            1.0,
+            1.0,
+            0.3921568691730499,
+            1.0
+        ],
+        "RandomColorMax2": [
+            0.8941176533699036,
+            0.8941176533699036,
+            0.03921568766236305,
+            1.0
+        ],
+        "RandomColorMax3": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+        ],
+        "RandomColorMin0": [
+            1.0,
+            1.0,
+            0.19607841968536377,
+            1.0
+        ],
+        "RandomColorMin1": [
+            1.0,
+            1.0,
+            0.3921568691730499,
+            1.0
+        ],
+        "RandomColorMin2": [
+            0.8941176533699036,
+            0.8941176533699036,
+            0.03921568766236305,
+            1.0
+        ],
+        "RandomColorMin3": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+        ],
+        "RandomTransformMax0": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomTransformMax1": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                0.05000000074505806,
+                0.05000000074505806,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomTransformMax2": {
+            "rotate": [
+                0.0,
+                0.0,
+                6.28000020980835
+            ],
+            "scale": [
+                0.05000000074505806,
+                3.0,
+                0.05000000074505806
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomTransformMax3": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                0.10000000149011612,
+                0.10000000149011612,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomTransformMin0": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomTransformMin1": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                0.05000000074505806,
+                0.05000000074505806,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomTransformMin2": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                0.05000000074505806,
+                0.5,
+                0.05000000074505806
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomTransformMin3": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                0.10000000149011612,
+                0.10000000149011612,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "TextureFilePath0": "gradationLine.png",
+        "TextureFilePath1": "circle2.png",
+        "TextureFilePath2": "gradationLine.png",
+        "TextureFilePath3": "circle2.png",
+        "kBottomRadius2": 0.10000000149011612,
+        "kDivide0": 32,
+        "kDivide2": 32,
+        "kHeight2": 1.0,
+        "kInnerRadius0": 0.20000000298023224,
+        "kOuterRadius0": 1.0,
+        "kTopRadius2": 5.0
+    },
+    "hitEffect_DisplayOrder": [
+        "Name0",
+        "TextureFilePath0",
+        "ParticleType0",
+        "RandomTransformMax0",
+        "RandomTransformMin0",
+        "RandomColorMax0",
+        "RandomColorMin0",
+        "LifeTime0",
+        "IsBillboard0",
+        "Name1",
+        "TextureFilePath1",
+        "ParticleType1",
+        "RandomTransformMax1",
+        "RandomTransformMin1",
+        "RandomVelocityMax1",
+        "RandomVelocityMin1",
+        "RandomColorMax1",
+        "RandomColorMin1",
+        "LifeTime1",
+        "IsBillboard1",
+        "Name2",
+        "TextureFilePath2",
+        "ParticleType2",
+        "RandomTransformMax2",
+        "RandomTransformMin2",
+        "RandomColorMax2",
+        "RandomColorMin2",
+        "LifeTime2",
+        "IsBillboard2",
+        "Name3",
+        "TextureFilePath3",
+        "ParticleType3",
+        "RandomTransformMax3",
+        "RandomTransformMin3",
+        "RandomColorMax3",
+        "RandomColorMin3",
+        "LifeTime3",
+        "IsBillboard3",
+        "Count0",
+        "Frequency0",
+        "IsEmitUpdate0",
+        "Count1",
+        "Frequency1",
+        "IsEmitUpdate1",
+        "Count2",
+        "Frequency2",
+        "IsEmitUpdate2",
+        "Count3",
+        "Frequency3",
+        "IsEmitUpdate3",
+        "kDivide0",
+        "kOuterRadius0",
+        "kInnerRadius0",
+        "kDivide2",
+        "kTopRadius2",
+        "kBottomRadius2",
+        "kHeight2"
+    ],
+    "hitEffect_HeaderGroups": {
+        "Count0": "aRing",
+        "Count1": "bCross",
+        "Count2": "cCylinder",
+        "Count3": "dCircle",
+        "Frequency0": "aRing",
+        "Frequency1": "bCross",
+        "Frequency2": "cCylinder",
+        "Frequency3": "dCircle",
+        "IsBillboard0": "aRing",
+        "IsBillboard1": "bCross",
+        "IsBillboard2": "cCylinder",
+        "IsBillboard3": "dCircle",
+        "IsEmitUpdate0": "aRing",
+        "IsEmitUpdate1": "bCross",
+        "IsEmitUpdate2": "cCylinder",
+        "IsEmitUpdate3": "dCircle",
+        "LifeTime0": "aRing",
+        "LifeTime1": "bCross",
+        "LifeTime2": "cCylinder",
+        "LifeTime3": "dCircle",
+        "Name0": "aRing",
+        "Name1": "bCross",
+        "Name2": "cCylinder",
+        "Name3": "dCircle",
+        "ParticleType0": "aRing",
+        "ParticleType1": "bCross",
+        "ParticleType2": "cCylinder",
+        "ParticleType3": "dCircle",
+        "RandomColorMax0": "aRing",
+        "RandomColorMax1": "bCross",
+        "RandomColorMax2": "cCylinder",
+        "RandomColorMax3": "dCircle",
+        "RandomColorMin0": "aRing",
+        "RandomColorMin1": "bCross",
+        "RandomColorMin2": "cCylinder",
+        "RandomColorMin3": "dCircle",
+        "RandomTransformMax0": "aRing",
+        "RandomTransformMax1": "bCross",
+        "RandomTransformMax2": "cCylinder",
+        "RandomTransformMax3": "dCircle",
+        "RandomTransformMin0": "aRing",
+        "RandomTransformMin1": "bCross",
+        "RandomTransformMin2": "cCylinder",
+        "RandomTransformMin3": "dCircle",
+        "TextureFilePath0": "aRing",
+        "TextureFilePath1": "bCross",
+        "TextureFilePath2": "cCylinder",
+        "TextureFilePath3": "dCircle",
+        "kBottomRadius2": "cCylinder",
+        "kDivide0": "aRing",
+        "kDivide2": "cCylinder",
+        "kHeight2": "cCylinder",
+        "kInnerRadius0": "aRing",
+        "kOuterRadius0": "aRing",
+        "kTopRadius2": "cCylinder"
+    }
+}
