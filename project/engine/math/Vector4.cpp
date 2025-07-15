@@ -15,3 +15,55 @@ Vector4 Vector4::Random(std::mt19937& randomEngine, const Vector4& vMin, const V
 	std::uniform_real_distribution<float> distW(vMin.w, vMax.w);
 	return { distX(randomEngine), distY(randomEngine), distZ(randomEngine) ,distW(randomEngine) };
 }
+
+Vector4 Vector4::operator-(){
+	return Vector4{ -x, -y, -z, -w };
+}
+
+Vector4 Vector4::operator+(const Vector4& v2){
+	return { x + v2.x, y + v2.y, z + v2.z , w + v2.w };
+}
+
+Vector4 Vector4::operator-(const Vector4& v2){
+	return { x - v2.x, y - v2.y, z - v2.z, w - v2.w };
+}
+
+Vector4 Vector4::operator*(const float& v2){
+	return { x * v2, y * v2, z * v2, w * v2 };
+}
+
+Vector4 Vector4::operator/(const float& v2){
+	return { x / v2, y / v2, z / v2, w / v2 };
+}
+
+Vector4& Vector4::operator+=(const Vector4& v2){
+	x += v2.x;
+	y += v2.y;
+	z += v2.z;
+	w += v2.w;
+	return *this;
+}
+
+Vector4& Vector4::operator-=(const Vector4& v2){
+	x -= v2.x;
+	y -= v2.y;
+	z -= v2.z;
+	w -= v2.w;
+	return *this;
+}
+
+Vector4& Vector4::operator*=(const float& v2){
+	x *= v2;
+	y *= v2;
+	z *= v2;
+	w *= v2;
+	return *this;
+}
+
+Vector4& Vector4::operator/=(const float& v2){
+	x /= v2;
+	y /= v2;
+	z /= v2;
+	w /= v2;
+	return *this;
+}

@@ -53,11 +53,15 @@ void ParticleManager::Update() {
 		int index = 0;
 		for (std::list<Particle>::iterator it = group.particles.begin(); it != group.particles.end();) {
 			Particle& particle = *it;
-
-			/*particle.currentTime += TimeManager::GetInstance()->deltaTime_;
+			particle.transform.scale += particle.velocity.scale * TimeManager::GetInstance()->deltaTime_;
+			particle.transform.rotate += particle.velocity.rotate * TimeManager::GetInstance()->deltaTime_;
+			particle.transform.translate += particle.velocity.translate * TimeManager::GetInstance()->deltaTime_;
+			// UV変形の更新
+			particle.uvTransform.scale += particle.uvVelocity.scale * TimeManager::GetInstance()->deltaTime_;
+			particle.uvTransform.rotate += particle.uvVelocity.rotate * TimeManager::GetInstance()->deltaTime_;
+			particle.uvTransform.translate += particle.uvVelocity.translate * TimeManager::GetInstance()->deltaTime_;
 			particle.color.w = 1.0f - (particle.currentTime / particle.lifeTime);
-			particle.transform.translate = particle.transform.translate + particle.velocity * TimeManager::GetInstance()->deltaTime_;
-			particle.uvTransform.translate.x += 0.001f;*/
+			// パーティクルの時間更新
 			particle.currentTime += TimeManager::GetInstance()->deltaTime_;
 			if (particle.lifeTime < particle.currentTime) {
 				it = group.particles.erase(it);
@@ -387,6 +391,13 @@ void ParticleManager::Emit(const std::string name, const Vector3& position, Part
 		particle.uvTransform.rotate = { 0.0f,0.0f,0.0f };
 		particle.uvTransform.translate = { 0.0f,0.0f,0.0f };
 		particle.color = Vector4::Random(randomEngine_, particleInitData.randomColorMin, particleInitData.randomColorMax);
+		particle.velocity.scale = Vector3::Random(randomEngine_, particleInitData.randomVelocityMin.scale, particleInitData.randomVelocityMax.scale);
+		particle.velocity.rotate = Vector3::Random(randomEngine_, particleInitData.randomVelocityMin.rotate, particleInitData.randomVelocityMax.rotate);
+		particle.velocity.translate = Vector3::Random(randomEngine_, particleInitData.randomVelocityMin.translate, particleInitData.randomVelocityMax.translate);
+		particle.uvVelocity.scale = Vector3::Random(randomEngine_, particleInitData.randomUvVelocityMin.scale, particleInitData.randomUvVelocityMax.scale);
+		particle.uvVelocity.rotate = Vector3::Random(randomEngine_, particleInitData.randomUvVelocityMin.rotate, particleInitData.randomUvVelocityMax.rotate);
+		particle.uvVelocity.translate = Vector3::Random(randomEngine_, particleInitData.randomUvVelocityMin.translate, particleInitData.randomUvVelocityMax.translate);
+		particle.isBillboard = particleInitData.isBillboard;
 		particle.lifeTime = particleInitData.lifeTime;
 		group.particles.push_back(particle);
 	}

@@ -83,9 +83,9 @@
                 0.0
             ],
             "scale": [
-                1.0,
-                1.0,
-                1.0
+                0.0,
+                0.0,
+                0.0
             ],
             "translate": [
                 0.0,
@@ -151,9 +151,9 @@
                 0.0
             ],
             "scale": [
-                1.0,
-                1.0,
-                1.0
+                0.0,
+                0.0,
+                0.0
             ],
             "translate": [
                 0.0,
@@ -204,6 +204,278 @@
             "scale": [
                 0.10000000149011612,
                 0.10000000149011612,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomUvVelocityMax0": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomUvVelocityMax1": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomUvVelocityMax2": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomUvVelocityMax3": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomUvVelocityMin0": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomUvVelocityMin1": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomUvVelocityMin2": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomUvVelocityMin3": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomVelocityMax0": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomVelocityMax1": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomVelocityMax2": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "translate": [
+                0.10000000149011612,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomVelocityMax3": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomVelocityMin0": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomVelocityMin1": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomVelocityMin2": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "translate": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "RandomVelocityMin3": {
+            "rotate": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
                 1.0
             ],
             "translate": [
@@ -281,7 +553,21 @@
         "kDivide2",
         "kTopRadius2",
         "kBottomRadius2",
-        "kHeight2"
+        "kHeight2",
+        "RandomVelocityMax0",
+        "RandomVelocityMin0",
+        "RandomUvVelocityMax0",
+        "RandomUvVelocityMin0",
+        "RandomUvVelocityMax1",
+        "RandomUvVelocityMin1",
+        "RandomVelocityMax2",
+        "RandomVelocityMin2",
+        "RandomUvVelocityMax2",
+        "RandomUvVelocityMin2",
+        "RandomVelocityMax3",
+        "RandomVelocityMin3",
+        "RandomUvVelocityMax3",
+        "RandomUvVelocityMin3"
     ],
     "hitEffect_HeaderGroups": {
         "Count0": "aRing",
@@ -328,6 +614,22 @@
         "RandomTransformMin1": "bCross",
         "RandomTransformMin2": "cCylinder",
         "RandomTransformMin3": "dCircle",
+        "RandomUvVelocityMax0": "aRing",
+        "RandomUvVelocityMax1": "bCross",
+        "RandomUvVelocityMax2": "cCylinder",
+        "RandomUvVelocityMax3": "dCircle",
+        "RandomUvVelocityMin0": "aRing",
+        "RandomUvVelocityMin1": "bCross",
+        "RandomUvVelocityMin2": "cCylinder",
+        "RandomUvVelocityMin3": "dCircle",
+        "RandomVelocityMax0": "aRing",
+        "RandomVelocityMax1": "bCross",
+        "RandomVelocityMax2": "cCylinder",
+        "RandomVelocityMax3": "dCircle",
+        "RandomVelocityMin0": "aRing",
+        "RandomVelocityMin1": "bCross",
+        "RandomVelocityMin2": "cCylinder",
+        "RandomVelocityMin3": "dCircle",
         "TextureFilePath0": "aRing",
         "TextureFilePath1": "bCross",
         "TextureFilePath2": "cCylinder",

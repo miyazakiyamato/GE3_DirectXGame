@@ -11,7 +11,7 @@ void BaseParticleEmitter::Initialize(const std::string& emitterName){
 	ApplyGlobalVariables();
 	InitializeGlobalVariables();
 	for (auto& [name, data] : emitterDates_) {
-		if (data.kDivide == 0) {
+		if (data.kDivide <= 0) {
 			data.kDivide = 32; // デフォルトの分割数
 		}
 		if (data.particleInitData.particleType == "cylinder") {	
@@ -81,15 +81,33 @@ void BaseParticleEmitter::UpdateGlobalVariables(){
 		// ボタンを押したときの処理
 		if (ImGui::Button("CreateGroup")) {
 			if (isGroupCreate) {
-				/*emitterDates_[groupNameText] = std::make_unique<ParticleGroupCreateData>();
+				emitterDates_[groupNameText] = EmitterData();
+				ApplyGlobalVariables();
 				InitializeGlobalVariables();
-				if (typeNameText == "cylinder") {
-					CreateCylinderParticleGroup(groupNameText, 32, 1.0f, 1.0f, 3.0f);
-				} else if (typeNameText == "ring") {
-					CreateRingParticleGroup(groupNameText, 32, 1.0f, 0.2f);
+				if (emitterDates_[groupNameText].kDivide <= 0) {
+					emitterDates_[groupNameText].kDivide = 32; // デフォルトの分割数
+				}
+				if (emitterDates_[groupNameText].particleInitData.particleType == "cylinder") {
+					ParticleManager::GetInstance()->CreateCylinderParticleGroup(groupNameText, emitterDates_[groupNameText].kDivide, emitterDates_[groupNameText].kTopRadius, emitterDates_[groupNameText].kBottomRadius, emitterDates_[groupNameText].kHeight);
+				} else if (emitterDates_[groupNameText].particleInitData.particleType == "ring") {
+					ParticleManager::GetInstance()->CreateRingParticleGroup(groupNameText, emitterDates_[groupNameText].kDivide, emitterDates_[groupNameText].kOuterRadius, emitterDates_[groupNameText].kInnerRadius);
 				} else {
-					CreateParticleGroup(groupNameText);
-				}*/
+					ParticleManager::GetInstance()->CreateParticleGroup(groupNameText);
+				}
+			}
+		}
+		if (ImGui::Button("GroupReset")) {
+			for (auto& [name, data] : emitterDates_) {
+				if (data.kDivide <= 0) {
+					data.kDivide = 32; // デフォルトの分割数
+				}
+				if (data.particleInitData.particleType == "cylinder") {
+					ParticleManager::GetInstance()->CreateCylinderParticleGroup(name, data.kDivide, data.kTopRadius, data.kBottomRadius, data.kHeight);
+				} else if (data.particleInitData.particleType == "ring") {
+					ParticleManager::GetInstance()->CreateRingParticleGroup(name, data.kDivide, data.kOuterRadius, data.kInnerRadius);
+				} else {
+					ParticleManager::GetInstance()->CreateParticleGroup(name);
+				}
 			}
 		}
 		//uint32_t objectIDIndex = 0;
@@ -206,6 +224,10 @@ void BaseParticleEmitter::InitializeGlobalVariables(){
 		globalVariables->AddItem(groupName, "Count" + std::to_string(objectIDIndex), (int32_t)data.particleInitData.count);
 		globalVariables->AddItem(groupName, "Frequency" + std::to_string(objectIDIndex), data.frequency);
 		globalVariables->AddItem(groupName, "IsEmitUpdate" + std::to_string(objectIDIndex), data.isEmitUpdate);
+		globalVariables->AddItem(groupName, "RandomVelocityMax" + std::to_string(objectIDIndex), data.particleInitData.randomVelocityMax);
+		globalVariables->AddItem(groupName, "RandomVelocityMin" + std::to_string(objectIDIndex), data.particleInitData.randomVelocityMin);
+		globalVariables->AddItem(groupName, "RandomUvVelocityMax" + std::to_string(objectIDIndex), data.particleInitData.randomUvVelocityMax);
+		globalVariables->AddItem(groupName, "RandomUvVelocityMin" + std::to_string(objectIDIndex), data.particleInitData.randomUvVelocityMin);
 		if (data.particleInitData.particleType == "cylinder") {
 			globalVariables->AddItem(groupName, "kDivide" + std::to_string(objectIDIndex), (int32_t)data.kDivide);
 			globalVariables->AddItem(groupName, "kTopRadius" + std::to_string(objectIDIndex), data.kTopRadius);
@@ -248,6 +270,10 @@ void BaseParticleEmitter::ApplyGlobalVariables() {
 		data.particleInitData.count = (uint32_t)globalVariables->GetValue<int32_t>(groupName, "Count" + std::to_string(objectIDIndex));
 		data.frequency = globalVariables->GetValue<float>(groupName, "Frequency" + std::to_string(objectIDIndex));
 		data.isEmitUpdate = globalVariables->GetValue<bool>(groupName, "IsEmitUpdate" + std::to_string(objectIDIndex));
+		data.particleInitData.randomVelocityMax = globalVariables->GetValue<Transform>(groupName, "RandomVelocityMax" + std::to_string(objectIDIndex));
+		data.particleInitData.randomVelocityMin = globalVariables->GetValue<Transform>(groupName, "RandomVelocityMin" + std::to_string(objectIDIndex));
+		data.particleInitData.randomUvVelocityMax = globalVariables->GetValue<Transform>(groupName, "RandomUvVelocityMax" + std::to_string(objectIDIndex));
+		data.particleInitData.randomUvVelocityMin = globalVariables->GetValue<Transform>(groupName, "RandomUvVelocityMin" + std::to_string(objectIDIndex));
 		if (data.particleInitData.particleType == "cylinder") {
 			data.kDivide = (uint32_t)globalVariables->GetValue<int32_t>(groupName, "kDivide" + std::to_string(objectIDIndex));
 			data.kTopRadius = globalVariables->GetValue<float>(groupName, "kTopRadius" + std::to_string(objectIDIndex));

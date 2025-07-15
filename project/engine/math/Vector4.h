@@ -15,4 +15,13 @@ public:
 	//ランダム
 	static Vector4 Random(std::mt19937& randomEngine, const Vector4& vMin, const Vector4& vMax);
 	//演算子のオーバーロード
+	Vector4 operator-();
+	Vector4 operator+(const Vector4& v2);
+	Vector4 operator-(const Vector4& v2);
+	Vector4 operator*(const float& v2);
+	Vector4 operator/(const float& v2);
+	Vector4& operator+=(const Vector4& v2);
+	Vector4& operator-=(const Vector4& v2);
+	Vector4& operator*=(const float& v2);
+	Vector4& operator/=(const float& v2);
 };

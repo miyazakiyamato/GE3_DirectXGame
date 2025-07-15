@@ -27,8 +27,9 @@ public:
 	struct Particle {
 		Transform transform;
 		Transform uvTransform;
-		Vector3 velocity;
 		Vector4 color;
+		Transform velocity{};
+		Transform uvVelocity{};
 		float lifeTime;
 		float currentTime;
 		bool isBillboard;
@@ -49,14 +50,10 @@ public:
 		float lifeTime = 2.0f;
 		uint32_t count = 1;//発生数
 		bool isBillboard = true;
-	};
-	struct ParticleUpdateData {
 		Transform randomVelocityMax{};
 		Transform randomVelocityMin{};
 		Transform randomUvVelocityMax{};
 		Transform randomUvVelocityMin{};
-		Vector4 randomColorVelocityMax{};
-		Vector4 randomColorVelocityMin{};
 	};
 	struct ParticleGroup {
 		std::list<Particle> particles;//パーティクルのリスト
