@@ -38,13 +38,14 @@ void Object3d::Initialize(){
 void Object3d::Update(){
 	Matrix4x4 worldMatrix;
 	Matrix4x4 worldViewProjectionMatrix;
-	worldMatrix = Matrix4x4::MakeAffineMatrix(transform.scale, transform.rotate + Vector3(0.0f,std::numbers::pi_v<float>,0.0f), transform.translate);
+	worldMatrix = Matrix4x4::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 	if (worldMatrix_) {
 		worldMatrix = *worldMatrix_ ;
 	}
 	if (parent_) {
-		worldMatrix = worldMatrix * parent_->GetWorldMatrix();
+		worldMatrix *= parent_->GetWorldMatrix();
 	}
+	worldMatrix = Matrix4x4::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, Vector3(0.0f, std::numbers::pi_v<float>, 0.0f), {}) * worldMatrix;
 	if (CameraManager::GetInstance()->GetCamera()) {
 		const Matrix4x4& viewProjectionMatrix = CameraManager::GetInstance()->GetCamera()->GetViewProjectionMatrix();
 		worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;

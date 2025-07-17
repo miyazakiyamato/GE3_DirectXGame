@@ -114,8 +114,8 @@ void GameScene::Initialize(){
 	object3d3->SetParent(object3ds_[2].get());
 	std::unique_ptr<Object3d> object3d4(new Object3d);
 	object3d4->Initialize();
-	object3d4->SetTranslate({ 0.0f,7.0f,2.0f });
-	object3d4->SetRotate({ 0.0f,0.0f,1.57f });
+	object3d4->SetTranslate({ 0.0f,7.0f,-2.0f });
+	object3d4->SetRotate({ 0.0f,0.0f,-1.57f });
 	object3d4->SetScale({ 10.0f,10.0f,10.0f });
 	object3d4->SetModel("sword/sword.obj");
 	object3d4->SetParent(object3d3.get());
@@ -282,6 +282,10 @@ void GameScene::Update(){
 	}
 	Matrix4x4 rHandworldMatrix = object3ds_[2]->GetJoint("mixamorig:RightHand").skeletonSpaceMatrix;
 	object3ds_[7]->SetWorldMatrix(&rHandworldMatrix);
+	/*for (size_t i = 0; i < object3ds_.size();i++) {
+		if (i == 7) {continue;}
+		object3ds_[i]->UpdateWorldMatrix();
+	}*/
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		object3d->Update();
 	}

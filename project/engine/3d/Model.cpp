@@ -75,7 +75,7 @@ void Model::LoadFile(const std::string& directoryPath, const std::string& filena
 			Vector3 normal = { 0.0f, 0.0f, -1.0f }; // 法線のデフォルト
 			if (mesh->HasNormals()) {
 				aiVector3D& n = mesh->mNormals[vertexIndex];
-				normal = { -n.x, n.y, n.z };
+				normal = { n.x, n.y, n.z };
 			}
 			Vector2 texcoord = { 0.0f, 0.0f }; // デフォルト値
 			if (mesh->HasTextureCoords(0)) {
