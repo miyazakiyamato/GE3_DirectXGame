@@ -26,6 +26,10 @@ from .file_name import OBJECT_PT_file_name
 from .collider import OBJECT_PT_collider
 #パネル 無効フラグ
 from .disabled import OBJECT_PT_disabled
+#オペレータ モジュールのimport
+from .spawn import MYADDON_OT_spawn_import_symbol 
+#オペレータ モジュールの生成
+from .spawn import MYADDON_OT_spawn_create_symbol 
 #オペレータ 頂点を伸ばす
 from .stretch_vertex import MYADDON_OT_stretch_vertex
 #オペレータ ICO球生成
@@ -40,6 +44,8 @@ classes = (
     MYADDON_OT_stretch_vertex,
     MYADDON_OT_create_ico_sphere,
     TOPBAR_MT_my_menu,
+    MYADDON_OT_spawn_import_symbol,
+    MYADDON_OT_spawn_create_symbol,
     MYADDON_OT_add_filename,
     MYADDON_OT_add_collider,
     MYADDON_OT_add_disabled,
