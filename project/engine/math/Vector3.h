@@ -4,6 +4,7 @@
 /// <summary>
 /// 3次元ベクトル
 /// </summary>
+class Quaternion;
 class Vector3{
 public:
 	//メンバ変数
@@ -16,6 +17,7 @@ public:
 	Vector3 Abs();
 	Vector3 Clamp01();
 	Vector3 Clamp_11();
+	Quaternion ToQuaternion() const;
 
 	static Vector3 Add(const Vector3& v1, const Vector3& v2);
 	static Vector3 Subtract(const Vector3& v1, const Vector3& v2);
