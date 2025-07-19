@@ -36,16 +36,16 @@ void Object3d::Initialize(){
 }
 
 void Object3d::Update(){
-	Matrix4x4 worldMatrix;
-	Matrix4x4 worldViewProjectionMatrix;
-	worldMatrix = Matrix4x4::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-	if (worldMatrix_) {
-		worldMatrix = *worldMatrix_ ;
+	if (!isSetWorldMatrix_) {
+		worldMatrix_ = Quaternion::MakeAffineMatrix(transform.scale, transform.rotate.ToQuaternion(), transform.translate);
 	}
+	isSetWorldMatrix_ = false;
 	if (parent_) {
-		worldMatrix *= parent_->GetWorldMatrix();
+		worldMatrix_ *= parent_->GetWorldMatrix();
 	}
-	worldMatrix = Matrix4x4::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, Vector3(0.0f, std::numbers::pi_v<float>, 0.0f), {}) * worldMatrix;
+	Matrix4x4 worldMatrix = worldMatrix_;
+	worldMatrix = Quaternion::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, Vector3(0.0f, std::numbers::pi_v<float>, 0.0f).ToQuaternion(), {}) * worldMatrix;
+	Matrix4x4 worldViewProjectionMatrix = worldMatrix;
 	if (CameraManager::GetInstance()->GetCamera()) {
 		const Matrix4x4& viewProjectionMatrix = CameraManager::GetInstance()->GetCamera()->GetViewProjectionMatrix();
 		worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;
@@ -54,89 +54,85 @@ void Object3d::Update(){
 
 		cameraData->worldPosition = {cameraWorldMatrix.m[3][0],cameraWorldMatrix.m[3][1],cameraWorldMatrix.m[3][2]};
 	}
-	else {
-		worldViewProjectionMatrix = worldMatrix;
-	}
-	if (model_) {
-		if (animationData_) {
-			animationData_->time += TimeManager::GetInstance()->deltaTime_;
-			if (animationData_->isLoop) {
-				animationData_->time = fmod(animationData_->time, animationData_->animation->GetDuration());
-			} else if (animationData_->time > animationData_->animation->GetDuration()) {
-				animationData_->time = animationData_->animation->GetDuration();
-			}
-			if (nextAnimationData_) {
-				nextAnimationData_->time += TimeManager::GetInstance()->deltaTime_;
-				skeletonData_->ApplyAnimation(animationData_->animation,nextAnimationData_->animation, nextAnimationData_->time / lerpTime_);
-				if (nextAnimationData_->time > lerpTime_) {
-					animationData_->animation = nextAnimationData_->animation; 
-					animationData_->time = 0.0f;
-					animationData_->isLoop = nextAnimationData_->isLoop;
-					nextAnimationData_.reset(); // 次のアニメーションデータを解放
-					skeletonData_->ApplyAnimation(animationData_->animation, animationData_->time);
-				}
-			} else {
-				skeletonData_->ApplyAnimation(animationData_->animation, animationData_->time);
-			}
-		}
-		wvpData->WVP = worldViewProjectionMatrix;
-		wvpData->World = worldMatrix;
-		wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
-
-		//スケルトンの更新
-		skeletonData_->Update();
-		//スキンクラスタの更新
-		skinClusterData_->Update(skeletonData_.get());
-		for (MaterialData materialData : materialDates_) {
-			materialData.material->uvTransform = Matrix4x4::MakeAffineMatrix(
-				materialData.uvTransform.scale,
-				materialData.uvTransform.rotate,
-				materialData.uvTransform.translate);
-		}
-	} else {
+	if (!model_) {
+		//モデルが設定されていない場合は、ワールド行列だけを更新
 		wvpData->WVP = worldViewProjectionMatrix;
 		wvpData->World = worldMatrix;
 		wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(worldMatrix));
+		return;
+	}
+	if (animationData_) {
+		animationData_->time += TimeManager::GetInstance()->deltaTime_;
+		if (animationData_->isLoop) {
+			animationData_->time = fmod(animationData_->time, animationData_->animation->GetDuration());
+		} else if (animationData_->time > animationData_->animation->GetDuration()) {
+			animationData_->time = animationData_->animation->GetDuration();
+		}
+		if (nextAnimationData_) {
+			nextAnimationData_->time += TimeManager::GetInstance()->deltaTime_;
+			skeletonData_->ApplyAnimation(animationData_->animation, nextAnimationData_->animation, nextAnimationData_->time / lerpTime_);
+			if (nextAnimationData_->time > lerpTime_) {
+				animationData_->animation = nextAnimationData_->animation;
+				animationData_->time = 0.0f;
+				animationData_->isLoop = nextAnimationData_->isLoop;
+				nextAnimationData_.reset(); // 次のアニメーションデータを解放
+				skeletonData_->ApplyAnimation(animationData_->animation, animationData_->time);
+			}
+		} else {
+			skeletonData_->ApplyAnimation(animationData_->animation, animationData_->time);
+		}
+	}
+	wvpData->WVP = worldViewProjectionMatrix;
+	wvpData->World = worldMatrix;
+	wvpData->WorldInverseTranspose = Matrix4x4::Transpose(Matrix4x4::Inverse(wvpData->World));
+
+	//スケルトンの更新
+	skeletonData_->Update();
+	//スキンクラスタの更新
+	skinClusterData_->Update(skeletonData_.get());
+	for (MaterialData materialData : materialDates_) {
+		materialData.material->uvTransform = Matrix4x4::MakeAffineMatrix(
+			materialData.uvTransform.scale,
+			materialData.uvTransform.rotate,
+			materialData.uvTransform.translate);
 	}
 }
 
 void Object3d::Draw(){
+	//モデルが設定されていない場合は何もしない
+	if (!model_) {return;}
+	// コマンドリストの取得
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
-	if (model_) {
-		// コマンドリストの取得
-		ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-		
-		PipelineManager::GetInstance()->DrawSetting(pipelineStateName_);
-		
-		for (uint32_t meshIndex = 0; meshIndex < model_->GetMeshData().size(); meshIndex++) {
-			if (animationData_) {
-				skinClusterData_->Draw(meshIndex);
-			}
-			//wvp用のCBufferの場所を設定
-			commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
-			//マテリアルCBufferの場所を設定
-			commandList->SetGraphicsRootConstantBufferView(0, materialDates_[meshIndex].materialResource.Get()->GetGPUVirtualAddress());
-			//テクスチャを設定
-			commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(materialDates_[meshIndex].textureFilePath_));
-			if (!isSkybox_) {
-				//カメラCBufferの場所を設定
-				commandList->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
-				//ライトマネージャーのデータを設定
-				lightManager_->Draw();
-				if (environmentTextureFilePath_ != "") {
-					//環境マップテクスチャを設定
-					commandList->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvHandleGPU(environmentTextureFilePath_));
-				}
-			}
+	PipelineManager::GetInstance()->DrawSetting(pipelineStateName_);
 
-			model_->Draw(meshIndex);
+	for (uint32_t meshIndex = 0; meshIndex < model_->GetMeshData().size(); meshIndex++) {
+		if (animationData_) {
+			skinClusterData_->Draw(meshIndex);
 		}
-		//Skeleton
-		if (skeletonData_ && isDrawSkeleton_) {
-			skeletonData_->Draw(wvpData->World);
+		//wvp用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
+		//マテリアルCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(0, materialDates_[meshIndex].materialResource.Get()->GetGPUVirtualAddress());
+		//テクスチャを設定
+		commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(materialDates_[meshIndex].textureFilePath_));
+		if (!isSkybox_) {
+			//カメラCBufferの場所を設定
+			commandList->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
+			//ライトマネージャーのデータを設定
+			lightManager_->Draw();
+			if (environmentTextureFilePath_ != "") {
+				//環境マップテクスチャを設定
+				commandList->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvHandleGPU(environmentTextureFilePath_));
+			}
 		}
+
+		model_->Draw(meshIndex);
 	}
-
+	//Skeleton
+	if (skeletonData_ && isDrawSkeleton_) {
+		skeletonData_->Draw(wvpData->World);
+	}
 }
 
 void Object3d::ImGuiUpdate(const std::string& name){
@@ -228,13 +224,22 @@ void Object3d::ImGuiUpdate(const std::string& name){
 	}
 }
 
+Matrix4x4 Object3d::GetJointMatrix(std::string jointName) const {
+	return skeletonData_->GetJoints()[skeletonData_->GetJointMap()[jointName]].skeletonSpaceMatrix * Quaternion::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, Vector3(0.0f, std::numbers::pi_v<float>, 0.0f).ToQuaternion(), {});
+}
+
 Vector3 Object3d::GetJointsPosition(std::string jointName){
 	Vector3 position = { 0.0f,0.0f,0.0f };
-	Matrix4x4 jointWorldMatrix = (Matrix4x4)GetJoint(jointName).skeletonSpaceMatrix * wvpData->World;
+	Matrix4x4 jointWorldMatrix = (Matrix4x4)GetJointMatrix(jointName) * worldMatrix_;
 	position.x = jointWorldMatrix.m[3][0];
 	position.y = jointWorldMatrix.m[3][1];
 	position.z = jointWorldMatrix.m[3][2];
 	return position;
+}
+
+void Object3d::SetWorldMatrix(const Matrix4x4& worldMatrix){
+	isSetWorldMatrix_ = true; // WorldMatrixをセットするフラグを立てる
+	worldMatrix_ = worldMatrix;
 }
 
 void Object3d::SetEnvironmentTexture(const std::string& cubeTextureFilePath) {
@@ -313,7 +318,7 @@ void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
 	pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
 }
 
-void Object3d::SetBlendMode(BlendMode blendMode){
+void Object3d::SetBlendMode(const BlendMode& blendMode){
 	blendMode_ = blendMode;
 	PipelineState pipelineState;
 	if (skinClusterData_) {
@@ -332,10 +337,9 @@ Vector3 Object3d::GetCenterPosition() const
 {
 	Vector3 worldPos;
 	//ワールド行列の平行移動成分取得
-	worldPos.x = wvpData->World.m[3][0];
-	worldPos.y = wvpData->World.m[3][1];
-	worldPos.z = wvpData->World.m[3][2];
+	worldPos.x = worldMatrix_.m[3][0];
+	worldPos.y = worldMatrix_.m[3][1];
+	worldPos.z = worldMatrix_.m[3][2];
 
 	return worldPos;
 }
-

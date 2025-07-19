@@ -67,6 +67,7 @@ private://メンバ変数
 
 	//Transform変数を作る。
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Matrix4x4 worldMatrix_;
 	std::unique_ptr<AnimationData> animationData_ = nullptr;
 	std::unique_ptr<AnimationData> nextAnimationData_ = nullptr;
 	std::unique_ptr<Skeleton> skeletonData_ = nullptr;
@@ -74,8 +75,8 @@ private://メンバ変数
 	float lerpTime_ = 0.1f; //!< アニメーションを何秒で補間するか
 
 	Object3d* parent_ = nullptr;
-	Matrix4x4* worldMatrix_;
-
+	
+	bool isSetWorldMatrix_ = false; //!< WorldMatrixをセットするかどうか
 	bool isDrawSkeleton_ = false; //!< Skeletonを描画するかどうか
 	bool isSkybox_ = false; //!< SkyBoxかどうか
 	std::string environmentTextureFilePath_ = "";
@@ -90,23 +91,23 @@ public://ゲッターセッター
 	const Vector4& GetColor(uint32_t num) const { return materialDates_[num].material->color; }
 	const Vector4& GetHighLightColor(uint32_t num) const { return materialDates_[num].material->highLightColor; }
 	Vector3 GetCenterPosition() const;
-	const Matrix4x4& GetWorldMatrix() const { return wvpData->World; }
+	const Matrix4x4& GetWorldMatrix() const { return worldMatrix_; }
 	bool GetEnableLighting(uint32_t num) const { return materialDates_[num].material->enableLighting; }
 	float GetShininess(uint32_t num) const { return materialDates_[num].material->shininess; }
 	bool GetEnableEnvironmentMap(uint32_t num) const { return materialDates_[num].material->enableEnvironmentMap; }
 	float GetEnvironmentCoefficient(uint32_t num) const { return materialDates_[num].material->environmentCoefficient; }
 	bool GetIsDrawSkeleton() const { return isDrawSkeleton_; }
-	const Skeleton::Joint& GetJoint(std::string jointName) const { return skeletonData_->GetJoints()[skeletonData_->GetJointMap()[jointName]]; }
+	Matrix4x4 GetJointMatrix(std::string jointName) const; 
 	Vector3 GetJointsPosition(std::string jointName);
 
 	void SetParent(Object3d* parent) { parent_ = parent; }
-	void SetWorldMatrix(Matrix4x4* worldMatrix) { worldMatrix_ = worldMatrix; }
-	void SetTexture(std::string textureFilePath) { materialDates_[0].textureFilePath_ = textureFilePath; }
-	void SetTexture(std::string textureFilePath, uint32_t num) { materialDates_[num].textureFilePath_ = textureFilePath; }
+	void SetWorldMatrix(const Matrix4x4& worldMatrix);
+	void SetTexture(const std::string& textureFilePath) { materialDates_[0].textureFilePath_ = textureFilePath; }
+	void SetTexture(const std::string& textureFilePath, uint32_t num) { materialDates_[num].textureFilePath_ = textureFilePath; }
 	void SetEnvironmentTexture(const std::string& cubeTextureFilePath);
 	void SetModel(const std::string& filePath);
 	void SetAnimation(const std::string& filePath,bool isLoop);
-	void SetBlendMode(BlendMode blendMode);
+	void SetBlendMode(const BlendMode& blendMode);
 	void SetScale(const Vector3& scale) { transform.scale = scale; }
 	void SetRotate(const Vector3& rotate) { transform.rotate = rotate; }
 	void SetTranslate(const Vector3& translate) { transform.translate = translate; }
