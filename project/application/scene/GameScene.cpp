@@ -281,10 +281,10 @@ void GameScene::Update(){
 	//	Vector3 velocityZ = Matrix4x4::Transform(velocity, Matrix4x4::MakeRotateYMatrix(-rotate.y));
 	//	rotate.x = std::atan2f(-velocityZ.y, velocityZ.z);
 
-		rotate.y += 3.14f; // 180度回転
-		object3ds_[2]->SetRotate(rotate);
-	}
-	object3ds_[7]->SetWorldMatrix(object3ds_[2]->GetJointMatrix("mixamorig:RightHand"));
+	//	rotate.y += 3.14f; // 180度回転
+	//	object3ds_[2]->SetRotate(rotate);
+	//}
+	//object3ds_[7]->SetWorldMatrix(object3ds_[2]->GetJointMatrix("mixamorig:RightHand"));
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		object3d->Update();
 	}
