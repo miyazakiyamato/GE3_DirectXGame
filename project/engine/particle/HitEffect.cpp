@@ -74,7 +74,7 @@ void HitEffect::Update(){
 }
 void HitEffect::Emit(){
 	for (const auto& [name, data] : emitterDates_) {
-		ParticleManager::GetInstance()->Emit(name, {0,1,0}, data.count);
+		ParticleManager::GetInstance()->Emit(name, emitterDates_[name].transform.translate + GetPosition(), data.count);
 	}
 }
 ;

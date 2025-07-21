@@ -17,6 +17,8 @@ public://メンバ関数
 
 	//メッセージの処理
 	bool ProcessMessage();
+
+	POINT GetWindowStartPosition() const;
 public://定数
 	//クライアント領域のサイズ
 	static const int32_t kClientWidth = 1280;
@@ -25,9 +27,9 @@ private://メンバ変数
 	//ウインドウクラスの設定
 	WNDCLASS wc{};
 	//ウインドウハンドル
-	HWND hwnd = nullptr;
+	HWND hwnd_ = nullptr;
 public://getter
 	HINSTANCE GetHInstance() const { return wc.hInstance; }
-	HWND GetHwnd() const { return hwnd; }
+	HWND GetHwnd() const { return hwnd_; }
 };
 

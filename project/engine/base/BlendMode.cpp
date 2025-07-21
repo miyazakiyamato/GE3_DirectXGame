@@ -87,5 +87,4 @@ namespace BlendModeHelper {
         return blendDesc;
     }
 
-
 } // namespace BlendModeHelper

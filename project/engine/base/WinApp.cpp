@@ -5,9 +5,9 @@
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT WinApp::WindowProc(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd_, msg, wparam, lparam)) {
 		return true;
 	}
 	//メッセージに応じてゲーム固有の処理を行う
@@ -20,7 +20,7 @@ LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	}
 	
 	//標準のメッセージ処理を行う
-	return DefWindowProc(hwnd, msg, wparam, lparam);
+	return DefWindowProc(hwnd_, msg, wparam, lparam);
 }
 
 void WinApp::Initialize(){
@@ -45,7 +45,7 @@ void WinApp::Initialize(){
 	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 
 	//ウィンドウの生成
-	hwnd = CreateWindow(
+	hwnd_ = CreateWindow(
 		wc.lpszClassName,        //利用するクラス名
 		L"LE2B_21_ミヤザキ_ヤマト",                  //タイトルバーの文字
 		WS_OVERLAPPEDWINDOW,      //よく見るウィンドウスタイル
@@ -59,7 +59,7 @@ void WinApp::Initialize(){
 		nullptr);
 
 	//ウィンドウを表示する
-	ShowWindow(hwnd, SW_SHOW);
+	ShowWindow(hwnd_, SW_SHOW);
 
 	//システムタイマーの分解能を上げる
 	timeBeginPeriod(1);
@@ -70,7 +70,7 @@ void WinApp::Update(){
 }
 
 void WinApp::Finalize(){
-	CloseWindow(hwnd);
+	CloseWindow(hwnd_);
 	CoUninitialize();
 }
 
@@ -88,4 +88,14 @@ bool WinApp::ProcessMessage()
 	}
 
 	return false;
+}
+POINT WinApp::GetWindowStartPosition() const
+{
+	RECT rect;
+	POINT start = { 0, 0 };
+	if (GetWindowRect(hwnd_, &rect)) {
+		start.x = rect.left;
+		start.y = rect.top;
+	}
+	return start;
 }

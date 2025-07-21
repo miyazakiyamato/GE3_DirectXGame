@@ -1,5 +1,6 @@
 #include "PipelineFactory.h"
 #include "ModelPipeline.h"
+#include "SkyboxPipeline.h"
 #include "SkinningObject3dPipeline.h"
 #include "SpritePipeline.h"
 #include "ParticlePipeline.h"
@@ -9,6 +10,8 @@
 BasePipeline* PipelineFactory::ChangePipeline(const std::string& pipelineName) {
 	if (pipelineName == "Object3d") {
 		return new ModelPipeline();
+	} else if (pipelineName == "Skybox") {
+		return new SkyboxPipeline();
 	} else if (pipelineName == "SkinningObject3d") {
 		return new SkinningObject3dPipeline();
 	} else if (pipelineName == "Sprite") {

@@ -17,6 +17,7 @@ public:
 	static Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion);
 	static Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate);
 	static Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
+	Vector3 ToEulerAngles() const;// クォータニオンをオイラー角に変換
 	Quaternion operator+(const Quaternion& q);
 	Quaternion operator*(const float& f);
 	Quaternion operator/(const float& f);

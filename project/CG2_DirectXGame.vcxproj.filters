@@ -67,12 +67,6 @@
     <Filter Include="ヘッダー ファイル\engine\scene">
       <UniqueIdentifier>{ceb05d1d-55d2-4b56-adc5-4862d879fb11}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\engine\manager">
-      <UniqueIdentifier>{d67664d4-3d46-4878-800e-03cfa9046deb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\manager">
-      <UniqueIdentifier>{63e00ed5-b026-482d-b9b3-678246b62c67}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application">
       <UniqueIdentifier>{0ecee62c-e735-43bc-9452-c8e7abb5fa09}</UniqueIdentifier>
     </Filter>
@@ -153,20 +147,8 @@
     <ClCompile Include="engine\math\Vector4.cpp">
       <Filter>ソース ファイル\engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\ModelManager.cpp">
-      <Filter>ソース ファイル\engine\manager</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\manager\TextureManager.cpp">
-      <Filter>ソース ファイル\engine\manager</Filter>
-    </ClCompile>
     <ClCompile Include="engine\3d\Camera.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\manager\CameraManager.cpp">
-      <Filter>ソース ファイル\engine\manager</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\manager\SrvManager.cpp">
-      <Filter>ソース ファイル\engine\manager</Filter>
     </ClCompile>
     <ClCompile Include="application\scene\MyGame.cpp">
       <Filter>ソース ファイル\application\scene</Filter>
@@ -231,9 +213,6 @@
     <ClCompile Include="engine\debug\StringUtility.cpp">
       <Filter>ソース ファイル\engine\debug</Filter>
     </ClCompile>
-    <ClCompile Include="engine\manager\LightManager.cpp">
-      <Filter>ソース ファイル\engine\manager</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -257,9 +236,6 @@
     </ClCompile>
     <ClCompile Include="engine\math\Quaternion.cpp">
       <Filter>ソース ファイル\engine\math</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\manager\TimeManager.cpp">
-      <Filter>ソース ファイル\engine\manager</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Line3D.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
@@ -294,6 +270,30 @@
     <ClCompile Include="engine\base\PipelineFactory.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
+    <ClCompile Include="engine\3d\CameraManager.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\LightManager.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\ModelManager.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\LevelDataManager.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\SrvManager.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\TextureManager.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\TimeManager.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\SkyboxPipeline.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -326,20 +326,8 @@
     <ClInclude Include="engine\math\Vector4.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\ModelManager.h">
-      <Filter>ヘッダー ファイル\engine\manager</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\manager\TextureManager.h">
-      <Filter>ヘッダー ファイル\engine\manager</Filter>
-    </ClInclude>
     <ClInclude Include="engine\3d\Camera.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\manager\CameraManager.h">
-      <Filter>ヘッダー ファイル\engine\manager</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\manager\SrvManager.h">
-      <Filter>ヘッダー ファイル\engine\manager</Filter>
     </ClInclude>
     <ClInclude Include="application\scene\BaseScene.h">
       <Filter>ヘッダー ファイル\application\scene</Filter>
@@ -407,9 +395,6 @@
     <ClInclude Include="engine\debug\ImGuiManager.h">
       <Filter>ヘッダー ファイル\engine\debug</Filter>
     </ClInclude>
-    <ClInclude Include="engine\manager\LightManager.h">
-      <Filter>ヘッダー ファイル\engine\manager</Filter>
-    </ClInclude>
     <ClInclude Include="engine\3d\ModelPipeline.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
@@ -431,20 +416,11 @@
     <ClInclude Include="engine\math\Quaternion.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\manager\TimeManager.h">
-      <Filter>ヘッダー ファイル\engine\manager</Filter>
-    </ClInclude>
     <ClInclude Include="engine\3d\Line3D.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Line3DPipeline.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\3d\Skeleton.h">
-      <Filter>ソース ファイル\engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\3d\Animation.h">
-      <Filter>ソース ファイル\engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\SkinCluster.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
@@ -466,6 +442,36 @@
     </ClInclude>
     <ClInclude Include="engine\base\PipelineFactory.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\CameraManager.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\LightManager.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\ModelManager.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\LevelDataManager.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\SrvManager.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\TextureManager.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\TimeManager.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\Animation.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\Skeleton.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\SkyboxPipeline.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -504,6 +510,9 @@
     </None>
     <None Include="resources\shaders\OffScreen\DepthBasedOutline.hlsli">
       <Filter>シェーダーファイル\OffScreen</Filter>
+    </None>
+    <None Include="resources\shaders\Skybox.hlsli">
+      <Filter>シェーダーファイル</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -578,6 +587,12 @@
     </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\DepthBasedOutline.VS.hlsl">
       <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\Skybox.PS.hlsl">
+      <Filter>シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\Skybox.VS.hlsl">
+      <Filter>シェーダーファイル</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

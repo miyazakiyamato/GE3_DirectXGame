@@ -48,6 +48,17 @@ void Skeleton::ApplyAnimation(Animation* animation, float time){
 	}
 }
 
+void Skeleton::ApplyAnimation(Animation* nowAnimation, Animation* nextAnimation, float time){
+	for (Skeleton::Joint& joint : joints) {
+		//対象のJointのAnimationがあれば、値の適用を行う
+		if (auto it = nowAnimation->GetNodeAnimationsMap().find(joint.name); it != nowAnimation->GetNodeAnimationsMap().end()) {
+			const Animation::NodeAnimation& rootNodeAnimation = (*it).second;
+			joint.localMatrix = nowAnimation->MakeLocalMatrix(joint.name, nextAnimation->GetNodeAnimations(joint.name), time);
+		}
+	}
+
+}
+
 void Skeleton::Update(){
 	//skeletonSpaceMatrixを更新。
 	for (Joint& joint : joints) {

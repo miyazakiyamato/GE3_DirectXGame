@@ -40,10 +40,8 @@ public:
 		Matrix4x4 uvTransform;
 	};
 	struct ParticleInitData {
-		Vector3 randomScaleMax{1.0f,1.0f,1.0f};
-		Vector3 randomScaleMin{1.0f,1.0f,1.0f};
-		Vector3 randomRotateMax{};
-		Vector3 randomRotateMin{};
+		Transform randomTransformMax;
+		Transform randomTransformMin;
 		Vector3 randomVelocityMax{1.0f,1.0f,1.0f};
 		Vector3 randomVelocityMin{-1.0f,-1.0f,-1.0f};
 		Vector4 randomColorMax{1.0f,1.0f,1.0f,1.0f};

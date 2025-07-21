@@ -22,6 +22,7 @@ public:
 	int32_t CreateJoint(const Model::Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
 	//アニメーションの更新
 	void ApplyAnimation(Animation* animation, float time);
+	void ApplyAnimation(Animation* nowAnimation, Animation* nextAnimation, float time);
 	//更新
 	void Update();
 	//描画

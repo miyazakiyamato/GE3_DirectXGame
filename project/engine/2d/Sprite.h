@@ -33,6 +33,8 @@ public://メンバ関数
 	void Update();
 	//描画
 	void Draw();
+	//ImGuiでの編集用
+	void ImGuiUpdate(const std::string& name);
 private://ローカル関数
 	//テクスチャサイズをイメージに合わせる
 	void AdjustTextureSize();

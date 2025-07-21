@@ -5,11 +5,10 @@
 #include "Vector3.h"
 #include "Vector4.h"
 
-struct Transform
-{
-	Vector3 scale;
-	Vector3 rotate;
-	Vector3 translate;
+struct Transform {
+    Vector3 scale{1.0f, 1.0f, 1.0f};
+    Vector3 rotate{0.0f, 0.0f, 0.0f};
+    Vector3 translate{0.0f, 0.0f, 0.0f};
 };
 
 /// <summary>
@@ -45,7 +44,6 @@ public:
 
 
 	//演算子のオーバーロード
-	Matrix4x4 operator+(const Matrix4x4& m2);
-	Matrix4x4 operator-(const Matrix4x4& m2);
 	Matrix4x4 operator*(const Matrix4x4& m2);
+	Matrix4x4& operator*=(const Matrix4x4& m2);
 };

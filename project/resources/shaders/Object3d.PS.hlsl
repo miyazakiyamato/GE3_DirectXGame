@@ -6,6 +6,8 @@ struct Material{
     float32_t4x4 uvTransform;
     int32_t enableLighting;
     float32_t shininess;
+    int32_t enableEnvironmentMap; // 環境マップを使用するかどうか
+    float32_t environmentCoefficient; // 環境マップの寄与度
 };
 ConstantBuffer<Material> gMaterial : register(b0);
 
@@ -26,6 +28,8 @@ ConstantBuffer<Camera> gCamera : register(b2);
 
 Texture2D<float32_t4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
+
+TextureCube<float4> gEnvironmentTexture : register(t3); // 環境マップ用テクスチャ
 
 struct PointLight{
     float32_t4 color; //!<ライトの色
@@ -149,11 +153,19 @@ PixelShaderOutput main(VertexShaderOutput input){
         //拡散反射・鏡面反射
         output.color.rgb = directionalLightCollor + pointLightColor + spotLightColor;
         output.color.a = gMaterial.color.a * textureColor.a;
+        
+        if (gMaterial.enableEnvironmentMap){
+            //環境マップ
+            float32_t3 cameraToPosition = normalize(input.worldPosition - gCamera.worldPosition);
+            float32_t3 reflectedVector = reflect(cameraToPosition, normalize(input.normal));
+            float32_t4 environmentColor = gEnvironmentTexture.Sample(gSampler, reflectedVector);
+            output.color.rgb += environmentColor.rgb * gMaterial.environmentCoefficient;
+        }
     }
     else{
         output.color = gMaterial.color * textureColor;
     }
     if (output.color.a == 0.0){ discard;}
-    
+
     return output;
 }
