@@ -5,10 +5,10 @@ bl_info = sys.modules[__package__].bl_info
 # メニュー項目描画
 def draw_menu_manual(self, context):
     self.layout.operator("wm.url_open_preset", text = "Manual", icon = 'HELP')
-#オペレータ モジュールのimport
-from .spawn import MYADDON_OT_spawn_import_symbol
-#オペレータ モジュールの生成
-from .spawn import MYADDON_OT_spawn_create_symbol 
+#オペレータ モジュールの生成 プレイヤー
+from .spawn import MYADDON_OT_spawn_create_player_symbol 
+#オペレータ モジュールの生成 エネミー
+from .spawn import MYADDON_OT_spawn_create_enemy_symbol 
 #オペレータ シーン出力
 from .export_scene import MYADDON_OT_export_scene
 #オペレータ 頂点を伸ばす
@@ -25,10 +25,10 @@ class TOPBAR_MT_my_menu(bpy.types.Menu):
         # トップバーの「エディターメニュー」に項目（オペレーター）を追加
         self.layout.operator(MYADDON_OT_export_scene.bl_idname,
                              text = MYADDON_OT_export_scene.bl_label)
-        self.layout.operator(MYADDON_OT_spawn_import_symbol.bl_idname,
-                             text = MYADDON_OT_spawn_import_symbol.bl_label)
-        self.layout.operator(MYADDON_OT_spawn_create_symbol.bl_idname,
-                             text = MYADDON_OT_spawn_create_symbol.bl_label)
+        self.layout.operator(MYADDON_OT_spawn_create_player_symbol.bl_idname,
+                             text = MYADDON_OT_spawn_create_player_symbol.bl_label)
+        self.layout.operator(MYADDON_OT_spawn_create_enemy_symbol.bl_idname,
+                             text = MYADDON_OT_spawn_create_enemy_symbol.bl_label)
         self.layout.operator(MYADDON_OT_stretch_vertex.bl_idname,
                              text = MYADDON_OT_stretch_vertex.bl_label)
         self.layout.operator(MYADDON_OT_create_ico_sphere.bl_idname,
