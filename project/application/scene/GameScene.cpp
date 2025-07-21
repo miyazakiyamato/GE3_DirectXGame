@@ -30,10 +30,10 @@ void GameScene::Initialize(){
 	AudioManager::GetInstance()->LoadWave("maou_se_system48.wav");
 	//AudioManager::GetInstance()->LoadMP3("audiostock_1420737.mp3");
 
-	/*ModelManager::GetInstance()->LoadModel("plane/plane.obj");
+	ModelManager::GetInstance()->LoadModel("plane/plane.obj");
 	ModelManager::GetInstance()->LoadModel("fence/fence.obj");
 	ModelManager::GetInstance()->LoadModel("axis/axis.obj");
-	ModelManager::GetInstance()->LoadModel("sphere/sphere.obj");*/
+	ModelManager::GetInstance()->LoadModel("sphere/sphere.obj");
 	ModelManager::GetInstance()->LoadModel("terrain/terrain.obj");
 	ModelManager::GetInstance()->LoadModel("skybox");
 	ModelManager::GetInstance()->LoadModel("ground/ground.obj");
@@ -108,8 +108,28 @@ void GameScene::Initialize(){
 				}
 			}
 		}
+		if (objectData->typeName == "PlayerSpawn") {
+			std::unique_ptr<Object3d> object3d(new Object3d);
+			object3d->Initialize();
+			object3d->SetScale(objectData->scaling);
+			object3d->SetRotate(objectData->rotation);
+			object3d->SetTranslate(objectData->translation);
+			object3d->SetModel("sphere/sphere.obj");
+			//object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
+			object3ds_.push_back(std::move(object3d));
+		}
+		if (objectData->typeName == "EnemySpawn") {
+			std::unique_ptr<Object3d> object3d(new Object3d);
+			object3d->Initialize();
+			object3d->SetScale(objectData->scaling);
+			object3d->SetRotate(objectData->rotation);
+			object3d->SetTranslate(objectData->translation);
+			object3d->SetModel("sphere/sphere.obj");
+			object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
+			object3ds_.push_back(std::move(object3d));
+		}
 	}
-	std::unique_ptr<Object3d> object3d3(new Object3d);
+	/*std::unique_ptr<Object3d> object3d3(new Object3d);
 	object3d3->Initialize();
 	object3d3->SetParent(object3ds_[2].get());
 	std::unique_ptr<Object3d> object3d4(new Object3d);
@@ -120,24 +140,7 @@ void GameScene::Initialize(){
 	object3d4->SetModel("sword/sword.obj");
 	object3d4->SetParent(object3d3.get());
 	object3ds_.push_back(std::move(object3d3));
-	object3ds_.push_back(std::move(object3d4));
-	/*object3ds_[0]->SetModel("AnimatedCube/AnimatedCube.gltf");
-	object3ds_[0]->SetAnimation("AnimatedCube/AnimatedCube.gltf",true);*/
-	/*object3ds_[0]->SetModel("simpleSkin/simpleSkin.gltf");
-	object3ds_[0]->SetAnimation("simpleSkin/simpleSkin.gltf",true);*/
-	/*object3ds_[1]->SetTranslate({ -1,0,0 });
-	object3ds_[1]->SetRotate({ 0,3.14f,0 });
-	object3ds_[1]->SetModel("terrain/terrain.obj");*/
-	//object3ds_[1]->SetModel("plane/plane.gltf");
-	//object3ds_[1]->SetModel("axis/axis.obj");
-	/*object3ds_[1]->SetModel("human/sneakWalk.gltf");
-	object3ds_[1]->SetAnimation("human/sneakWalk.gltf", true);
-	object3ds_[1]->SetTranslate({ 1,0,0 });
-	object3ds_[1]->SetRotate({ 0,3.14f,0 });
-	object3ds_[2]->SetModel("human/walk.gltf");
-	object3ds_[2]->SetAnimation("human/walk.gltf", true);
-	object3ds_[2]->SetTranslate({ 0,0,0 });
-	object3ds_[2]->SetRotate({ 0,3.14f,0 });*/
+	object3ds_.push_back(std::move(object3d4));*/
 	//
 	isAccelerationField = false;
 	accelerationField_.reset(new AccelerationField);
@@ -228,64 +231,60 @@ void GameScene::Update(){
 		//particleSystem_->Emit("hitEffect");
 	}
 	//player
-	static bool isSneak = false;
-	
-	if (input_->TriggerControllerButton(XINPUT_GAMEPAD_B) || input_->TriggerKey(DIK_LSHIFT)) {
-		isSneak = !isSneak;
-		if (isSneak) {
-			object3ds_[2]->SetAnimation("human/sneakWalk.gltf", true);
-		} else {
-			object3ds_[2]->SetAnimation("human/walk.gltf", true);
-		}
-	}
-	if (input_->TriggerControllerButton(XINPUT_GAMEPAD_Y) || input_->TriggerKey(DIK_F)) {
-		object3ds_[2]->SetIsDrawSkeleton(!object3ds_[2]->GetIsDrawSkeleton());
-	}
-	if (input_->TriggerControllerButton(XINPUT_GAMEPAD_A) || input_->TriggerKey(DIK_SPACE)) {
-		Vector3 hitPosition = object3ds_[2]->GetJointsPosition("mixamorig:RightHand");
-		particleSystem_->FindEmitter("hitEffect")->SetPosition(hitPosition);
+	//static bool isSneak = false;
+	//
+	//if (input_->TriggerControllerButton(XINPUT_GAMEPAD_B) || input_->TriggerKey(DIK_LSHIFT)) {
+	//	isSneak = !isSneak;
+	//	if (isSneak) {
+	//		object3ds_[2]->SetAnimation("human/sneakWalk.gltf", true);
+	//	} else {
+	//		object3ds_[2]->SetAnimation("human/walk.gltf", true);
+	//	}
+	//}
+	//if (input_->TriggerControllerButton(XINPUT_GAMEPAD_Y) || input_->TriggerKey(DIK_F)) {
+	//	object3ds_[2]->SetIsDrawSkeleton(!object3ds_[2]->GetIsDrawSkeleton());
+	//}
+	//if (input_->TriggerControllerButton(XINPUT_GAMEPAD_A) || input_->TriggerKey(DIK_SPACE)) {
+	//	Vector3 hitPosition = object3ds_[2]->GetJointsPosition("mixamorig:RightHand");
+	//	particleSystem_->FindEmitter("hitEffect")->SetPosition(hitPosition);
 
-		particleSystem_->Emit("hitEffect");
-	}
-	Vector3 velocity = { 0.0f,0.0f,0.0f };
-	float speed = 0.1f;
-	if (isSneak) {
-		speed = 0.05f;
-	}
-	if (input_->PushKey(DIK_W)) {
-		velocity.z += speed;
-	}else if (input_->PushKey(DIK_S)) {
-		velocity.z -= speed;
-	}
-	if (input_->PushKey(DIK_A)) {
-		velocity.x -= speed;
-	} else if (input_->PushKey(DIK_D)) {
-		velocity.x += speed;
-	}
-	if (input_->GetControllerStickX() != 0.0f ||
-		input_->GetControllerStickY() != 0.0f) {
-		velocity = {};
-		velocity.x += input_->GetControllerStickX();
-		velocity.z += input_->GetControllerStickY();
-	}
-	if(velocity.Length() != 0.0f){
-		velocity = velocity.Normalize() * speed;
+	//	particleSystem_->Emit("hitEffect");
+	//}
+	//Vector3 velocity = { 0.0f,0.0f,0.0f };
+	//float speed = 0.1f;
+	//if (isSneak) {
+	//	speed = 0.05f;
+	//}
+	//if (input_->PushKey(DIK_W)) {
+	//	velocity.z += speed;
+	//}else if (input_->PushKey(DIK_S)) {
+	//	velocity.z -= speed;
+	//}
+	//if (input_->PushKey(DIK_A)) {
+	//	velocity.x -= speed;
+	//} else if (input_->PushKey(DIK_D)) {
+	//	velocity.x += speed;
+	//}
+	//if (input_->GetControllerStickX() != 0.0f ||
+	//	input_->GetControllerStickY() != 0.0f) {
+	//	velocity = {};
+	//	velocity.x += input_->GetControllerStickX();
+	//	velocity.z += input_->GetControllerStickY();
+	//}
+	//if(velocity.Length() != 0.0f){
+	//	velocity = velocity.Normalize() * speed;
 
-		object3ds_[2]->SetTranslate((Vector3)object3ds_[2]->GetTranslate() + velocity);
-		Vector3 rotate{};
-		rotate.y = std::atan2f(velocity.x, velocity.z);
-		Vector3 velocityZ = Matrix4x4::Transform(velocity, Matrix4x4::MakeRotateYMatrix(-rotate.y));
-		rotate.x = std::atan2f(-velocityZ.y, velocityZ.z);
+	//	object3ds_[2]->SetTranslate((Vector3)object3ds_[2]->GetTranslate() + velocity);
+	//	Vector3 rotate{};
+	//	rotate.y = std::atan2f(velocity.x, velocity.z);
+	//	Vector3 velocityZ = Matrix4x4::Transform(velocity, Matrix4x4::MakeRotateYMatrix(-rotate.y));
+	//	rotate.x = std::atan2f(-velocityZ.y, velocityZ.z);
 
-		rotate.y += 3.14f; // 180度回転
-		object3ds_[2]->SetRotate(rotate);
-	}
-	Matrix4x4 rHandworldMatrix = object3ds_[2]->GetJoint("mixamorig:RightHand").skeletonSpaceMatrix;
-	object3ds_[7]->SetWorldMatrix(&rHandworldMatrix);
-	/*for (size_t i = 0; i < object3ds_.size();i++) {
-		if (i == 7) {continue;}
-		object3ds_[i]->UpdateWorldMatrix();
-	}*/
+	//	rotate.y += 3.14f; // 180度回転
+	//	object3ds_[2]->SetRotate(rotate);
+	//}
+	//Matrix4x4 rHandworldMatrix = object3ds_[2]->GetJoint("mixamorig:RightHand").skeletonSpaceMatrix;
+	//object3ds_[7]->SetWorldMatrix(&rHandworldMatrix);
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		object3d->Update();
 	}

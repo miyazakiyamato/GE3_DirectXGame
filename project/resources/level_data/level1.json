@@ -67,7 +67,6 @@
                     0.010000000707805157
                 ]
             },
-            "disabled": true,
             "children": [
                 {
                     "type": "MESH",
@@ -157,6 +156,69 @@
                 ]
             },
             "file_name": "terrain/terrain.obj"
+        },
+        {
+            "type": "PlayerSpawn",
+            "name": "PlayerSpawn",
+            "transform": {
+                "translation": [
+                    -1.6202181577682495,
+                    -1.8409183025360107,
+                    0.9333459138870239
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn",
+            "transform": {
+                "translation": [
+                    0.0,
+                    6.3346638679504395,
+                    0.8957556486129761
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.001",
+            "transform": {
+                "translation": [
+                    3.030308961868286,
+                    4.746731758117676,
+                    0.7523486018180847
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
         },
         {
             "type": "MESH",
