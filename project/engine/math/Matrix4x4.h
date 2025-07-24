@@ -21,9 +21,9 @@ public:
 
 
 	//メンバ関数
-	Matrix4x4 Inverse();
-	Matrix4x4 Transpose();
-	Vector3 Transform(const Vector3& Vector);
+	Matrix4x4 Inverse() const;
+	Matrix4x4 Transpose() const;
+	Vector3 Transform(const Vector3& Vector) const;
 
 	static Matrix4x4 Inverse(const Matrix4x4& m);
 	static Matrix4x4 Transpose(const Matrix4x4& m);
@@ -44,6 +44,6 @@ public:
 
 
 	//演算子のオーバーロード
-	Matrix4x4 operator*(const Matrix4x4& m2);
+	Matrix4x4 operator*(const Matrix4x4& m2) const;
 	Matrix4x4& operator*=(const Matrix4x4& m2);
 };

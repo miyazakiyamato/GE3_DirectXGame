@@ -96,15 +96,14 @@ void DirectXCommon::SwapChainPreDraw(){
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
 	//遷移後のResourceState
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-;
 	//TransitionBarrierを張る
 	commandList->ResourceBarrier(1, &barrier);
 
 	//描画先のRTVとDSVを設定する
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
-	//指定した深度で画面全体をクリアする
-	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	////指定した深度で画面全体をクリアする
+	//commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	//指定した色で画面全体をクリアする
 	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };//青っぽい色。RGBAの順
@@ -112,11 +111,22 @@ void DirectXCommon::SwapChainPreDraw(){
 
 	commandList->RSSetViewports(1, &viewport);//Viewportを設定
 	commandList->RSSetScissorRects(1, &scissorRect);//Scirssorを設定
-
 }
 
 void DirectXCommon::OffScreenDraw(){
+	// 深度バッファをSRVとして使う前にリソースバリアを張る
+	//TransitionBarrierの設定
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = depthStencilResource.Get();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	commandList->ResourceBarrier(1, &barrier);
+
 	srvManager_->SetGraphicsRootDescriptorTable(0, offScreenSRVIndex);
+	srvManager_->SetGraphicsRootDescriptorTable(2, offScreenDepthSRVIndex);
 	commandList->DrawInstanced(3, 1, 0, 0);
 }
 
@@ -156,6 +166,14 @@ void DirectXCommon::PostDraw(){
 	//TransitionBarrierを張る
 	commandList->ResourceBarrier(1, &barrier);
 
+	// SRVから深度書き込みに戻す
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = depthStencilResource.Get();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	commandList->ResourceBarrier(1, &barrier);
 	//コマンドリストの内容を確定させる。すべてのコマンドを積んでからCloseする
 	hr = commandList->Close();
 	assert(SUCCEEDED(hr));
@@ -416,6 +434,8 @@ void DirectXCommon::CreateOffScreenSRV(SrvManager* srvManager){
 	DirectX::TexMetadata metadata{};
 	metadata.mipLevels = 1;
 	srvManager_->CreateSRVforTexture2D(offScreenSRVIndex, renderTextureResource.Get(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, metadata);
+	offScreenDepthSRVIndex = srvManager_->ALLocate();
+	srvManager_->CreateSRVforDepthTexture2D(offScreenDepthSRVIndex, depthStencilResource.Get(), DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, const uint32_t& descriptorSize, const uint32_t& index) {

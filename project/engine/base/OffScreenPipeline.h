@@ -6,6 +6,7 @@ public:
 	//namespace省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 public://メンバ関数
+	std::vector<D3D12_STATIC_SAMPLER_DESC> StaticSamplers(StaticSamplersMode statocSamplersMode) override;
 	//ルートシグネチャのデータを取得
 	std::vector<D3D12_DESCRIPTOR_RANGE> DescriptorRanges()override;
 	std::vector<D3D12_ROOT_PARAMETER> RootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges)override;

@@ -20,11 +20,6 @@ enum class DepthMode {
 	kReadOnly, //!< 深度テストを読み取り専用にする
 };
 
-enum class StaticSamplersMode {
-	kwrap, //!< Wrapモード
-	kclamp, //!< Clampモード
-};
-
 enum class PrimitiveTopologyType {
 	kTriangleList, //!< 三角形リスト
 	kLineList,     //!< ラインリスト

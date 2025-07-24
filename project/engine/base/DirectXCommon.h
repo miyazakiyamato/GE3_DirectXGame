@@ -119,6 +119,7 @@ private://メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource = nullptr;
 	D3D12_CLEAR_VALUE clearValue_;
 	uint32_t offScreenSRVIndex = 0;
+	uint32_t offScreenDepthSRVIndex = 0;
 	//スワップチェインリソース
 	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2> swapChainResources;
 	//スワップチェーン

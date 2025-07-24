@@ -3,9 +3,19 @@
 struct PixelShaderOutput{
     float32_t4 color : SV_TARGET0;
 };
+struct Material{
+    //uint32_t kNumBoxX = 3;
+    //uint32_t kNumBoxY = 3;
+    float32_t4x4 projectionInverse;
+    float32_t depthSensitivity;
+};
+ConstantBuffer<Material> gMaterial : register(b0);
 
 Texture2D<float32_t4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
+
+Texture2D<float32_t> gDepthTexture : register(t1);
+SamplerState gSamplerPoint : register(s1);
 
 static const uint32_t kNumBoxX = 3;
 static const uint32_t kNumBoxY = 3;
@@ -37,18 +47,19 @@ PixelShaderOutput main(VertexShaderOutput input){
     for (int32_t x = 0; x < kNumBoxX; ++x){
         for (int32_t y = 0; y < kNumBoxY; ++y){
             float32_t2 texcoord = input.texcoord + kIndex[x][y] * uvStepSize;
-            float32_t3 fetchColor = gTexture.Sample(gSampler, texcoord).rgb;
-            float32_t luminance = Luminance(fetchColor);
-            difference.x += luminance * kPrewittHorizontalKernel[x][y];
-            difference.y += luminance * kPrewittVerticalKernel[x][y];
+            float32_t ndcDepth = gDepthTexture.Sample(gSamplerPoint, texcoord);
+            float32_t4 viewSpace = mul(float32_t4(0.0f,0.0f, ndcDepth, 1.0f), gMaterial.projectionInverse);
+            float32_t viewZ = viewSpace.z * rcp(viewSpace.w); //同時座標系からデカルト座標系へ変換
+            difference.x += viewZ * kPrewittHorizontalKernel[x][y];
+            difference.y += viewZ * kPrewittVerticalKernel[x][y];
         }
     }
     
     float32_t weight = length(difference);
-    weight = saturate(weight * 6.0f);
+    weight = saturate(weight * gMaterial.depthSensitivity);
     
     PixelShaderOutput output;
-    output.color.rgb = (1.0f - weight) * gTexture.Sample(gSampler,input.texcoord).rgb;
+    output.color.rgb = (1.0f - weight) * gTexture.Sample(gSampler, input.texcoord).rgb;
     output.color.a = 1.0f;
     
     return output;

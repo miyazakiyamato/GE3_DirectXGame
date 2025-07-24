@@ -73,6 +73,10 @@ void Framework::Initialize(){
 	//タイムマネージャの初期化
 	timeManager_ = TimeManager::GetInstance();
 	timeManager_->Initialize();
+	
+	//オフスクリーン
+	offScreen_ = std::make_unique<OffScreen>();
+	offScreen_->Initialize(dxCommon.get());
 }
 
 void Framework::Finalize(){
@@ -100,11 +104,8 @@ void Framework::Update(){
 
 	imGuiManager->Begin();
 
-
 	lineManager_->Update();
-
 	sceneManager_->Update();
-
 	timeManager_->Update();
 
 	imGuiManager->End();

@@ -1,5 +1,28 @@
 #include "BasePipeline.h"
 
+D3D12_STATIC_SAMPLER_DESC BasePipeline::CreateStaticSampler(D3D12_FILTER filter,StaticSamplersMode staticSamplersMode, UINT ShaderRegister){
+	D3D12_STATIC_SAMPLER_DESC staticSampler = {};
+	staticSampler.Filter = filter;//バイナリフィルタ
+	switch (staticSamplersMode) {
+	default:
+	case StaticSamplersMode::kwrap://Wrapモード
+		staticSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;//0~1の範囲外をリピート
+		staticSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		staticSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		break;
+	case StaticSamplersMode::kclamp://Clampモード
+		staticSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;//0~1の範囲外をClamp
+		staticSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		staticSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		break;
+	}
+	staticSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;//比較しない
+	staticSampler.MaxLOD = D3D12_FLOAT32_MAX;//ありったけのMipmapを使う
+	staticSampler.ShaderRegister = ShaderRegister;//レジスタ番号
+	staticSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;//PixelShaderで使う
+	return staticSampler;
+}
+
 D3D12_DESCRIPTOR_RANGE BasePipeline::CreateDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE type, UINT baseShaderRegister, UINT numDescriptors){
 	D3D12_DESCRIPTOR_RANGE descriptorRange{};
 	descriptorRange.BaseShaderRegister = baseShaderRegister;//始まり

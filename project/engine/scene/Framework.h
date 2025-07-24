@@ -31,6 +31,7 @@
 #include "LightManager.h"
 #include "TimeManager.h"
 #include "Line3D.h"
+#include "OffScreen.h"
 
 class Framework{
 public://メンバ関数
@@ -82,5 +83,7 @@ protected://メンバ変数
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;
 	//タイムマネージャ
 	TimeManager* timeManager_ = nullptr;
+	//オフスクリーン
+	std::unique_ptr<OffScreen> offScreen_ = nullptr;
 };
 

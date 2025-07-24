@@ -55,6 +55,21 @@ void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResou
 	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUDescriptorHandle(srvIndex));
 }
 
+void SrvManager::CreateSRVforDepthTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format){
+	assert(pResource != nullptr); // リソースが有効か確認
+	// SRV記述子を初期化
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = Format; // 深度テクスチャのフォーマット
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
+	srvDesc.Texture2D.MostDetailedMip = 0; // 最も詳細なミップレベル
+	srvDesc.Texture2D.MipLevels = 1; // ミップレベル数
+	srvDesc.Texture2D.PlaneSlice = 0; // プレーンスライス（通常は0）
+	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f; // 最小LODクランプ値
+	// SRV作成
+	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUDescriptorHandle(srvIndex));
+}
+
 void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride) {
 	assert(pResource != nullptr); // リソースが有効か確認
 	// SRV記述子を初期化

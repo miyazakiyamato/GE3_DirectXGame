@@ -3,23 +3,23 @@
 #include <algorithm>
 #include "Quaternion.h"
 
-float Vector3::Length(){
+float Vector3::Length() const {
     return Length(*this);
 }
 
-Vector3 Vector3::Normalize(){
+Vector3 Vector3::Normalize() const {
     return Normalize(*this);
 }
 
-Vector3 Vector3::Abs(){
+Vector3 Vector3::Abs() const {
     return Abs(*this);
 }
 
-Vector3 Vector3::Clamp01(){
+Vector3 Vector3::Clamp01() const {
     return Clamp(*this, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
 }
 
-Vector3 Vector3::Clamp_11(){
+Vector3 Vector3::Clamp_11() const {
     return Clamp(*this, { -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f });
 }
 
@@ -162,23 +162,23 @@ Vector3 Vector3::Random(std::mt19937& randomEngine,const Vector3& vMin, const Ve
     return { distX(randomEngine), distY(randomEngine), distZ(randomEngine) };
 }
 
-Vector3 Vector3::operator-(){
+Vector3 Vector3::operator-() const {
     return { -x, -y, -z };
 }
 
-Vector3 Vector3::operator+(const Vector3& v2){
+Vector3 Vector3::operator+(const Vector3& v2) const {
     return { x + v2.x, y + v2.y, z + v2.z };
 }
 
-Vector3 Vector3::operator-(const Vector3& v2){
+Vector3 Vector3::operator-(const Vector3& v2) const {
     return { x - v2.x, y - v2.y, z - v2.z };
 }
 
-Vector3 Vector3::operator*(const float& v2){
+Vector3 Vector3::operator*(const float& v2) const {
     return { x * v2, y * v2, z * v2 };
 }
 
-Vector3 Vector3::operator/(const float& v2){
+Vector3 Vector3::operator/(const float& v2) const {
     return { x / v2, y / v2, z / v2 };
 }
 

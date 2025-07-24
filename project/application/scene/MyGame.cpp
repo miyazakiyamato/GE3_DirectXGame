@@ -14,6 +14,8 @@ void MyGame::Initialize(){
 	//sceneManager_->ChangeOffScreenState("GaussianFilter");
 	//sceneManager_->ChangeOffScreenState("LuminanceBasedOutline");
 	sceneManager_->ChangeOffScreenState("DepthBasedOutline");
+	//オフスクリーンの初期化
+	offScreen_->SetDepthSensitivity(5000.0f);
 }
 
 void MyGame::Finalize(){
@@ -27,6 +29,7 @@ void MyGame::Update(){
 }
 
 void MyGame::Draw(){
+	offScreen_->Update();
 	//描画前処理
 	dxCommon->RenderTexturePreDraw();
 	srvManager->PreDraw();
@@ -36,6 +39,7 @@ void MyGame::Draw(){
 	//OffScreenの描画
 	dxCommon->SwapChainPreDraw();
 	sceneManager_->OffScreenDrawSetting();
+	offScreen_->Draw();
 	dxCommon->OffScreenDraw();
 #ifdef _DEBUG
 	//実際のcommandListのImGuiの描画コマンドを積む

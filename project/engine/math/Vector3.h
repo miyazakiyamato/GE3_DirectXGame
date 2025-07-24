@@ -12,11 +12,11 @@ public:
 	float y;
 	float z;
 	//メンバ関数
-	float Length();
-	Vector3 Normalize();
-	Vector3 Abs();
-	Vector3 Clamp01();
-	Vector3 Clamp_11();
+	float Length() const;
+	Vector3 Normalize() const;
+	Vector3 Abs() const;
+	Vector3 Clamp01() const ;
+	Vector3 Clamp_11() const;
 	Quaternion ToQuaternion() const;
 
 	static Vector3 Add(const Vector3& v1, const Vector3& v2);
@@ -41,11 +41,11 @@ public:
 	static Vector3 CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, const float& t);
 	static Vector3 Random(std::mt19937& randomEngine, const Vector3& vMin, const Vector3& vMax);
 	//演算子のオーバーロード
-	Vector3 operator-();
-	Vector3 operator+(const Vector3& v2);
-	Vector3 operator-(const Vector3& v2);
-	Vector3 operator*(const float& v2);
-	Vector3 operator/(const float& v2);
+	Vector3 operator-() const;
+	Vector3 operator+(const Vector3& v2) const;
+	Vector3 operator-(const Vector3& v2) const;
+	Vector3 operator*(const float& v2) const;
+	Vector3 operator/(const float& v2) const;
 	Vector3& operator+=(const Vector3& v2);
 	Vector3& operator-=(const Vector3& v2);
 	Vector3& operator*=(const float& v2);

@@ -4,6 +4,13 @@
 using namespace Microsoft::WRL;
 using namespace Logger;
 
+std::vector<D3D12_STATIC_SAMPLER_DESC> Line3DPipeline::StaticSamplers(StaticSamplersMode statocSamplersMode) {
+	std::vector<D3D12_STATIC_SAMPLER_DESC> staticSamplers;
+	staticSamplers.resize(1);
+	staticSamplers[0] = CreateStaticSampler(D3D12_FILTER_MIN_MAG_MIP_LINEAR, statocSamplersMode,0);
+	return staticSamplers;
+}
+
 std::vector<D3D12_DESCRIPTOR_RANGE> Line3DPipeline::DescriptorRanges() {
 	std::vector<D3D12_DESCRIPTOR_RANGE> descriptorRanges = {};
 	return descriptorRanges;

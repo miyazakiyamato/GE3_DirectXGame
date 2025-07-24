@@ -116,27 +116,15 @@ void PipelineManager::CreateRootSignature(PipelineData& pipeline){
 	descriptionRootSignature.pParameters = rootParameters.get();
 	descriptionRootSignature.NumParameters = rootParametersCount;
 
-	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
-	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;//バイナリフィルタ
-	switch (pipeline.state.staticSamplersMode){
-	default:
-	case StaticSamplersMode::kwrap://Wrapモード
-		staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;//0~1の範囲外をリピート
-		staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-		staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-		break;
-	case StaticSamplersMode::kclamp://Clampモード
-		staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;//0~1の範囲外をClamp
-		staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-		staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-		break;
-	}
-	staticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;//比較しない
-	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;//ありったけのMipmapを使う
-	staticSamplers[0].ShaderRegister = 0;//レジスタ番号0を使う
-	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;//PixelShaderで使う
-	descriptionRootSignature.pStaticSamplers = staticSamplers;
-	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
+	std::vector<D3D12_STATIC_SAMPLER_DESC> staticSamplersVector = basePipeline->StaticSamplers(pipeline.state.staticSamplersMode);
+	const uint32_t staticSamplersCount = static_cast<uint32_t>(staticSamplersVector.size());
+
+	// 動的配列を作成しvectorからコピー
+	std::unique_ptr<D3D12_STATIC_SAMPLER_DESC[]> staticSamplers(new D3D12_STATIC_SAMPLER_DESC[staticSamplersCount]);
+	std::copy_n(staticSamplersVector.begin(), staticSamplersCount, staticSamplers.get());
+
+	descriptionRootSignature.pStaticSamplers = staticSamplers.get();
+	descriptionRootSignature.NumStaticSamplers = staticSamplersCount;
 
 	//シリアライズしてバイナリにする
 	ComPtr<ID3DBlob> signatureBlob = nullptr;
