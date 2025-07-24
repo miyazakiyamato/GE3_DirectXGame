@@ -13,7 +13,8 @@ void MyGame::Initialize(){
 	//sceneManager_->ChangeOffScreenState("BoxFilter");
 	//sceneManager_->ChangeOffScreenState("GaussianFilter");
 	//sceneManager_->ChangeOffScreenState("LuminanceBasedOutline");
-	sceneManager_->ChangeOffScreenState("DepthBasedOutline");
+	//sceneManager_->ChangeOffScreenState("DepthBasedOutline");
+	sceneManager_->ChangeOffScreenState("RadialBlur");
 	//オフスクリーンの初期化
 	offScreen_->SetDepthSensitivity(5000.0f);
 }
