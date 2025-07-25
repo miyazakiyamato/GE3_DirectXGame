@@ -74,13 +74,14 @@ void Framework::Initialize(){
 	timeManager_ = TimeManager::GetInstance();
 	timeManager_->Initialize();
 	
-	//オフスクリーン
-	offScreen_ = std::make_unique<OffScreen>();
-	offScreen_->Initialize(dxCommon.get());
+	//PostEffectManagerの初期化
+	postEffectManager_ = PostEffectManager::GetInstance();
+	postEffectManager_->Initialize(dxCommon.get());
 }
 
 void Framework::Finalize(){
 	//終了
+	postEffectManager_->Finalize();
 	timeManager_->Finalize();
 	sceneManager_->Finalize();
 	audioManager_->Finalize();

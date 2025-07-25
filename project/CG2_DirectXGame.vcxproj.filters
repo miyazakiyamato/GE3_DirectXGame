@@ -294,7 +294,7 @@
     <ClCompile Include="engine\3d\SkyboxPipeline.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\OffScreen.cpp">
+    <ClCompile Include="engine\base\PostEffectManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
   </ItemGroup>
@@ -476,7 +476,7 @@
     <ClInclude Include="engine\3d\SkyboxPipeline.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\OffScreen.h">
+    <ClInclude Include="engine\base\PostEffectManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
   </ItemGroup>

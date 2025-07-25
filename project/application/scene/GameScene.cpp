@@ -10,6 +10,7 @@
 #include "TimeManager.h"
 #include "Line3D.h"
 #include "HitEffect.h"
+#include "PostEffectManager.h"
 #include <numbers>
 
 void GameScene::Initialize(){
@@ -219,7 +220,7 @@ void GameScene::Update(){
 	}
 #endif //_DEBUG
 	CameraManager::GetInstance()->GetCamera()->Update();
-
+	PostEffectManager::GetInstance()->Update();
 #ifdef _DEBUG
 	// デバッグ用にワールドトランスフォームの更新
 	collisionManager_->UpdateWorldTransform();
@@ -231,60 +232,7 @@ void GameScene::Update(){
 		//ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
 		//particleSystem_->Emit("hitEffect");
 	}
-	//player
-	//static bool isSneak = false;
-	//
-	//if (input_->TriggerControllerButton(XINPUT_GAMEPAD_B) || input_->TriggerKey(DIK_LSHIFT)) {
-	//	isSneak = !isSneak;
-	//	if (isSneak) {
-	//		object3ds_[2]->SetAnimation("human/sneakWalk.gltf", true);
-	//	} else {
-	//		object3ds_[2]->SetAnimation("human/walk.gltf", true);
-	//	}
-	//}
-	//if (input_->TriggerControllerButton(XINPUT_GAMEPAD_Y) || input_->TriggerKey(DIK_F)) {
-	//	object3ds_[2]->SetIsDrawSkeleton(!object3ds_[2]->GetIsDrawSkeleton());
-	//}
-	//if (input_->TriggerControllerButton(XINPUT_GAMEPAD_A) || input_->TriggerKey(DIK_SPACE)) {
-	//	Vector3 hitPosition = object3ds_[2]->GetJointsPosition("mixamorig:RightHand");
-	//	particleSystem_->FindEmitter("hitEffect")->SetPosition(hitPosition);
-
-	//	particleSystem_->Emit("hitEffect");
-	//}
-	//Vector3 velocity = { 0.0f,0.0f,0.0f };
-	//float speed = 0.1f;
-	//if (isSneak) {
-	//	speed = 0.05f;
-	//}
-	//if (input_->PushKey(DIK_W)) {
-	//	velocity.z += speed;
-	//}else if (input_->PushKey(DIK_S)) {
-	//	velocity.z -= speed;
-	//}
-	//if (input_->PushKey(DIK_A)) {
-	//	velocity.x -= speed;
-	//} else if (input_->PushKey(DIK_D)) {
-	//	velocity.x += speed;
-	//}
-	//if (input_->GetControllerStickX() != 0.0f ||
-	//	input_->GetControllerStickY() != 0.0f) {
-	//	velocity = {};
-	//	velocity.x += input_->GetControllerStickX();
-	//	velocity.z += input_->GetControllerStickY();
-	//}
-	//if(velocity.Length() != 0.0f){
-	//	velocity = velocity.Normalize() * speed;
-
-	//	object3ds_[2]->SetTranslate((Vector3)object3ds_[2]->GetTranslate() + velocity);
-	//	Vector3 rotate{};
-	//	rotate.y = std::atan2f(velocity.x, velocity.z);
-	//	Vector3 velocityZ = Matrix4x4::Transform(velocity, Matrix4x4::MakeRotateYMatrix(-rotate.y));
-	//	rotate.x = std::atan2f(-velocityZ.y, velocityZ.z);
-
-	//	rotate.y += 3.14f; // 180度回転
-	//	object3ds_[2]->SetRotate(rotate);
-	//}
-	//object3ds_[7]->SetWorldMatrix(object3ds_[2]->GetJointMatrix("mixamorig:RightHand"));
+	
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		object3d->Update();
 	}
