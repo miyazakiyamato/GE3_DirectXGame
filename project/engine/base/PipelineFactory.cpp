@@ -27,7 +27,8 @@ BasePipeline* PipelineFactory::ChangePipeline(const std::string& pipelineName) {
 		pipelineName == "OffScreen/GaussianFilter" ||
 		pipelineName == "OffScreen/LuminanceBasedOutline" ||
 		pipelineName == "OffScreen/DepthBasedOutline" ||
-		pipelineName == "OffScreen/RadialBlur") {
+		pipelineName == "OffScreen/RadialBlur"||
+		pipelineName == "OffScreen/Dissolve" ) {
 		return new OffScreenPipeline();
 	}
 	assert(0);

@@ -10,6 +10,8 @@ void OffScreen::Initialize(DirectXCommon* dxCommon){
 	// 初期値の設定
 	material->projectionInverseMatrix = Matrix4x4::MakeIdentity4x4();
 	material->depthSensitivity = 1.0f; // 深度感度の初期値
+	material->threshold = 0.5f; // マスクの閾値の初期値
+	material->edgeColor = Vector3(1.0f, 1.0f, 1.0f); // エッジの色の初期値
 }
 
 void OffScreen::Update(){

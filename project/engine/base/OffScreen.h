@@ -10,7 +10,9 @@ public:
 	struct Material {
 		Matrix4x4 projectionInverseMatrix;
 		float depthSensitivity = 1.0f;
-		float padding[3]; // 16バイト境界に合わせるためのパディング
+		float threshold; // マスクの閾値
+		float padding[2]; // 16バイト境界に合わせるためのパディング
+		Vector3 edgeColor; // エッジの色
 	};
 public:
 	//初期化
@@ -28,6 +30,11 @@ private:
 	Material* material = nullptr;
 public:
 	void SetDepthSensitivity(float sensitivity) { material->depthSensitivity = sensitivity; }
+	void SetThreshold(float threshold) { material->threshold = threshold; }
+	void SetEdgeColor(const Vector3& color) { material->edgeColor = color; }
+	
 	float GetDepthSensitivity() const { return material->depthSensitivity; }
+	float GetThreshold() const { return material->threshold; }
+	Vector3 GetEdgeColor() const { return material->edgeColor; }
 };
 

@@ -126,7 +126,7 @@ void DirectXCommon::OffScreenDraw(){
 	commandList->ResourceBarrier(1, &barrier);
 
 	srvManager_->SetGraphicsRootDescriptorTable(0, offScreenSRVIndex);
-	srvManager_->SetGraphicsRootDescriptorTable(2, offScreenDepthSRVIndex);
+	//srvManager_->SetGraphicsRootDescriptorTable(2, offScreenDepthSRVIndex);
 	commandList->DrawInstanced(3, 1, 0, 0);
 }
 

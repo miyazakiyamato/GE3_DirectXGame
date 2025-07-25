@@ -523,6 +523,9 @@
     <None Include="resources\shaders\OffScreen\RadialBlur.hlsli">
       <Filter>シェーダーファイル</Filter>
     </None>
+    <None Include="resources\shaders\OffScreen\Dissolve.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Object3d.PS.hlsl">
@@ -608,6 +611,12 @@
     </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\RadialBlur.VS.hlsl">
       <Filter>シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\Dissolve.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\Dissolve.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
