@@ -113,6 +113,23 @@ void DirectXCommon::SwapChainPreDraw(){
 	commandList->RSSetScissorRects(1, &scissorRect);//Scirssorを設定
 }
 
+void DirectXCommon::OffScreenDepthDraw(){
+	// 深度バッファをSRVとして使う前にリソースバリアを張る
+	//TransitionBarrierの設定
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = depthStencilResource.Get();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	commandList->ResourceBarrier(1, &barrier);
+
+	srvManager_->SetGraphicsRootDescriptorTable(0, offScreenSRVIndex);
+	srvManager_->SetGraphicsRootDescriptorTable(2, offScreenDepthSRVIndex);
+	commandList->DrawInstanced(3, 1, 0, 0);
+}
+
 void DirectXCommon::OffScreenDraw(){
 	// 深度バッファをSRVとして使う前にリソースバリアを張る
 	//TransitionBarrierの設定

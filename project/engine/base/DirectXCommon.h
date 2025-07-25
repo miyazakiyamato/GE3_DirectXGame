@@ -32,6 +32,7 @@ public://メンバ関数
 	//描画前処理(スワップチェイン)
 	void SwapChainPreDraw();
 	//offScreen描画
+	void OffScreenDepthDraw();
 	void OffScreenDraw();
 	//描画後処理
 	void PostDraw();

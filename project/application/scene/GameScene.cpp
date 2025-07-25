@@ -214,6 +214,7 @@ void GameScene::Update(){
 				sprite->ImGuiUpdate(spriteName);
 				++spriteIDIndex;
 			}
+			PostEffectManager::GetInstance()->ImGuiUpdate();
 			ImGui::EndMenuBar();
 		}
 		ImGui::End();

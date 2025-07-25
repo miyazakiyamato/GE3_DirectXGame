@@ -76,7 +76,7 @@ void Framework::Initialize(){
 	
 	//PostEffectManagerの初期化
 	postEffectManager_ = PostEffectManager::GetInstance();
-	postEffectManager_->Initialize(dxCommon.get());
+	postEffectManager_->Initialize(dxCommon.get(),srvManager.get());
 }
 
 void Framework::Finalize(){
