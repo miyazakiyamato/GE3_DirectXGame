@@ -1,5 +1,6 @@
 #include "Offscreen.h"
 #include "CameraManager.h"
+#include "TimeManager.h"
 
 void OffScreen::Initialize(DirectXCommon* dxCommon){
 	dxCommon_ = dxCommon;
@@ -12,9 +13,11 @@ void OffScreen::Initialize(DirectXCommon* dxCommon){
 	material->depthSensitivity = 1.0f; // 深度感度の初期値
 	material->threshold = 0.5f; // マスクの閾値の初期値
 	material->edgeColor = Vector3(1.0f, 1.0f, 1.0f); // エッジの色の初期値
+	material->time = 0.0f; // 時間の初期値
 }
 
 void OffScreen::Update(){
+	material->time += TimeManager::GetInstance()->deltaTime_; // 時間の更新
 	if (CameraManager::GetInstance()->GetCamera()) {
 		// カメラの投影行列を取得
 		const Matrix4x4& projectionMatrix = CameraManager::GetInstance()->GetCamera()->GetProjectionMatrix();

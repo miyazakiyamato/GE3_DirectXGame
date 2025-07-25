@@ -13,6 +13,7 @@ public:
 		float threshold; // マスクの閾値
 		float padding[2]; // 16バイト境界に合わせるためのパディング
 		Vector3 edgeColor; // エッジの色
+		float time = 0.0f; // 時間の変数（必要に応じて使用）
 	};
 public:
 	//初期化

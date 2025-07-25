@@ -15,9 +15,10 @@ void MyGame::Initialize(){
 	//sceneManager_->ChangeOffScreenState("LuminanceBasedOutline");
 	//sceneManager_->ChangeOffScreenState("DepthBasedOutline");
 	//sceneManager_->ChangeOffScreenState("RadialBlur");
-	sceneManager_->ChangeOffScreenState("Dissolve");
-	textureManager_->LoadTexture("noise0.png");
-	textureManager_->LoadTexture("noise1.png");
+	//sceneManager_->ChangeOffScreenState("Dissolve");
+	sceneManager_->ChangeOffScreenState("Random");
+	/*textureManager_->LoadTexture("noise0.png");
+	textureManager_->LoadTexture("noise1.png");*/
 	//オフスクリーンの初期化
 	offScreen_->SetDepthSensitivity(5000.0f);
 }
@@ -61,7 +62,7 @@ void MyGame::Draw(){
 	dxCommon->SwapChainPreDraw();
 	sceneManager_->OffScreenDrawSetting();
 	offScreen_->Draw();
-	srvManager->SetGraphicsRootDescriptorTable(2, textureManager_->GetSrvIndex("noise0.png"));
+	//srvManager->SetGraphicsRootDescriptorTable(2, textureManager_->GetSrvIndex("noise0.png"));
 	dxCommon->OffScreenDraw();
 #ifdef _DEBUG
 	//実際のcommandListのImGuiの描画コマンドを積む
