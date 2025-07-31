@@ -621,5 +621,8 @@
     <FxCompile Include="resources\shaders\OffScreen\RadialBlur.VS.hlsl">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
+    <FxCompile Include="resources\shaders\Particle.CS.hlsl">
+      <Filter>シェーダーファイル</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

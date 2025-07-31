@@ -147,10 +147,10 @@ void GameScene::Initialize(){
 	isAccelerationField = false;
 	accelerationField_.reset(new AccelerationField);
 
-	//ParticleManager::GetInstance()->CreateParticleGroup();
 	particleSystem_.reset(new ParticleSystem);
-	std::unique_ptr<BaseParticleEmitter> hitEffect = std::make_unique<HitEffect>();
-	particleSystem_->CreateParticleEmitter("hitEffect", std::move(hitEffect));
+	ParticleManager::GetInstance()->CreateParticleGroup("hitEffect");
+	/*std::unique_ptr<BaseParticleEmitter> hitEffect = std::make_unique<HitEffect>();
+	particleSystem_->CreateParticleEmitter("hitEffect", std::move(hitEffect));*/
 	
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
@@ -204,7 +204,7 @@ void GameScene::Update(){
 
 				object3dCount++;
 			}
-			ParticleManager::GetInstance()->UpdateGlobalVariables();
+			//ParticleManager::GetInstance()->UpdateGlobalVariables();
 			groupName = "Particle";
 			
 			groupName = "Sprite";
@@ -238,7 +238,7 @@ void GameScene::Update(){
 		object3d->Update();
 	}
 
-	if (isAccelerationField) {
+	/*if (isAccelerationField) {
 		for (std::pair<const std::string, std::unique_ptr<ParticleManager::ParticleGroup>>& pair : ParticleManager::GetInstance()->GetParticleGroups()) {
 			ParticleManager::ParticleGroup& group = *pair.second;
 			int index = 0;
@@ -254,7 +254,7 @@ void GameScene::Update(){
 				++index;
 			}
 		}
-	}
+	}*/
 	
 	particleSystem_->Update();
 

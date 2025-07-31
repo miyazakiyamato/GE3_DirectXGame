@@ -8,7 +8,7 @@ void SrvUavManager::Initialize(DirectXCommon* dxCommon){
 	dxCommon_ = dxCommon;
 
 	//デスクリプタヒープの生成。SRVはShader内で触るものなので、ShaderVisibleはture
-	descriptorHeap = dxCommon_->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
+	descriptorHeap_ = dxCommon_->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
 	//デスクリプタ1個分のサイズを取得して記録
 	descriptorSize = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
@@ -24,16 +24,14 @@ uint32_t SrvUavManager::Allocate(){
 	return index;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE SrvUavManager::GetCPUDescriptorHandle(uint32_t index)
-{
-	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+D3D12_CPU_DESCRIPTOR_HANDLE SrvUavManager::GetCPUDescriptorHandle(uint32_t index){
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 	handleCPU.ptr += (descriptorSize * index);
 	return handleCPU;
 }
 
-D3D12_GPU_DESCRIPTOR_HANDLE SrvUavManager::GetGPUDescriptorHandle(uint32_t index)
-{
-	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+D3D12_GPU_DESCRIPTOR_HANDLE SrvUavManager::GetGPUDescriptorHandle(uint32_t index){
+	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap_->GetGPUDescriptorHandleForHeapStart();
 	handleGPU.ptr += (descriptorSize * index);
 	return handleGPU;
 }
@@ -104,7 +102,7 @@ void SrvUavManager::CreateUAVforStructuredBuffer(uint32_t uavIndex, ID3D12Resour
 
 void SrvUavManager::PreDraw(){
 	//描画用のDescriptorHeapの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { descriptorHeap.Get() };
+	ID3D12DescriptorHeap* descriptorHeaps[] = { descriptorHeap_.Get() };
 	//SRV用のデスクリプタヒープを指定する
 	dxCommon_->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
 }
@@ -149,6 +147,6 @@ bool SrvUavManager::AvailabilityCheck(){
 
 ID3D12DescriptorHeap* SrvUavManager::GetDescriptorHeapForImGui()
 {
-	return descriptorHeap.Get();
+	return descriptorHeap_.Get();
 }
 

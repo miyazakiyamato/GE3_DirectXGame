@@ -103,7 +103,8 @@ std::string  PipelineManager::CreatePipelineState(const PipelineState& pipelineS
 	//グラフィックスパイプラインの生成
 	CreateGraphicsPipeline(data);
 
-	if (data.state.shaderName == "Object3d") {
+	if (data.state.shaderName == "Object3d" ||
+		data.state.shaderName == "Particle") {
 		//コンピュートルートシグネチャの作成
 		CreateComputeRootSignature(data);
 		//コンピュートシェーダーの生成
