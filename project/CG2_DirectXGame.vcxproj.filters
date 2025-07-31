@@ -493,9 +493,6 @@
     <None Include="resources\shaders\Skybox.hlsli">
       <Filter>シェーダーファイル</Filter>
     </None>
-    <None Include="resources\shaders\OffScreen\RadialBlur.hlsli">
-      <Filter>シェーダーファイル</Filter>
-    </None>
     <None Include="resources\shaders\RandomFunctions.hlsli">
       <Filter>シェーダーファイル</Filter>
     </None>
@@ -524,6 +521,9 @@
       <Filter>シェーダーファイル\OffScreen</Filter>
     </None>
     <None Include="resources\shaders\OffScreen\Vignette.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </None>
+    <None Include="resources\shaders\OffScreen\RadialBlur.hlsli">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </None>
   </ItemGroup>
@@ -556,12 +556,6 @@
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\Skybox.VS.hlsl">
-      <Filter>シェーダーファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="resources\shaders\OffScreen\RadialBlur.PS.hlsl">
-      <Filter>シェーダーファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="resources\shaders\OffScreen\RadialBlur.VS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\BoxFilter.PS.hlsl">
@@ -620,6 +614,12 @@
     </FxCompile>
     <FxCompile Include="resources\shaders\Object3d.CS.hlsl">
       <Filter>シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\RadialBlur.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\RadialBlur.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
