@@ -69,6 +69,7 @@ public://メンバ関数
 	void Initialize(DirectXCommon* dxCommon, const std::string& directoryPath, const std::string& filename);
 	//描画
 	void Draw(size_t meshIndex);
+	void Draw(size_t meshIndex,const D3D12_VERTEX_BUFFER_VIEW* vertexBufferView);
 	//ファイルの読み取り
 	void LoadFile(const std::string& directoryPath, const std::string& filename);
 	//Node解析

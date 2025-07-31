@@ -17,13 +17,13 @@ void Framework::Initialize(){
 	input_->Initialize(winApp.get());
 	
 	//SRVの初期化
-	srvManager.reset(new SrvManager());
-	srvManager->Initialize(dxCommon.get());
-	dxCommon->CreateOffScreenSRV(srvManager.get());
+	srvUavManager.reset(new SrvUavManager());
+	srvUavManager->Initialize(dxCommon.get());
+	dxCommon->CreateOffScreenSRV(srvUavManager.get());
 
 	//ImGuiの初期化
 	imGuiManager.reset(new ImGuiManager());
-	imGuiManager->Initialize(winApp.get(), dxCommon.get(), srvManager.get());
+	imGuiManager->Initialize(winApp.get(), dxCommon.get(), srvUavManager.get());
 
 	// グローバル変数の読み込み
 	globalVariables_ = GlobalVariables::GetInstance();
@@ -35,23 +35,23 @@ void Framework::Initialize(){
 
 	//テクスチャマネージャの初期化
 	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize(dxCommon.get(), srvManager.get());
+	textureManager_->Initialize(dxCommon.get(), srvUavManager.get());
 
 	//パーティクルマネージャの初期化
 	particleManager_ = ParticleManager::GetInstance();
-	particleManager_->Initialize(dxCommon.get(), srvManager.get());
+	particleManager_->Initialize(dxCommon.get(), srvUavManager.get());
 
 	//モデルマネージャの初期化
 	modelManager_ = ModelManager::GetInstance();
-	modelManager_->Initialize(dxCommon.get(), srvManager.get());
+	modelManager_->Initialize(dxCommon.get(), srvUavManager.get());
 	
 	//ラインマネージャ
 	lineManager_ = Line3dManager::GetInstance();
-	lineManager_->Initialize(srvManager.get());
+	lineManager_->Initialize(srvUavManager.get());
 
 	//ライトマネージャの初期化
 	lightManager_ = LightManager::GetInstance();
-	lightManager_->Initialize(dxCommon.get(), srvManager.get());
+	lightManager_->Initialize(dxCommon.get(), srvUavManager.get());
 
 	//カメラマネージャの初期化
 	cameraManager_ = CameraManager::GetInstance();
@@ -76,7 +76,7 @@ void Framework::Initialize(){
 	
 	//PostEffectManagerの初期化
 	postEffectManager_ = PostEffectManager::GetInstance();
-	postEffectManager_->Initialize(dxCommon.get(),srvManager.get());
+	postEffectManager_->Initialize(dxCommon.get(),srvUavManager.get());
 }
 
 void Framework::Finalize(){

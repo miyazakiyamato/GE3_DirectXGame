@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 #include "DirectXCommon.h"
-#include "SrvManager.h"
+#include "SrvUavManager.h"
 #include <algorithm>
 
 TextureManager* TextureManager::instance = nullptr;
@@ -13,9 +13,9 @@ TextureManager* TextureManager::GetInstance()
 	return instance;
 }
 
-void TextureManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager){
+void TextureManager::Initialize(DirectXCommon* dxCommon, SrvUavManager* srvUavManager){
 	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
+	srvUavManager_ = srvUavManager;
 }
 
 void TextureManager::Finalize(){
@@ -31,7 +31,7 @@ void TextureManager::LoadTexture(const std::string& filePath){
 	}
 
 	//テクスチャ枚数上限チェック
-	assert(srvManager_->AvailabilityCheck());
+	assert(srvUavManager_->AvailabilityCheck());
 
 	//Textureを読んで転送する
 	DirectX::ScratchImage mipImages = dxCommon_->LoadTexture(directoryPath_ + filePath);
@@ -43,16 +43,16 @@ void TextureManager::LoadTexture(const std::string& filePath){
 	textureData.metadata = mipImages.GetMetadata();
 	textureData.resource = dxCommon_->CreateTextureResource(textureData.metadata);
 	textureData.intermediateResource = dxCommon_->UploadTextureData(textureData.resource.Get(), mipImages);
-	textureData.srvIndex = srvManager_->ALLocate();
-	textureData.srvHandleCPU = srvManager_->GetCPUDescriptorHandle(textureData.srvIndex);
-	textureData.srvHandleGPU = srvManager_->GetGPUDescriptorHandle(textureData.srvIndex);
+	textureData.srvIndex = srvUavManager_->Allocate();
+	textureData.srvHandleCPU = srvUavManager_->GetCPUDescriptorHandle(textureData.srvIndex);
+	textureData.srvHandleGPU = srvUavManager_->GetGPUDescriptorHandle(textureData.srvIndex);
 
-	srvManager_->CreateSRVforTexture2D(textureData.srvIndex, textureData.resource.Get(), textureData.metadata.format, textureData.metadata);
+	srvUavManager_->CreateSRVforTexture2D(textureData.srvIndex, textureData.resource.Get(), textureData.metadata.format, textureData.metadata);
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(const std::string& filePath){
 	//テクスチャ枚数上限チェック
-	assert(srvManager_->AvailabilityCheck());
+	assert(srvUavManager_->AvailabilityCheck());
 
 	TextureData& textureData = textureDates[filePath];
 	return textureData.srvHandleGPU;
@@ -60,7 +60,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(const std::string& f
 
 const DirectX::TexMetadata& TextureManager::GetMetaData(const std::string& filePath){
 	//範囲外指定違反チェック
-	assert(srvManager_->AvailabilityCheck());
+	assert(srvUavManager_->AvailabilityCheck());
 
 	TextureData& textureData = textureDates[filePath];
 	return textureData.metadata;
@@ -68,7 +68,7 @@ const DirectX::TexMetadata& TextureManager::GetMetaData(const std::string& fileP
 
 uint32_t TextureManager::GetSrvIndex(const std::string& filePath){
 	//範囲外指定違反チェック
-	assert(srvManager_->AvailabilityCheck());
+	assert(srvUavManager_->AvailabilityCheck());
 
 	TextureData& textureData = textureDates[filePath];
 	return textureData.srvIndex;

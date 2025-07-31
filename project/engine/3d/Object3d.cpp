@@ -103,13 +103,14 @@ void Object3d::Draw(){
 	if (!model_) {return;}
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-
-	PipelineManager::GetInstance()->DrawSetting(pipelineStateName_);
-
-	for (uint32_t meshIndex = 0; meshIndex < model_->GetMeshData().size(); meshIndex++) {
-		if (animationData_) {
+	if (!isSkybox_) {
+		PipelineManager::GetInstance()->DrawSettingCS(pipelineStateName_);
+		for (uint32_t meshIndex = 0; meshIndex < model_->GetMeshData().size(); meshIndex++) {
 			skinClusterData_->Draw(meshIndex);
 		}
+	}
+	PipelineManager::GetInstance()->DrawSetting(pipelineStateName_);
+	for (uint32_t meshIndex = 0; meshIndex < model_->GetMeshData().size(); meshIndex++) {
 		//wvp用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 		//マテリアルCBufferの場所を設定
@@ -125,9 +126,10 @@ void Object3d::Draw(){
 				//環境マップテクスチャを設定
 				commandList->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetSrvHandleGPU(environmentTextureFilePath_));
 			}
+			model_->Draw(meshIndex,skinClusterData_->GetSkinnedVerticesView(meshIndex));
+		} else {
+			model_->Draw(meshIndex);
 		}
-
-		model_->Draw(meshIndex);
 	}
 	//Skeleton
 	if (skeletonData_ && isDrawSkeleton_) {
@@ -309,21 +311,12 @@ void Object3d::SetAnimation(const std::string& filePath, bool isLoop){
 		animationData_->time = 0.0f;
 		animationData_->isLoop = isLoop;
 	}
-	
-
-	//パイプラインを設定
-	PipelineState pipelineState;
-	pipelineState.shaderName = "SkinningObject3d";
-	pipelineState.blendMode = blendMode_;
-	pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
 }
 
 void Object3d::SetBlendMode(const BlendMode& blendMode){
 	blendMode_ = blendMode;
 	PipelineState pipelineState;
-	if (skinClusterData_) {
-		pipelineState.shaderName = "SkinningObject3d";
-	} else if (isSkybox_) {
+	if (isSkybox_) {
 		pipelineState.shaderName = "Skybox";
 		pipelineState.depthMode = DepthMode::kReadOnly;
 	} else {

@@ -58,3 +58,10 @@ D3D12_INPUT_ELEMENT_DESC BasePipeline::CreateInputElementDesc(const char* semant
 	inputElementDesc.AlignedByteOffset = alignedByteOffset;
 	return inputElementDesc;
 }
+std::vector<D3D12_DESCRIPTOR_RANGE> BasePipeline::ComputeDescriptorRanges(){
+	return std::vector<D3D12_DESCRIPTOR_RANGE>();
+}
+
+std::vector<D3D12_ROOT_PARAMETER> BasePipeline::ComputeRootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges){
+	return std::vector<D3D12_ROOT_PARAMETER>();
+}

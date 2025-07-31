@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <memory>
 #include "DirectXCommon.h"
-#include "SrvManager.h"
+#include "SrvUavManager.h"
 #include "Matrix4x4.h"
 
 class PostEffectManager{
@@ -23,7 +23,7 @@ public:
 	//インスタンス取得
 	static PostEffectManager* GetInstance();
 	//初期化
-	void Initialize(DirectXCommon* dxCommon,SrvManager* srvManager);
+	void Initialize(DirectXCommon* dxCommon,SrvUavManager* srvUavManager);
 	//終了処理
 	void Finalize();
 	//更新
@@ -45,7 +45,7 @@ private://シングルインスタンス
 	PostEffectManager& operator=(PostEffectManager&) = delete;
 private:
 	DirectXCommon* dxCommon_ = nullptr;
-	SrvManager* srvManager_ = nullptr;
+	SrvUavManager* srvUavManager_ = nullptr;
 
 	std::string offScreenName_; //!< オフスクリーンのパイプライン名
 	std::string postEffectName_ = "Fullscreen"; //!< オフスクリーンのパイプライン名

@@ -21,7 +21,7 @@
 #include "Logger.h"
 #include "Camera.h"
 #include "CameraManager.h"
-#include "SrvManager.h"
+#include "SrvUavManager.h"
 #include "ImGuiManager.h"
 #include "GlobalVariables.h"
 #include "AudioManager.h"
@@ -56,7 +56,7 @@ protected://メンバ変数
 	//入力
 	Input* input_ = nullptr;
 	//SRV
-	std::unique_ptr<SrvManager> srvManager = nullptr;
+	std::unique_ptr<SrvUavManager> srvUavManager = nullptr;
 	//ImGuiマネージャ
 	std::unique_ptr<ImGuiManager> imGuiManager = nullptr;
 	//

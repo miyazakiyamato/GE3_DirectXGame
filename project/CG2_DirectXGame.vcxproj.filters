@@ -252,9 +252,6 @@
     <ClCompile Include="engine\3d\SkinCluster.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\SkinningObject3dPipeline.cpp">
-      <Filter>ソース ファイル\engine\3d</Filter>
-    </ClCompile>
     <ClCompile Include="engine\base\OffScreenPipeline.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
@@ -282,9 +279,6 @@
     <ClCompile Include="engine\base\LevelDataManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\SrvManager.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
     <ClCompile Include="engine\base\TextureManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
@@ -295,6 +289,9 @@
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\PostEffectManager.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\SrvUavManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
   </ItemGroup>
@@ -458,9 +455,6 @@
     <ClInclude Include="engine\base\LevelDataManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\SrvManager.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
     <ClInclude Include="engine\base\TextureManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
@@ -479,6 +473,9 @@
     <ClInclude Include="engine\base\PostEffectManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
+    <ClInclude Include="engine\base\SrvUavManager.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Object3d.hlsli">
@@ -491,9 +488,6 @@
       <Filter>シェーダーファイル</Filter>
     </None>
     <None Include="resources\shaders\Line3D.hlsli">
-      <Filter>シェーダーファイル</Filter>
-    </None>
-    <None Include="resources\shaders\SkinningObject3d.hlsli">
       <Filter>シェーダーファイル</Filter>
     </None>
     <None Include="resources\shaders\Skybox.hlsli">
@@ -556,12 +550,6 @@
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\Line3D.VS.hlsl">
-      <Filter>シェーダーファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="resources\shaders\SkinningObject3d.PS.hlsl">
-      <Filter>シェーダーファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="resources\shaders\SkinningObject3d.VS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\Skybox.PS.hlsl">
@@ -629,6 +617,9 @@
     </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\Vignette.VS.hlsl">
       <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\Object3d.CS.hlsl">
+      <Filter>シェーダーファイル</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

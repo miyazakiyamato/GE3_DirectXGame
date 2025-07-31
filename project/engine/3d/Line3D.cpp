@@ -2,7 +2,7 @@
 #include "PipelineManager.h"
 #include "TextureManager.h"
 #include <CameraManager.h>
-#include "SrvManager.h"
+#include "SrvUavManager.h"
 #include "numbers"
 
 Line3dManager* Line3dManager::instance = nullptr;
@@ -14,8 +14,8 @@ Line3dManager* Line3dManager::GetInstance() {
 	return instance;
 }
 
-void Line3dManager::Initialize(SrvManager* srvManager) {
-	srvManager_ = srvManager;
+void Line3dManager::Initialize(SrvUavManager* srvUavManager) {
+	srvUavManager_ = srvUavManager;
 
 	//Line用のTransformationMatirx用のリソースを作る
 	wvpResource = PipelineManager::GetInstance()->GetDxCommon()->CreateBufferResource(sizeof(TransformationMatrix));

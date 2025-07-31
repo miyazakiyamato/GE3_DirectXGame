@@ -9,7 +9,7 @@
 #include "Matrix4x4.h"
 
 class DirectXCommon;
-class SrvManager;
+class SrvUavManager;
 class ParticleManager {
 public:
 	//namespace省略
@@ -86,7 +86,7 @@ public://メンバ関数
 	//シングルトンインスタンスの取得
 	static ParticleManager* GetInstance();
 	//初期化
-	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
+	void Initialize(DirectXCommon* dxCommon, SrvUavManager* srvUavManager);
 	//終了
 	void Finalize();
 	//更新
@@ -119,7 +119,7 @@ private://シングルインスタンス
 private://メンバ変数
 	//ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
-	SrvManager* srvManager_ = nullptr;
+	SrvUavManager* srvUavManager_ = nullptr;
 	//インスタンスの最大数
 	uint32_t kMaxInstance = 1000;
 

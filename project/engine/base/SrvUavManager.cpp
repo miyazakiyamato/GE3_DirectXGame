@@ -1,10 +1,10 @@
-#include "SrvManager.h"
+#include "SrvUavManager.h"
 #include <cassert>
 #include "ParticleManager.h"
 
-const uint32_t SrvManager::kMaxSRVCount = 512;
+const uint32_t SrvUavManager::kMaxSRVCount = 512;
 
-void SrvManager::Initialize(DirectXCommon* dxCommon){
+void SrvUavManager::Initialize(DirectXCommon* dxCommon){
 	dxCommon_ = dxCommon;
 
 	//デスクリプタヒープの生成。SRVはShader内で触るものなので、ShaderVisibleはture
@@ -13,7 +13,7 @@ void SrvManager::Initialize(DirectXCommon* dxCommon){
 	descriptorSize = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
-uint32_t SrvManager::ALLocate(){
+uint32_t SrvUavManager::Allocate(){
 	assert(useIndex < kMaxSRVCount);
 	
 	//returnする番号を一旦記録しておく
@@ -24,21 +24,21 @@ uint32_t SrvManager::ALLocate(){
 	return index;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE SrvManager::GetCPUDescriptorHandle(uint32_t index)
+D3D12_CPU_DESCRIPTOR_HANDLE SrvUavManager::GetCPUDescriptorHandle(uint32_t index)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	handleCPU.ptr += (descriptorSize * index);
 	return handleCPU;
 }
 
-D3D12_GPU_DESCRIPTOR_HANDLE SrvManager::GetGPUDescriptorHandle(uint32_t index)
+D3D12_GPU_DESCRIPTOR_HANDLE SrvUavManager::GetGPUDescriptorHandle(uint32_t index)
 {
 	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 	handleGPU.ptr += (descriptorSize * index);
 	return handleGPU;
 }
 
-void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, DirectX::TexMetadata metadata){
+void SrvUavManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, DirectX::TexMetadata metadata){
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = Format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -55,7 +55,7 @@ void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResou
 	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUDescriptorHandle(srvIndex));
 }
 
-void SrvManager::CreateSRVforDepthTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format){
+void SrvUavManager::CreateSRVforDepthTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format){
 	assert(pResource != nullptr); // リソースが有効か確認
 	// SRV記述子を初期化
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -70,7 +70,7 @@ void SrvManager::CreateSRVforDepthTexture2D(uint32_t srvIndex, ID3D12Resource* p
 	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUDescriptorHandle(srvIndex));
 }
 
-void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride) {
+void SrvUavManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride) {
 	assert(pResource != nullptr); // リソースが有効か確認
 	// SRV記述子を初期化
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -85,14 +85,31 @@ void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ID3D12Resource*
 	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetCPUDescriptorHandle(srvIndex));
 }
 
-void SrvManager::PreDraw(){
+void SrvUavManager::CreateUAVforStructuredBuffer(uint32_t uavIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByStride){
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc{};
+	uavDesc.Format = DXGI_FORMAT_UNKNOWN; // 構造化バッファはフォーマット指定なし
+	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+	uavDesc.Buffer.FirstElement = 0; // 最初の要素
+	uavDesc.Buffer.NumElements = numElements; // 構造体の要素数
+	uavDesc.Buffer.CounterOffsetInBytes = 0; // カウンターオフセット（通常は0）
+	uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE; // デフォルト
+	uavDesc.Buffer.StructureByteStride = structureByStride; // 各要素のバイトサイズ
+	dxCommon_->GetDevice()->CreateUnorderedAccessView(
+		pResource,
+		nullptr, // カウンターリソースは使用しない
+		&uavDesc,
+		GetCPUDescriptorHandle(uavIndex) // UAVのCPUハンドルを取得
+	);
+}
+
+void SrvUavManager::PreDraw(){
 	//描画用のDescriptorHeapの設定
 	ID3D12DescriptorHeap* descriptorHeaps[] = { descriptorHeap.Get() };
 	//SRV用のデスクリプタヒープを指定する
 	dxCommon_->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
 }
 
-void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParaneterIndex, uint32_t srvIndex){
+void SrvUavManager::SetGraphicsRootDescriptorTable(UINT RootParaneterIndex, uint32_t srvIndex){
 	// コマンドリストが有効か確認
 	auto commandList = dxCommon_->GetCommandList();
 	assert(commandList != nullptr);
@@ -107,7 +124,22 @@ void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParaneterIndex, uint32_
 	commandList->SetGraphicsRootDescriptorTable(RootParaneterIndex, gpuHandle);
 }
 
-bool SrvManager::AvailabilityCheck(){
+void SrvUavManager::SetComputeRootDescriptorTable(UINT RootParaneterIndex, uint32_t srvIndex){
+	// コマンドリストが有効か確認
+	auto commandList = dxCommon_->GetCommandList();
+	assert(commandList != nullptr);
+
+	// SRVインデックスが範囲内か確認
+	assert(srvIndex < kMaxSRVCount);
+
+	// GPUデスクリプタハンドルを取得
+	auto gpuHandle = GetGPUDescriptorHandle(srvIndex);
+	assert(gpuHandle.ptr != 0); // GPUハンドルが有効か確認
+	// ルートディスクリプタテーブルを設定
+	commandList->SetComputeRootDescriptorTable(RootParaneterIndex, gpuHandle);
+}
+
+bool SrvUavManager::AvailabilityCheck(){
 	if (useIndex < kMaxSRVCount) {
 		return true;
 	}
@@ -115,7 +147,7 @@ bool SrvManager::AvailabilityCheck(){
 	return false;
 }
 
-ID3D12DescriptorHeap* SrvManager::GetDescriptorHeapForImGui()
+ID3D12DescriptorHeap* SrvUavManager::GetDescriptorHeapForImGui()
 {
 	return descriptorHeap.Get();
 }

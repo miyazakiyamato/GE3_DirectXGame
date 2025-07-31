@@ -1,7 +1,6 @@
 #include "PipelineFactory.h"
 #include "ModelPipeline.h"
 #include "SkyboxPipeline.h"
-#include "SkinningObject3dPipeline.h"
 #include "SpritePipeline.h"
 #include "ParticlePipeline.h"
 #include "Line3DPipeline.h"
@@ -12,9 +11,7 @@ BasePipeline* PipelineFactory::ChangePipeline(const std::string& pipelineName) {
 		return new ModelPipeline();
 	} else if (pipelineName == "Skybox") {
 		return new SkyboxPipeline();
-	} else if (pipelineName == "SkinningObject3d") {
-		return new SkinningObject3dPipeline();
-	} else if (pipelineName == "Sprite") {
+	}else if (pipelineName == "Sprite") {
 		return new SpritePipeline();
 	} else if (pipelineName == "Particle") {
 		return new ParticlePipeline();

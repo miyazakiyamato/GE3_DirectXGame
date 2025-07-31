@@ -2,11 +2,11 @@
 
 class WinApp;
 class DirectXCommon;
-class SrvManager;
+class SrvUavManager;
 class ImGuiManager{
 public://メンバ関数
 	//初期化
-	void Initialize(WinApp* winApp,DirectXCommon* dxCommon,SrvManager* srvManager);
+	void Initialize(WinApp* winApp,DirectXCommon* dxCommon,SrvUavManager* srvUavManager);
 	//終了
 	void Finalize();
 
@@ -28,6 +28,6 @@ private://メンバ変数
 	//DirectXCommon
 	DirectXCommon* dxCommon_ = nullptr;
 	//SRV
-	SrvManager* srvManager_ = nullptr;
+	SrvUavManager* srvUavManager_ = nullptr;
 };
 

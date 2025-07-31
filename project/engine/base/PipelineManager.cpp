@@ -56,6 +56,17 @@ void PipelineManager::DrawSetting(const std::string& stateName){
 	nowStateName_ = stateName;
 }
 
+void PipelineManager::DrawSettingCS(const std::string& stateName){
+	PipelineData* pipelineData = pipelineDates_[stateName].get();
+	// コマンドリストの取得
+	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
+	//RootSignatureを設定。
+	commandList->SetComputeRootSignature(pipelineData->computeRootSignature.Get());
+	commandList->SetPipelineState(pipelineData->computePipelineState.Get());//コンピュートPSOを設定
+
+	nowStateName_ = stateName + "cs";
+}
+
 std::string  PipelineManager::CreatePipelineState(const PipelineState& pipelineState) {
 	std::string setStateName = pipelineState.shaderName;
 	int id = 0;
@@ -91,6 +102,13 @@ std::string  PipelineManager::CreatePipelineState(const PipelineState& pipelineS
 	CreateRootSignature(data);
 	//グラフィックスパイプラインの生成
 	CreateGraphicsPipeline(data);
+
+	if (data.state.shaderName == "Object3d") {
+		//コンピュートルートシグネチャの作成
+		CreateComputeRootSignature(data);
+		//コンピュートシェーダーの生成
+		CreateComputePipeline(data);
+	}
 
 	std::unique_ptr<PipelineData> state = std::make_unique<PipelineData>(data);
 	pipelineDates_[setStateName] = std::move(state);
@@ -252,5 +270,71 @@ void PipelineManager::CreateGraphicsPipeline(PipelineData& pipeline){
 	//実際に生成
 	hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&pipeline.graphicsPipelineState));
+	assert(SUCCEEDED(hr));
+}
+
+void PipelineManager::CreateComputeRootSignature(PipelineData& pipeline) {
+	HRESULT hr;
+	//RootSignature作成
+	std::unique_ptr<BasePipeline> basePipeline(PipelineFactory::ChangePipeline(pipeline.state.shaderName));
+	std::vector<D3D12_DESCRIPTOR_RANGE> descriptorRanges = basePipeline->ComputeDescriptorRanges();
+	std::vector<D3D12_ROOT_PARAMETER> rootParametersVector = basePipeline->ComputeRootParameters(descriptorRanges);
+	const uint32_t rootParametersCount = static_cast<uint32_t>(rootParametersVector.size());
+
+	// 動的配列を作成しvectorからコピー
+	std::unique_ptr<D3D12_ROOT_PARAMETER[]> rootParameters(new D3D12_ROOT_PARAMETER[rootParametersCount]);
+	std::copy_n(rootParametersVector.begin(), rootParametersCount, rootParameters.get());
+
+	// ルートシグネチャ全体のデスクリプション
+	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature = {};
+	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	descriptionRootSignature.pParameters = rootParameters.get();
+	descriptionRootSignature.NumParameters = rootParametersCount;
+
+	descriptionRootSignature.pStaticSamplers = nullptr;
+	descriptionRootSignature.NumStaticSamplers = 0;
+
+	//シリアライズしてバイナリにする
+	ComPtr<ID3DBlob> signatureBlob = nullptr;
+	ComPtr<ID3DBlob> errorBlob = nullptr;
+	hr = D3D12SerializeRootSignature(&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+	if (FAILED(hr)) {
+		Logger::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		assert(false);
+	}
+	//バイナリをもとに生成
+	hr = dxCommon_->GetDevice()->CreateRootSignature(0,
+		signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(),
+		IID_PPV_ARGS(&pipeline.computeRootSignature));
+}
+
+void PipelineManager::CreateComputePipeline(PipelineData& pipeline){
+	HRESULT hr;
+
+	// シェーダーをコンパイルする
+	// コンピュートシェーダーのファイルパスを指定
+	ComPtr<IDxcBlob> computeShaderBlob = dxCommon_->CompileShader(shaderFilePath_ + ConvertString(pipeline.state.shaderName) + csFilePath_,L"cs_6_0");
+	assert(computeShaderBlob != nullptr);
+	
+	// ComputePipelineStateDescの作成
+	D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineStateDesc{};
+	// Compute Shaderの設定
+	computePipelineStateDesc.CS = {
+		.pShaderBytecode = computeShaderBlob->GetBufferPointer(),
+		.BytecodeLength = computeShaderBlob->GetBufferSize()
+	};
+	// NodeMask (通常は0で問題ありません)
+	computePipelineStateDesc.NodeMask = 0;
+	// CachedPSO (今回は使用しない)
+	computePipelineStateDesc.CachedPSO = {};
+	// Flags (通常はnone)
+	computePipelineStateDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+
+	computePipelineStateDesc.pRootSignature = pipeline.computeRootSignature.Get();
+	// 実際に生成
+	hr = dxCommon_->GetDevice()->CreateComputePipelineState(
+		&computePipelineStateDesc,
+		IID_PPV_ARGS(&pipeline.computePipelineState) // 結果を PipelineData に格納
+	);
 	assert(SUCCEEDED(hr));
 }

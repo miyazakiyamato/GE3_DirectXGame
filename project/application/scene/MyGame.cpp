@@ -21,7 +21,7 @@ void MyGame::Update(){
 void MyGame::Draw(){
 	//描画前処理
 	dxCommon->RenderTexturePreDraw();
-	srvManager->PreDraw();
+	srvUavManager->PreDraw();
 		
 	sceneManager_->Draw();
 

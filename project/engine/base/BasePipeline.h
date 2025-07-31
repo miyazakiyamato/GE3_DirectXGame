@@ -18,6 +18,9 @@ public://メンバ関数
 	virtual std::vector<D3D12_ROOT_PARAMETER> RootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges) = 0;
 	//グラフィックスパイプラインのデータを取得
 	virtual std::vector<D3D12_INPUT_ELEMENT_DESC> InputElementDesc() = 0;
+	//コンピュートシェーダーのデータを取得
+	virtual std::vector<D3D12_DESCRIPTOR_RANGE> ComputeDescriptorRanges();
+	virtual std::vector<D3D12_ROOT_PARAMETER> ComputeRootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges);
 	//値をセットしたものを取得
 	D3D12_STATIC_SAMPLER_DESC CreateStaticSampler(D3D12_FILTER filter, StaticSamplersMode staticSamplersMode, UINT ShaderRegister);
 	D3D12_DESCRIPTOR_RANGE CreateDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE type, UINT baseShaderRegister, UINT numDescriptors);

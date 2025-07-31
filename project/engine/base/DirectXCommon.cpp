@@ -9,7 +9,7 @@
 #include "externals/imgui/imgui_impl_win32.h"
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/DirectXTex/d3dx12.h"
-#include "SrvManager.h"
+#include "SrvUavManager.h"
 
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
@@ -125,8 +125,8 @@ void DirectXCommon::OffScreenDepthDraw(){
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	commandList->ResourceBarrier(1, &barrier);
 
-	srvManager_->SetGraphicsRootDescriptorTable(0, offScreenSRVIndex);
-	srvManager_->SetGraphicsRootDescriptorTable(2, offScreenDepthSRVIndex);
+	srvUavManager_->SetGraphicsRootDescriptorTable(0, offScreenSRVIndex);
+	srvUavManager_->SetGraphicsRootDescriptorTable(2, offScreenDepthSRVIndex);
 	commandList->DrawInstanced(3, 1, 0, 0);
 }
 
@@ -142,8 +142,8 @@ void DirectXCommon::OffScreenDraw(){
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	commandList->ResourceBarrier(1, &barrier);
 
-	srvManager_->SetGraphicsRootDescriptorTable(0, offScreenSRVIndex);
-	//srvManager_->SetGraphicsRootDescriptorTable(2, offScreenDepthSRVIndex);
+	srvUavManager_->SetGraphicsRootDescriptorTable(0, offScreenSRVIndex);
+	//srvUavManager_->SetGraphicsRootDescriptorTable(2, offScreenDepthSRVIndex);
 	commandList->DrawInstanced(3, 1, 0, 0);
 }
 
@@ -445,14 +445,14 @@ void DirectXCommon::CreateRTVDescriptorHeaps(){
 	}
 }
 
-void DirectXCommon::CreateOffScreenSRV(SrvManager* srvManager){
-	srvManager_ = srvManager;
-	offScreenSRVIndex = srvManager_->ALLocate();
+void DirectXCommon::CreateOffScreenSRV(SrvUavManager* srvUavManager){
+	srvUavManager_ = srvUavManager;
+	offScreenSRVIndex = srvUavManager_->Allocate();
 	DirectX::TexMetadata metadata{};
 	metadata.mipLevels = 1;
-	srvManager_->CreateSRVforTexture2D(offScreenSRVIndex, renderTextureResource.Get(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, metadata);
-	offScreenDepthSRVIndex = srvManager_->ALLocate();
-	srvManager_->CreateSRVforDepthTexture2D(offScreenDepthSRVIndex, depthStencilResource.Get(), DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
+	srvUavManager_->CreateSRVforTexture2D(offScreenSRVIndex, renderTextureResource.Get(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, metadata);
+	offScreenDepthSRVIndex = srvUavManager_->Allocate();
+	srvUavManager_->CreateSRVforDepthTexture2D(offScreenDepthSRVIndex, depthStencilResource.Get(), DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE DirectXCommon::GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, const uint32_t& descriptorSize, const uint32_t& index) {
@@ -630,6 +630,35 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(const
 	HRESULT hr = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
 		&vertexResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
 		IID_PPV_ARGS(&vertexResource));
+	assert(SUCCEEDED(hr));
+
+	return vertexResource;
+}
+
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateRWBufferResource(const size_t& sizeInbytes){
+	D3D12_HEAP_PROPERTIES defaultHeapProperties{};
+	defaultHeapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+	// リソースの設定
+	D3D12_RESOURCE_DESC resourceDesc{};
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	resourceDesc.Width = sizeInbytes;
+	resourceDesc.Height = 1;
+	resourceDesc.DepthOrArraySize = 1;
+	resourceDesc.MipLevels = 1;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	// 作成するリソース
+	ComPtr<ID3D12Resource> vertexResource = nullptr;
+	// リソースを作成。
+	HRESULT hr = device->CreateCommittedResource(
+		&defaultHeapProperties,                 // DEFAULTヒープのプロパティ
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDesc,                          // UAVフラグ付きのリソースデスク
+		D3D12_RESOURCE_STATE_COMMON,            // 汎用的な初期ステート
+		nullptr,                                // 最適化されたクリア値は不要
+		IID_PPV_ARGS(&vertexResource)
+	);
 	assert(SUCCEEDED(hr));
 
 	return vertexResource;

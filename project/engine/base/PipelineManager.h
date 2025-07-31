@@ -46,6 +46,8 @@ public:
 		PipelineState state;
 		ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 		ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
+		ComPtr<ID3D12RootSignature> computeRootSignature = nullptr;
+		ComPtr<ID3D12PipelineState> computePipelineState = nullptr;
 	};
 public://メンバ関数
 	//シングルトンインスタンスの取得
@@ -56,6 +58,7 @@ public://メンバ関数
 	void Finalize();
 	//描画設定
 	void DrawSetting(const std::string& stateName);
+	void DrawSettingCS(const std::string& stateName);
 	//グラフィックスパイプラインの生成
 	std::string CreatePipelineState(const PipelineState& pipelineState);
 private:
@@ -63,6 +66,10 @@ private:
 	void CreateRootSignature(PipelineData& pipeline);
 	//グラフィックスパイプラインの生成
 	void CreateGraphicsPipeline(PipelineData& pipeline);
+	//コンピュートルートシグネチャの作成
+	void CreateComputeRootSignature(PipelineData& pipeline);
+	//コンピュートシェーダーの生成
+	void CreateComputePipeline(PipelineData& pipeline);
 private://シングルインスタンス
 	static PipelineManager* instance;
 
@@ -79,6 +86,7 @@ private:
 	std::wstring shaderFilePath_ = L"resources/shaders/";
 	std::wstring vsFilePath_ = L".VS.hlsl";
 	std::wstring psFilePath_ = L".PS.hlsl";
+	std::wstring csFilePath_ = L".CS.hlsl";
 public:
 	DirectXCommon* GetDxCommon() { return dxCommon_; }
 };

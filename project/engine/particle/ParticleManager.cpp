@@ -1,6 +1,6 @@
 #include "ParticleManager.h"
 #include "DirectXCommon.h"
-#include "SrvManager.h"
+#include "SrvUavManager.h"
 #include "TextureManager.h"
 #include "CameraManager.h"
 #include <numbers>
@@ -18,9 +18,9 @@ ParticleManager* ParticleManager::GetInstance(){
 	return instance;
 }
 
-void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager) {
+void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvUavManager* srvUavManager) {
 	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
+	srvUavManager_ = srvUavManager;
 
 	//ランダムエンジンの初期化
 	std::random_device seedGenerator;
@@ -107,7 +107,7 @@ void ParticleManager::Draw() {
 		commandList->IASetVertexBuffers(0, 1, &group->vertexBufferView);// VBVを設定
 		commandList->IASetIndexBuffer(&group->indexBufferView);//IBVを設定
 		// インスタンシングデータのSRVのDescriptorTableを設定
-		srvManager_->SetGraphicsRootDescriptorTable(0, group->srvIndexForInstancing);
+		srvUavManager_->SetGraphicsRootDescriptorTable(0, group->srvIndexForInstancing);
 		//SRVのDescriptorTableの先頭を設定、2はrootParameter[2]である
 		commandList->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->GetSrvHandleGPU(group->materialData.textureFilePath));
 		// DrawCall (インスタンシング描画)
@@ -193,8 +193,8 @@ void ParticleManager::CreateParticleGroup(const std::string name) {
 		group->instancingData[index].color = { 1.0f,1.0f,1.0f,1.0f };//色を書き込む
 	}
 
-	group->srvIndexForInstancing = srvManager_->ALLocate();
-	srvManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
+	group->srvIndexForInstancing = srvUavManager_->Allocate();
+	srvUavManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
 
 
 	PipelineState pipelineState;
@@ -296,8 +296,8 @@ void ParticleManager::CreateRingParticleGroup(const std::string name, const uint
 		group->instancingData[index].color = { 1.0f,1.0f,1.0f,1.0f };//色を書き込む
 	}
 
-	group->srvIndexForInstancing = srvManager_->ALLocate();
-	srvManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
+	group->srvIndexForInstancing = srvUavManager_->Allocate();
+	srvUavManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
 
 	PipelineState pipelineState;
 	pipelineState.shaderName = "Particle";
@@ -392,8 +392,8 @@ void ParticleManager::CreateCylinderParticleGroup(const std::string name,const u
 		group->instancingData[index].color = { 1.0f,1.0f,1.0f,1.0f };//色を書き込む
 	}
 
-	group->srvIndexForInstancing = srvManager_->ALLocate();
-	srvManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
+	group->srvIndexForInstancing = srvUavManager_->Allocate();
+	srvUavManager_->CreateSRVforStructuredBuffer(group->srvIndexForInstancing, group->instancingResource.Get(), kMaxInstance, sizeof(ParticleForGPU));
 
 	PipelineState pipelineState;
 	pipelineState.shaderName = "Particle";

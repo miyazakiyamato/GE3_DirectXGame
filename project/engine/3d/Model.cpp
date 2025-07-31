@@ -60,6 +60,16 @@ void Model::Draw(size_t meshIndex){
 	commandList->DrawIndexedInstanced(UINT(meshDates_[meshIndex].indices.size()), 1, 0, 0, 0);
 }
 
+void Model::Draw(size_t meshIndex, const D3D12_VERTEX_BUFFER_VIEW* vertexBufferView){
+	// コマンドリストの取得
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+	commandList->IASetVertexBuffers(0, 1, vertexBufferView); //VBVを設定
+	commandList->IASetIndexBuffer(&meshDates_[meshIndex].indexBufferView);//IBVを設定
+	//描画！(DrawCall/ドローコール)3頂点で1つのインスタンス。インスタンスについては
+	commandList->DrawIndexedInstanced(UINT(meshDates_[meshIndex].indices.size()), 1, 0, 0, 0);
+}
+
 void Model::LoadFile(const std::string& directoryPath, const std::string& filename) {
 	Assimp::Importer importer;
 	std::string filePath = directoryPath + "/" + filename;

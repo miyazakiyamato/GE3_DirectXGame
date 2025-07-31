@@ -14,9 +14,9 @@ PostEffectManager* PostEffectManager::GetInstance(){
 	return instance;
 }
 
-void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager){
+void PostEffectManager::Initialize(DirectXCommon* dxCommon, SrvUavManager* srvUavManager){
 	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
+	srvUavManager_ = srvUavManager;
 
 	TextureManager::GetInstance()->LoadTexture("noise0.png"); // マスクテクスチャの読み込み
 
@@ -72,7 +72,7 @@ void PostEffectManager::Draw(){
 	//マテリアルCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, materialResource.Get()->GetGPUVirtualAddress());
 	if (postEffectName_ == "Dissolve") {
-		srvManager_->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(maskTextureName_));
+		srvUavManager_->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex(maskTextureName_));
 	}
 	if (postEffectName_ == "DepthBasedOutline") {
 		dxCommon_->OffScreenDepthDraw();

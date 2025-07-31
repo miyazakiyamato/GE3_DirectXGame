@@ -22,7 +22,7 @@ namespace {
 	const uint32_t kRTVHandleNum = 3;
 }
 
-class SrvManager;
+class SrvUavManager;
 class DirectXCommon{
 public://メンバ関数
 	//初期化
@@ -50,7 +50,7 @@ public://メンバ関数
 	void CreateDescriptorHeaps();
 	//レンダーターゲットビューの初期化
 	void CreateRTVDescriptorHeaps();
-	void CreateOffScreenSRV(SrvManager* srvManager);
+	void CreateOffScreenSRV(SrvUavManager* srvUavManager);
 	//指定の番号のCPUデスクリプタハンドルを取得
 	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, const uint32_t& descriptorSize, const uint32_t& index);
 	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, const uint32_t& descriptorSize, const uint32_t& index);
@@ -74,6 +74,7 @@ public://メンバ関数
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateRenderTextureResource(DXGI_FORMAT format,const Vector4& clearColor);
 	//バッファリソースの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(const size_t& sizeInbytes);
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateRWBufferResource(const size_t& sizeInbytes);
 	//テクスチャリソースの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
 	//テクスチャデータの転送
@@ -91,7 +92,7 @@ private://メンバ関数
 private://メンバ変数
 	//WindowsAPI
 	WinApp* winApp_ = nullptr;
-	SrvManager* srvManager_ = nullptr;
+	SrvUavManager* srvUavManager_ = nullptr;
 	//DirectX12デバイス
 	Microsoft::WRL::ComPtr<ID3D12Device> device;
 	//DXGIファクトリ

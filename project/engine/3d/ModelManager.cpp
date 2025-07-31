@@ -10,9 +10,9 @@ ModelManager* ModelManager::GetInstance()
 	return instance;
 }
 
-void ModelManager::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager){
+void ModelManager::Initialize(DirectXCommon* dxCommon, SrvUavManager* srvUavManager){
 	dxCommon_ = dxCommon;
-	srvManager_ = srvManager;
+	srvUavManager_ = srvUavManager;
 }
 
 void ModelManager::Finalize(){
