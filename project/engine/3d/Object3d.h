@@ -57,6 +57,7 @@ private://メンバ変数
 	std::vector<MaterialData> materialDates_;
 	BlendMode blendMode_ = BlendMode::kNormal;
 	std::string pipelineStateName_ = "";
+	std::string computeShaderPipelineName_ = "";
 	//バッファリソース
 	ComPtr<ID3D12Resource> wvpResource;
 	ComPtr<ID3D12Resource> cameraResource;

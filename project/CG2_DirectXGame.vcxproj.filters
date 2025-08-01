@@ -294,6 +294,12 @@
     <ClCompile Include="engine\base\SrvUavManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
+    <ClCompile Include="engine\particle\InitializeParticlePipeline.cpp">
+      <Filter>ソース ファイル\engine\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\ModelComputePipeline.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -476,6 +482,12 @@
     <ClInclude Include="engine\base\SrvUavManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
+    <ClInclude Include="engine\particle\InitializeParticlePipeline.h">
+      <Filter>ヘッダー ファイル\engine\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\ModelComputePipeline.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Object3d.hlsli">
@@ -612,7 +624,7 @@
     <FxCompile Include="resources\shaders\OffScreen\Vignette.VS.hlsl">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
-    <FxCompile Include="resources\shaders\Object3d.CS.hlsl">
+    <FxCompile Include="resources\shaders\SkinningObject3d.CS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\RadialBlur.PS.hlsl">
@@ -621,7 +633,7 @@
     <FxCompile Include="resources\shaders\OffScreen\RadialBlur.VS.hlsl">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
-    <FxCompile Include="resources\shaders\Particle.CS.hlsl">
+    <FxCompile Include="resources\shaders\InitializeParticle.CS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
   </ItemGroup>

@@ -42,12 +42,15 @@ public:
 	//namespace省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 	//構造体
-	struct PipelineData {
+	struct GraphicsPipelineData {
 		PipelineState state;
 		ComPtr<ID3D12RootSignature> rootSignature = nullptr;
-		ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
-		ComPtr<ID3D12RootSignature> computeRootSignature = nullptr;
-		ComPtr<ID3D12PipelineState> computePipelineState = nullptr;
+		ComPtr<ID3D12PipelineState> pipelineState = nullptr;
+	};
+	struct ComputePipelineData{
+		std::string shaderName = "";
+		ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+		ComPtr<ID3D12PipelineState> pipelineState = nullptr;
 	};
 public://メンバ関数
 	//シングルトンインスタンスの取得
@@ -61,15 +64,16 @@ public://メンバ関数
 	void DrawSettingCS(const std::string& stateName);
 	//グラフィックスパイプラインの生成
 	std::string CreatePipelineState(const PipelineState& pipelineState);
+	std::string CreateComputePipelineState(const std::string& shaderName);
 private:
 	//ルートシグネチャの作成
-	void CreateRootSignature(PipelineData& pipeline);
+	void CreateGraphicsRootSignature(GraphicsPipelineData& pipeline);
 	//グラフィックスパイプラインの生成
-	void CreateGraphicsPipeline(PipelineData& pipeline);
+	void CreateGraphicsPipeline(GraphicsPipelineData& pipeline);
 	//コンピュートルートシグネチャの作成
-	void CreateComputeRootSignature(PipelineData& pipeline);
+	void CreateComputeRootSignature(ComputePipelineData& pipeline);
 	//コンピュートシェーダーの生成
-	void CreateComputePipeline(PipelineData& pipeline);
+	void CreateComputePipeline(ComputePipelineData& pipeline);
 private://シングルインスタンス
 	static PipelineManager* instance;
 
@@ -80,7 +84,8 @@ private://シングルインスタンス
 private:
 	DirectXCommon* dxCommon_ = nullptr;
 	//パイプラインデータ
-	std::map<std::string,std::unique_ptr<PipelineData>> pipelineDates_;
+	std::map<std::string,std::unique_ptr<GraphicsPipelineData>> graphicsPipelineDates_;
+	std::map<std::string,std::unique_ptr<ComputePipelineData>> computePipelineDates_;
 	std::string nowStateName_;
 	//Shaderファイルパス
 	std::wstring shaderFilePath_ = L"resources/shaders/";

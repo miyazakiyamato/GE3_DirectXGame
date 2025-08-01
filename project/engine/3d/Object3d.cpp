@@ -33,6 +33,7 @@ void Object3d::Initialize(){
 	pipelineState.shaderName = "Object3d";
 	pipelineState.blendMode = blendMode_;
 	pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
+	computeShaderPipelineName_ = PipelineManager::GetInstance()->CreateComputePipelineState("SkinningObject3d");
 }
 
 void Object3d::Update(){
@@ -104,7 +105,7 @@ void Object3d::Draw(){
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 	if (!isSkybox_) {
-		PipelineManager::GetInstance()->DrawSettingCS(pipelineStateName_);
+		PipelineManager::GetInstance()->DrawSettingCS(computeShaderPipelineName_);
 		for (uint32_t meshIndex = 0; meshIndex < model_->GetMeshData().size(); meshIndex++) {
 			skinClusterData_->Draw(meshIndex);
 		}

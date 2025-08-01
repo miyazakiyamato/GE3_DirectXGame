@@ -74,7 +74,7 @@ void ParticleManager::Draw() {
 	// 全てのパーティクルグループについて処理
 	for (auto& [name, group] : particleGroups) {
 		//パイプラインを設定
-		PipelineManager::GetInstance()->DrawSetting(group->pipelineStateName_);
+		PipelineManager::GetInstance()->DrawSetting(group->pipelineStateName);
 
 		commandList->IASetVertexBuffers(0, 1, &group->vertexBufferView);// VBVを設定
 		commandList->IASetIndexBuffer(&group->indexBufferView);//IBVを設定
@@ -103,7 +103,8 @@ void ParticleManager::CreateParticleGroup(const std::string name) {
 	pipelineState.blendMode = group->blendMode_;
 	pipelineState.cullMode = CullMode::kNone;//カリングなし
 	pipelineState.depthMode = DepthMode::kReadOnly;//読み込み
-	group->pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
+	group->pipelineStateName = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
+	group->computeShaderPipelineName = PipelineManager::GetInstance()->CreateComputePipelineState("InitializeParticle");
 	
 	// 頂点
 	CreatePlane(group.get());
@@ -135,7 +136,7 @@ void ParticleManager::CreateParticle(ParticleGroup* group){
 
 	// コンピュートパイプライン設定
 	srvUavManager_->PreDraw();
-	PipelineManager::GetInstance()->DrawSettingCS(group->pipelineStateName_);
+	PipelineManager::GetInstance()->DrawSettingCS(group->computeShaderPipelineName);
 	// UAVをルートシグネチャに設定
 	srvUavManager_->SetComputeRootDescriptorTable(0, group->particleUavIndex);
 	// Compute Shaderを実行
@@ -424,5 +425,5 @@ void ParticleManager::SetBlendMode(std::string name, BlendMode blendMode) {
 	pipelineState.cullMode = CullMode::kNone;//カリングなし
 	pipelineState.depthMode = DepthMode::kReadOnly;//読み込み
 	pipelineState.staticSamplersMode = StaticSamplersMode::kclamp;
-	particleGroups[name]->pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
+	particleGroups[name]->pipelineStateName = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
 }

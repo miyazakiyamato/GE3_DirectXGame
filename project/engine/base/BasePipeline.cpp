@@ -58,10 +58,21 @@ D3D12_INPUT_ELEMENT_DESC BasePipeline::CreateInputElementDesc(const char* semant
 	inputElementDesc.AlignedByteOffset = alignedByteOffset;
 	return inputElementDesc;
 }
+std::vector<D3D12_STATIC_SAMPLER_DESC> BasePipeline::StaticSamplers(StaticSamplersMode staticSamplersMode){
+	return std::vector<D3D12_STATIC_SAMPLER_DESC>();
+}
+std::vector<D3D12_DESCRIPTOR_RANGE> BasePipeline::DescriptorRanges(){
+	return std::vector<D3D12_DESCRIPTOR_RANGE>();
+}
+std::vector<D3D12_ROOT_PARAMETER> BasePipeline::RootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges){
+	return std::vector<D3D12_ROOT_PARAMETER>();
+}
+std::vector<D3D12_INPUT_ELEMENT_DESC> BasePipeline::InputElementDesc(){
+	return std::vector<D3D12_INPUT_ELEMENT_DESC>();
+}
 std::vector<D3D12_DESCRIPTOR_RANGE> BasePipeline::ComputeDescriptorRanges(){
 	return std::vector<D3D12_DESCRIPTOR_RANGE>();
 }
-
 std::vector<D3D12_ROOT_PARAMETER> BasePipeline::ComputeRootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges){
 	return std::vector<D3D12_ROOT_PARAMETER>();
 }

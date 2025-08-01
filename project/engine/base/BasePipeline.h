@@ -12,12 +12,12 @@ public:
 	//namespace省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 public://メンバ関数
-	virtual std::vector<D3D12_STATIC_SAMPLER_DESC> StaticSamplers(StaticSamplersMode staticSamplersMode) = 0;
+	virtual std::vector<D3D12_STATIC_SAMPLER_DESC> StaticSamplers(StaticSamplersMode staticSamplersMode);
 	//ルートシグネチャのデータを取得
-	virtual std::vector<D3D12_DESCRIPTOR_RANGE> DescriptorRanges() = 0;
-	virtual std::vector<D3D12_ROOT_PARAMETER> RootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges) = 0;
-	//グラフィックスパイプラインのデータを取得
-	virtual std::vector<D3D12_INPUT_ELEMENT_DESC> InputElementDesc() = 0;
+	virtual std::vector<D3D12_DESCRIPTOR_RANGE> DescriptorRanges();
+	virtual std::vector<D3D12_ROOT_PARAMETER> RootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges);
+	//パイプラインのデータを取得
+	virtual std::vector<D3D12_INPUT_ELEMENT_DESC> InputElementDesc();
 	//コンピュートシェーダーのデータを取得
 	virtual std::vector<D3D12_DESCRIPTOR_RANGE> ComputeDescriptorRanges();
 	virtual std::vector<D3D12_ROOT_PARAMETER> ComputeRootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges);

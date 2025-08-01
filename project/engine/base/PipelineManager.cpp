@@ -31,13 +31,13 @@ void PipelineManager::DrawSetting(const std::string& stateName){
 		return;
 	}
 
-	PipelineData* pipelineData = pipelineDates_[stateName].get();
+	GraphicsPipelineData* pipelineData = graphicsPipelineDates_[stateName].get();
 	// コマンドリストの取得
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
 
 	//RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	commandList->SetGraphicsRootSignature(pipelineData->rootSignature.Get());
-	commandList->SetPipelineState(pipelineData->graphicsPipelineState.Get());//PSOを設定
+	commandList->SetPipelineState(pipelineData->pipelineState.Get());//PSOを設定
 	if (pipelineData->state.isOffScreen == false) {
 		//形状を設定。PSOに設定している物とはまた別。同じものを設定すると考えておくとよい
 		switch (pipelineData->state.primitiveTopologyType) {
@@ -57,22 +57,22 @@ void PipelineManager::DrawSetting(const std::string& stateName){
 }
 
 void PipelineManager::DrawSettingCS(const std::string& stateName){
-	PipelineData* pipelineData = pipelineDates_[stateName].get();
+	ComputePipelineData* pipelineData = computePipelineDates_[stateName].get();
 	// コマンドリストの取得
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
 	//RootSignatureを設定。
-	commandList->SetComputeRootSignature(pipelineData->computeRootSignature.Get());
-	commandList->SetPipelineState(pipelineData->computePipelineState.Get());//コンピュートPSOを設定
+	commandList->SetComputeRootSignature(pipelineData->rootSignature.Get());
+	commandList->SetPipelineState(pipelineData->pipelineState.Get());//コンピュートPSOを設定
 
-	nowStateName_ = stateName + "cs";
+	nowStateName_ = stateName;
 }
 
 std::string  PipelineManager::CreatePipelineState(const PipelineState& pipelineState) {
 	std::string setStateName = pipelineState.shaderName;
 	int id = 0;
 	//読み込み済みなら
-	if (pipelineDates_.count(setStateName) > 0) {
-		for (const auto& [name, pipelineData] : pipelineDates_) {
+	if (graphicsPipelineDates_.count(setStateName) > 0) {
+		for (const auto& [name, pipelineData] : graphicsPipelineDates_) {
 			if (name.rfind(setStateName, 0) == 0) {
 				if (pipelineData->state.shaderName == pipelineState.shaderName &&
 					pipelineData->state.cullMode == pipelineState.cullMode &&
@@ -95,28 +95,36 @@ std::string  PipelineManager::CreatePipelineState(const PipelineState& pipelineS
 		setStateName += std::to_string(id);
 	}
 
-	PipelineData data;
+	GraphicsPipelineData data;
 	data.state = pipelineState;
 
 	//ルートシグネチャの作成
-	CreateRootSignature(data);
+	CreateGraphicsRootSignature(data);
 	//グラフィックスパイプラインの生成
 	CreateGraphicsPipeline(data);
 
-	if (data.state.shaderName == "Object3d" ||
-		data.state.shaderName == "Particle") {
-		//コンピュートルートシグネチャの作成
-		CreateComputeRootSignature(data);
-		//コンピュートシェーダーの生成
-		CreateComputePipeline(data);
-	}
-
-	std::unique_ptr<PipelineData> state = std::make_unique<PipelineData>(data);
-	pipelineDates_[setStateName] = std::move(state);
+	std::unique_ptr<GraphicsPipelineData> state = std::make_unique<GraphicsPipelineData>(data);
+	graphicsPipelineDates_[setStateName] = std::move(state);
 	return setStateName;
 }
 
-void PipelineManager::CreateRootSignature(PipelineData& pipeline){
+std::string PipelineManager::CreateComputePipelineState(const std::string& shaderName){
+	if (computePipelineDates_.count(shaderName) > 0) {
+		//読み込み済みなら
+		return shaderName;
+	}
+	ComputePipelineData data;
+	data.shaderName = shaderName;
+	//コンピュートルートシグネチャの作成
+	CreateComputeRootSignature(data);
+	//コンピュートシェーダーの生成
+	CreateComputePipeline(data);
+	std::unique_ptr<ComputePipelineData> state = std::make_unique<ComputePipelineData>(data);
+	computePipelineDates_[shaderName] = std::move(state);
+	return shaderName;
+}
+
+void PipelineManager::CreateGraphicsRootSignature(GraphicsPipelineData& pipeline){
 	HRESULT hr;
 
 	//RootSignature作成
@@ -127,7 +135,7 @@ void PipelineManager::CreateRootSignature(PipelineData& pipeline){
 	std::vector<D3D12_DESCRIPTOR_RANGE> descriptorRanges = basePipeline->DescriptorRanges();
 	std::vector<D3D12_ROOT_PARAMETER> rootParametersVector = basePipeline->RootParameters(descriptorRanges);
 	const uint32_t rootParametersCount = static_cast<uint32_t>(rootParametersVector.size());
-
+	
 	// 動的配列を作成しvectorからコピー
 	std::unique_ptr<D3D12_ROOT_PARAMETER[]> rootParameters(new D3D12_ROOT_PARAMETER[rootParametersCount]);
 	std::copy_n(rootParametersVector.begin(), rootParametersCount, rootParameters.get());
@@ -161,9 +169,9 @@ void PipelineManager::CreateRootSignature(PipelineData& pipeline){
 	assert(SUCCEEDED(hr));
 }
 
-void PipelineManager::CreateGraphicsPipeline(PipelineData& pipeline){
+void PipelineManager::CreateGraphicsPipeline(GraphicsPipelineData& pipeline){
 	HRESULT hr;
-
+	
 	//InputLayout
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 
@@ -270,18 +278,18 @@ void PipelineManager::CreateGraphicsPipeline(PipelineData& pipeline){
 	}
 	//実際に生成
 	hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
-		IID_PPV_ARGS(&pipeline.graphicsPipelineState));
+		IID_PPV_ARGS(&pipeline.pipelineState));
 	assert(SUCCEEDED(hr));
 }
 
-void PipelineManager::CreateComputeRootSignature(PipelineData& pipeline) {
+void PipelineManager::CreateComputeRootSignature(ComputePipelineData& pipeline) {
 	HRESULT hr;
 	//RootSignature作成
-	std::unique_ptr<BasePipeline> basePipeline(PipelineFactory::ChangePipeline(pipeline.state.shaderName));
+	std::unique_ptr<BasePipeline> basePipeline(PipelineFactory::ChangePipeline(pipeline.shaderName));
 	std::vector<D3D12_DESCRIPTOR_RANGE> descriptorRanges = basePipeline->ComputeDescriptorRanges();
 	std::vector<D3D12_ROOT_PARAMETER> rootParametersVector = basePipeline->ComputeRootParameters(descriptorRanges);
 	const uint32_t rootParametersCount = static_cast<uint32_t>(rootParametersVector.size());
-
+	
 	// 動的配列を作成しvectorからコピー
 	std::unique_ptr<D3D12_ROOT_PARAMETER[]> rootParameters(new D3D12_ROOT_PARAMETER[rootParametersCount]);
 	std::copy_n(rootParametersVector.begin(), rootParametersCount, rootParameters.get());
@@ -306,15 +314,14 @@ void PipelineManager::CreateComputeRootSignature(PipelineData& pipeline) {
 	//バイナリをもとに生成
 	hr = dxCommon_->GetDevice()->CreateRootSignature(0,
 		signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(),
-		IID_PPV_ARGS(&pipeline.computeRootSignature));
+		IID_PPV_ARGS(&pipeline.rootSignature));
 }
 
-void PipelineManager::CreateComputePipeline(PipelineData& pipeline){
+void PipelineManager::CreateComputePipeline(ComputePipelineData& pipeline){
 	HRESULT hr;
-
 	// シェーダーをコンパイルする
 	// コンピュートシェーダーのファイルパスを指定
-	ComPtr<IDxcBlob> computeShaderBlob = dxCommon_->CompileShader(shaderFilePath_ + ConvertString(pipeline.state.shaderName) + csFilePath_,L"cs_6_0");
+	ComPtr<IDxcBlob> computeShaderBlob = dxCommon_->CompileShader(shaderFilePath_ + ConvertString(pipeline.shaderName) + csFilePath_,L"cs_6_0");
 	assert(computeShaderBlob != nullptr);
 	
 	// ComputePipelineStateDescの作成
@@ -331,11 +338,11 @@ void PipelineManager::CreateComputePipeline(PipelineData& pipeline){
 	// Flags (通常はnone)
 	computePipelineStateDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 
-	computePipelineStateDesc.pRootSignature = pipeline.computeRootSignature.Get();
+	computePipelineStateDesc.pRootSignature = pipeline.rootSignature.Get();
 	// 実際に生成
 	hr = dxCommon_->GetDevice()->CreateComputePipelineState(
 		&computePipelineStateDesc,
-		IID_PPV_ARGS(&pipeline.computePipelineState) // 結果を PipelineData に格納
+		IID_PPV_ARGS(&pipeline.pipelineState) // 結果を GraphicsPipelineData に格納
 	);
 	assert(SUCCEEDED(hr));
 }

@@ -55,7 +55,8 @@ public:
 		uint32_t* indexData = nullptr;
 		//State
 		BlendMode blendMode_ = BlendMode::kAdd;
-		std::string pipelineStateName_ = "";
+		std::string pipelineStateName = "";
+		std::string computeShaderPipelineName = "";
 		Vector2 textureLeftTop_ = { 0.0f,0.0f };
 		Vector2 textureSize_ = { 100.0f,100.0f };
 	};
