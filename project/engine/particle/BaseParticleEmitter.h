@@ -4,15 +4,6 @@
 
 class BaseParticleEmitter{
 public:
-	struct EmitterData {
-		std::string textureFilePath;
-		Transform transform;//発生中心
-		uint32_t count = 3;//発生数
-		float frequency = 0.5f;//発生頻度
-		float frequencyTime = 0.0f;//頻度用時刻
-		bool isEmitUpdate = false;//連続発生するか
-	};;
-public:
 	BaseParticleEmitter() = default;
 	virtual ~BaseParticleEmitter() = default;
 	virtual void Initialize(const std::string& emitterName ) = 0;
@@ -22,8 +13,6 @@ public:
 	virtual void Emit() = 0;
 protected:
 	std::string name_ = ""; // エミッターの名前
-
-	std::map<std::string, EmitterData> emitterDates_; // エミッターのデータを格納するマップ
 
 	Transform transform_; // エミッターの変換情報
 public:

@@ -70,3 +70,15 @@ float32_t3 rand1dTo3d(float32_t value){
         rand1dTo1d(value, 5.7241)
     );
 }
+class RandomGenerator{
+    float32_t3 seed;
+    float32_t3 Generate3d(){
+        seed = rand3dTo3d(seed);
+        return seed;
+    }
+    float32_t Generate1d(){
+        float32_t result = rand3dTo1d(seed);
+        seed.x = result;
+        return result;
+    }
+};

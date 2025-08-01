@@ -255,7 +255,7 @@
     <ClCompile Include="engine\base\OffScreenPipeline.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\particle\HitEffect.cpp">
+    <ClCompile Include="engine\particle\EmitterSphere.cpp">
       <Filter>ソース ファイル\engine\particle</Filter>
     </ClCompile>
     <ClCompile Include="engine\particle\BaseParticleEmitter.cpp">
@@ -299,6 +299,9 @@
     </ClCompile>
     <ClCompile Include="engine\3d\ModelComputePipeline.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\particle\EmitParticlePipeline.cpp">
+      <Filter>ソース ファイル\engine\particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -440,7 +443,7 @@
     <ClInclude Include="engine\particle\BaseParticleEmitter.h">
       <Filter>ヘッダー ファイル\engine\particle</Filter>
     </ClInclude>
-    <ClInclude Include="engine\particle\HitEffect.h">
+    <ClInclude Include="engine\particle\EmitterSphere.h">
       <Filter>ヘッダー ファイル\engine\particle</Filter>
     </ClInclude>
     <ClInclude Include="engine\particle\ParticleSystem.h">
@@ -487,6 +490,9 @@
     </ClInclude>
     <ClInclude Include="engine\3d\ModelComputePipeline.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\particle\EmitParticlePipeline.h">
+      <Filter>ヘッダー ファイル\engine\particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -634,6 +640,9 @@
       <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\InitializeParticle.CS.hlsl">
+      <Filter>シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\EmitParticle.CS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
   </ItemGroup>

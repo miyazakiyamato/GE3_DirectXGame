@@ -9,7 +9,7 @@
 #include "GlobalVariables.h"
 #include "TimeManager.h"
 #include "Line3D.h"
-#include "HitEffect.h"
+#include "EmitterSphere.h"
 #include "PostEffectManager.h"
 #include <numbers>
 
@@ -148,9 +148,8 @@ void GameScene::Initialize(){
 	accelerationField_.reset(new AccelerationField);
 
 	particleSystem_.reset(new ParticleSystem);
-	ParticleManager::GetInstance()->CreateParticleGroup("hitEffect");
-	/*std::unique_ptr<BaseParticleEmitter> hitEffect = std::make_unique<HitEffect>();
-	particleSystem_->CreateParticleEmitter("hitEffect", std::move(hitEffect));*/
+	std::unique_ptr<BaseParticleEmitter> emitterSphere = std::make_unique<EmitterSphere>();
+	particleSystem_->CreateParticleEmitter("emitterSphere", std::move(emitterSphere));
 	
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
@@ -169,6 +168,7 @@ void GameScene::Initialize(){
 }
 
 void GameScene::Finalize(){
+	particleSystem_->Finalize();
 	//解放
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
 		object3d.reset();  // メモリを解放する
@@ -231,7 +231,7 @@ void GameScene::Update(){
 		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
 		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
 		//ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
-		//particleSystem_->Emit("hitEffect");
+		particleSystem_->Emit("emitterSphere");
 	}
 	
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {

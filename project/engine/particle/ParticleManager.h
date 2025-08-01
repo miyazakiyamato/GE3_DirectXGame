@@ -118,6 +118,8 @@ private://メンバ変数
 	//パーティクルデータ
 	std::map<std::string, std::unique_ptr<ParticleGroup>> particleGroups;
 public://ゲッターセッター
+	DirectXCommon* GetDirectXCommon() { return dxCommon_; }
+	SrvUavManager* GetSrvUavManager() { return srvUavManager_; }
 	std::map<std::string, std::unique_ptr<ParticleGroup>>& GetParticleGroups() { return particleGroups; }
 	ParticleGroup* GetParticleGroup(std::string name);
 	const BlendMode& GetBlendMode(std::string name) { return particleGroups[name]->blendMode_; }

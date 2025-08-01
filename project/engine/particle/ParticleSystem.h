@@ -7,6 +7,7 @@ class ParticleSystem{
 public:
 	// ParticleSystemのコンストラクタ
 	ParticleSystem() {};
+	void Finalize();
 	// パーティクルの更新
 	void Update();
 	// パーティクルの描画

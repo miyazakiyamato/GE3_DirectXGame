@@ -1,6 +1,14 @@
 #include "ParticleSystem.h"
 #include "ParticleManager.h"
 
+void ParticleSystem::Finalize() {
+	// すべてのエミッターを削除
+	for (auto& emitter : emitters_) {
+		emitter.second.reset();
+	}
+	emitters_.clear();
+}
+
 void ParticleSystem::Update(){
 	for (const auto& [name, emitter] : emitters_) {
 		emitter->Update();
