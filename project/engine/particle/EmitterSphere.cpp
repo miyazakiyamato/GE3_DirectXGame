@@ -46,8 +46,9 @@ void EmitterSphere::Emit(){
 	commandList->SetComputeRootConstantBufferView(1, emitterDataResource_->GetGPUVirtualAddress());
 	// フレームごとの時間情報をCBufferに設定
 	commandList->SetComputeRootConstantBufferView(2, TimeManager::GetInstance()->GetPerFrameResource()->GetGPUVirtualAddress());
-	// freeCounterのリソースをUAVに設定
-	srvUavManager_->SetComputeRootDescriptorTable(3, group->freeCounterUAVIndex);
+	// freeListのリソースをUAVに設定
+	srvUavManager_->SetComputeRootDescriptorTable(3, group->freeListIndexUAVIndex);
+	srvUavManager_->SetComputeRootDescriptorTable(4, group->freeListUAVIndex);
 	// Compute Shaderを実行
 	commandList->Dispatch(1, 1, 1);
 }

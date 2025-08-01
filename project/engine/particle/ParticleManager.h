@@ -44,9 +44,12 @@ public:
 		//WorldViewProjection用のリソース
 		ComPtr<ID3D12Resource> perViewResource; // PerView定数バッファ
 		PerView* perViewData = nullptr; // マッピング用ポインタ
-		//freeCounter
-		ComPtr<ID3D12Resource> freeCounterResource;
-		uint32_t freeCounterUAVIndex; // freeCounterのインデックス
+		//freeListIndex
+		ComPtr<ID3D12Resource> freeListIndexResource;
+		uint32_t freeListIndexUAVIndex;
+		//freeList
+		ComPtr<ID3D12Resource> freeListResource;
+		uint32_t freeListUAVIndex;
 		//頂点
 		uint32_t kParticleVertexNum;
 		uint32_t kParticleIndexNum;
