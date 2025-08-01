@@ -5,6 +5,7 @@ struct VertexShaderOutput{
     float32_t4 color : COLOR0;
     //float32_t4x4 uvTransform : UVTRANSFORM0;
 };
+static const uint32_t kMaxParticles = 1024;
 struct Particle{
     float32_t3 translate;
     float32_t3 scale;

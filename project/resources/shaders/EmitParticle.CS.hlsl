@@ -17,6 +17,7 @@ struct PerFrame{
 RWStructuredBuffer<Particle> gParticles : register(u0);
 ConstantBuffer<EmitterSphere> gEmitter : register(b0);
 ConstantBuffer<PerFrame> gPerFrame : register(b1);
+RWStructuredBuffer<int32_t> gFreeCounter : register(u1);
 
 [numthreads(1,1,1)]
 void main(uint32_t3 DTid : SV_DispatchThreadID){
@@ -24,11 +25,14 @@ void main(uint32_t3 DTid : SV_DispatchThreadID){
         RandomGenerator generator;
         generator.seed = (DTid + gPerFrame.time) * gPerFrame.time;
         for (uint32_t countIndex = 0; countIndex < gEmitter.count; ++countIndex){
-            gParticles[countIndex].scale = generator.Generate3d();
-            gParticles[countIndex].translate = generator.Generate3d();
-            gParticles[countIndex].color.rgb = generator.Generate3d();
-            gParticles[countIndex].color.a = 1.0f;
-            
+            int32_t particleIndex;
+            InterlockedAdd(gFreeCounter[0], 1, particleIndex);
+            if (particleIndex < kMaxParticles){
+                gParticles[particleIndex].scale = generator.Generate3d();
+                gParticles[particleIndex].translate = generator.Generate3d();
+                gParticles[particleIndex].color.rgb = generator.Generate3d();
+                gParticles[particleIndex].color.a = 1.0f;
+            }
         }
     }
 }

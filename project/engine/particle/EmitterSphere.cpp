@@ -8,6 +8,7 @@ void EmitterSphere::Initialize(const std::string& emitterName) {
 	name_ = emitterName;
 	particleManager_ = ParticleManager::GetInstance();
 	dxCommon_ = ParticleManager::GetInstance()->GetDirectXCommon();
+	srvUavManager_ = particleManager_->GetSrvUavManager();
 	particleManager_->CreateParticleGroup(name_);
 	computeShaderPipelineName_ = PipelineManager::GetInstance()->CreateComputePipelineState("EmitParticle");
 	
@@ -42,10 +43,9 @@ void EmitterSphere::Update(){
 	Emit();
 }
 void EmitterSphere::Emit(){
-	SrvUavManager* srvUavManager = particleManager_->GetSrvUavManager();
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 	ParticleManager::ParticleGroup* group = particleManager_->GetParticleGroup(name_);
-	srvUavManager->PreDraw();
+	srvUavManager_->PreDraw();
 	// リソースバリアをUAVに遷移
 	D3D12_RESOURCE_BARRIER barrier{};
 	barrier.Transition.pResource = group->particleResource.Get();
@@ -56,11 +56,13 @@ void EmitterSphere::Emit(){
 	// コンピュートパイプライン設定
 	PipelineManager::GetInstance()->DrawSettingCS(computeShaderPipelineName_);
 	// UAVをルートシグネチャに設定
-	srvUavManager->SetComputeRootDescriptorTable(0, group->particleUavIndex);
+	srvUavManager_->SetComputeRootDescriptorTable(0, group->particleUavIndex);
 	// エミッターのデータをCBufferに設定
 	commandList->SetComputeRootConstantBufferView(1, emitterDataResource_->GetGPUVirtualAddress());
 	// フレームごとの時間情報をCBufferに設定
 	commandList->SetComputeRootConstantBufferView(2, perFrameResource_->GetGPUVirtualAddress());
+	// freeCounterのリソースをUAVに設定
+	srvUavManager_->SetComputeRootDescriptorTable(3, group->freeCounterUAVIndex);
 	// Compute Shaderを実行
 	commandList->Dispatch(1, 1, 1);
 	// リソースバリアをSRV（描画で使う状態）に戻す

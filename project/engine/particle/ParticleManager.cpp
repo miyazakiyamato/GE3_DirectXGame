@@ -120,6 +120,10 @@ void ParticleManager::CreateParticleGroup(const std::string name) {
 	//worldViewProjection用のリソースを作成
 	group->perViewResource = dxCommon_->CreateBufferResource(sizeof(PerView));
 	group->perViewResource->Map(0, nullptr, reinterpret_cast<void**>(&group->perViewData));
+	// freeCounterのリソースを作成
+	group->freeCounterResource = dxCommon_->CreateRWBufferResource(sizeof(int32_t));
+	group->freeCounterUAVIndex = srvUavManager_->Allocate();
+	srvUavManager_->CreateUAVforStructuredBuffer(group->freeCounterUAVIndex, group->freeCounterResource.Get(), 1, sizeof(int32_t));
 
 	CreateParticle(group.get());
 
@@ -139,6 +143,8 @@ void ParticleManager::CreateParticle(ParticleGroup* group){
 	PipelineManager::GetInstance()->DrawSettingCS(group->computeShaderPipelineName);
 	// UAVをルートシグネチャに設定
 	srvUavManager_->SetComputeRootDescriptorTable(0, group->particleUavIndex);
+	// freeCounterのリソースをUAVに設定
+	srvUavManager_->SetComputeRootDescriptorTable(1, group->freeCounterUAVIndex);
 	// Compute Shaderを実行
 	commandList->Dispatch(1, 1, 1);
 	// リソースバリアをSRV（描画で使う状態）に戻す

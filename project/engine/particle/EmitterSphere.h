@@ -3,6 +3,7 @@
 #include "DirectXCommon.h"
 
 class ParticleManager;
+class SrvUavManager;
 class EmitterSphere : public BaseParticleEmitter{
 public:
 	//namespace省略
@@ -27,6 +28,7 @@ public:
 private:
 	DirectXCommon* dxCommon_ = nullptr; // DirectXの共通インスタンス
 	ParticleManager* particleManager_ = nullptr; // パーティクルマネージャーのインスタンス
+	SrvUavManager* srvUavManager_ = nullptr; // SRV/UAVマネージャーのインスタンス
 	// エミッターのデータを格納するリソース
 	ComPtr<ID3D12Resource> emitterDataResource_;
 	EmitterData* emitterData_ = nullptr; // エミッターの球体情報
