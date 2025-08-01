@@ -32,9 +32,6 @@ private:
 	// エミッターのデータを格納するリソース
 	ComPtr<ID3D12Resource> emitterDataResource_;
 	EmitterData* emitterData_ = nullptr; // エミッターの球体情報
-	//timeのリソース
-	ComPtr<ID3D12Resource> perFrameResource_;
-	PerFrame* perFrameData_ = nullptr; // フレームごとの時間情報
 
 	std::string computeShaderPipelineName_ = "";
 };

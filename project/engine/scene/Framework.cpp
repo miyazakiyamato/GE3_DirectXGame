@@ -72,7 +72,7 @@ void Framework::Initialize(){
 
 	//タイムマネージャの初期化
 	timeManager_ = TimeManager::GetInstance();
-	timeManager_->Initialize();
+	timeManager_->Initialize(dxCommon.get());
 	
 	//PostEffectManagerの初期化
 	postEffectManager_ = PostEffectManager::GetInstance();

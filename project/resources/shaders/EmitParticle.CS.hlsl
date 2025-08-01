@@ -9,10 +9,6 @@ struct EmitterSphere{
     float32_t frequencyTime; // 射出間隔調整用
     uint32_t emit; // 射出許可
 };
-struct PerFrame{
-    float32_t time;
-    float32_t deltaTime;
-};
 
 RWStructuredBuffer<Particle> gParticles : register(u0);
 ConstantBuffer<EmitterSphere> gEmitter : register(b0);
@@ -30,8 +26,11 @@ void main(uint32_t3 DTid : SV_DispatchThreadID){
             if (particleIndex < kMaxParticles){
                 gParticles[particleIndex].scale = generator.Generate3d();
                 gParticles[particleIndex].translate = generator.Generate3d();
+                gParticles[particleIndex].velocity = generator.Generate3d();
                 gParticles[particleIndex].color.rgb = generator.Generate3d();
                 gParticles[particleIndex].color.a = 1.0f;
+                gParticles[particleIndex].lifeTime = generator.Generate1d();
+                gParticles[particleIndex].currentTime = 0;
             }
         }
     }

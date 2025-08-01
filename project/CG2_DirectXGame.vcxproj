@@ -131,6 +131,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\math\Quaternion.cpp" />
     <ClCompile Include="engine\particle\EmitParticlePipeline.cpp" />
     <ClCompile Include="engine\particle\InitializeParticlePipeline.cpp" />
+    <ClCompile Include="engine\particle\UpdateParticlePipeline.cpp" />
     <ClCompile Include="engine\scene\AbstractSceneFactory.cpp" />
     <ClCompile Include="application\scene\BaseScene.cpp" />
     <ClCompile Include="engine\audio\AudioManager.cpp" />
@@ -196,6 +197,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\Quaternion.h" />
     <ClInclude Include="engine\particle\EmitParticlePipeline.h" />
     <ClInclude Include="engine\particle\InitializeParticlePipeline.h" />
+    <ClInclude Include="engine\particle\UpdateParticlePipeline.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />
     <ClInclude Include="application\scene\BaseScene.h" />
     <ClInclude Include="engine\audio\AudioManager.h" />
@@ -445,6 +447,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\Vignette.VS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\UpdateParticle.CS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>

@@ -303,6 +303,9 @@
     <ClCompile Include="engine\particle\EmitParticlePipeline.cpp">
       <Filter>ソース ファイル\engine\particle</Filter>
     </ClCompile>
+    <ClCompile Include="engine\particle\UpdateParticlePipeline.cpp">
+      <Filter>ソース ファイル\engine\particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -494,6 +497,9 @@
     <ClInclude Include="engine\particle\EmitParticlePipeline.h">
       <Filter>ヘッダー ファイル\engine\particle</Filter>
     </ClInclude>
+    <ClInclude Include="engine\particle\UpdateParticlePipeline.h">
+      <Filter>ヘッダー ファイル\engine\particle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Object3d.hlsli">
@@ -643,6 +649,9 @@
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\EmitParticle.CS.hlsl">
+      <Filter>シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\UpdateParticle.CS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
   </ItemGroup>

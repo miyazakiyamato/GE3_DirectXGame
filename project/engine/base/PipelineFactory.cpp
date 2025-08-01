@@ -5,6 +5,7 @@
 #include "SpritePipeline.h"
 #include "ParticlePipeline.h"
 #include "InitializeParticlePipeline.h"
+#include "UpdateParticlePipeline.h"
 #include "EmitParticlePipeline.h"
 #include "Line3DPipeline.h"
 #include "OffScreenPipeline.h"
@@ -22,6 +23,8 @@ BasePipeline* PipelineFactory::ChangePipeline(const std::string& pipelineName) {
 		return new ParticlePipeline();
 	} else if (pipelineName == "InitializeParticle") {
 		return new InitializeParticlePipeline();
+	}else if (pipelineName == "UpdateParticle") {
+		return new UpdateParticlePipeline();
 	} else if (pipelineName == "EmitParticle") {
 		return new EmitParticlePipeline();
 	} else if (pipelineName == "Line3D") {

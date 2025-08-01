@@ -59,7 +59,6 @@ public:
 		//State
 		BlendMode blendMode_ = BlendMode::kAdd;
 		std::string pipelineStateName = "";
-		std::string computeShaderPipelineName = "";
 		Vector2 textureLeftTop_ = { 0.0f,0.0f };
 		Vector2 textureSize_ = { 100.0f,100.0f };
 	};
@@ -108,6 +107,8 @@ private://メンバ変数
 	//インスタンスの最大数
 	uint32_t kMaxParticles = 1024;
 
+	std::string initCSPipelineName_ = "";
+	std::string updateCSPipelineName_ = "";
 	//ランダムエンジン
 	std::mt19937 randomEngine_;
 

@@ -22,11 +22,13 @@ void ParticleManager::Initialize(DirectXCommon* dxCommon, SrvUavManager* srvUavM
 	dxCommon_ = dxCommon;
 	srvUavManager_ = srvUavManager;
 
+	initCSPipelineName_ = PipelineManager::GetInstance()->CreateComputePipelineState("InitializeParticle");
+	updateCSPipelineName_ = PipelineManager::GetInstance()->CreateComputePipelineState("UpdateParticle");
+
 	//ランダムエンジンの初期化
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 	randomEngine_ = randomEngine;
-
 	//調整項目の初期化
 	InitializeGlobalVariables();
 	ApplyGlobalVariables();
@@ -60,10 +62,27 @@ void ParticleManager::Update() {
 		billboardMatrix.m[3][1] = 0.0f;
 		billboardMatrix.m[3][2] = 0.0f;
 	}
-	// 全グループの定数バッファを更新
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+	
+	// コンピュートパイプライン設定
+	srvUavManager_->PreDraw();
+	PipelineManager::GetInstance()->DrawSettingCS(updateCSPipelineName_);
+	// フレームごとの時間情報をCBufferに設定
+	commandList->SetComputeRootConstantBufferView(1, TimeManager::GetInstance()->GetPerFrameResource()->GetGPUVirtualAddress());
+	// 全グループの更新
 	for (auto& [name, group] : particleGroups) {
 		group->perViewData->viewProjection = viewProjectionMatrix;
 		group->perViewData->billboardMatrix = billboardMatrix;
+		// UAVの処理をまたがないようにするバリア
+		D3D12_RESOURCE_BARRIER barrier{};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		barrier.UAV.pResource = group->particleResource.Get();
+		commandList->ResourceBarrier(1, &barrier);
+		// UAVをルートシグネチャに設定
+		srvUavManager_->SetComputeRootDescriptorTable(0, group->particleUavIndex);
+		// Compute Shaderを実行
+		commandList->Dispatch(1, 1, 1);
 	}
 }
 
@@ -104,7 +123,6 @@ void ParticleManager::CreateParticleGroup(const std::string name) {
 	pipelineState.cullMode = CullMode::kNone;//カリングなし
 	pipelineState.depthMode = DepthMode::kReadOnly;//読み込み
 	group->pipelineStateName = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
-	group->computeShaderPipelineName = PipelineManager::GetInstance()->CreateComputePipelineState("InitializeParticle");
 	
 	// 頂点
 	CreatePlane(group.get());
@@ -140,7 +158,7 @@ void ParticleManager::CreateParticle(ParticleGroup* group){
 
 	// コンピュートパイプライン設定
 	srvUavManager_->PreDraw();
-	PipelineManager::GetInstance()->DrawSettingCS(group->computeShaderPipelineName);
+	PipelineManager::GetInstance()->DrawSettingCS(initCSPipelineName_);
 	// UAVをルートシグネチャに設定
 	srvUavManager_->SetComputeRootDescriptorTable(0, group->particleUavIndex);
 	// freeCounterのリソースをUAVに設定

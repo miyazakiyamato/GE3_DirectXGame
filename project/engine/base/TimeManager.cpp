@@ -15,8 +15,15 @@ void TimeManager::Finalize(){
 	instance = nullptr;
 }
 
-void TimeManager::Initialize(){
+void TimeManager::Initialize(DirectXCommon* dxCommon){
+	dxCommon_ = dxCommon;
 	deltaTime_ = kFlamTime_;
+	// フレームごとの時間情報のリソースを作成
+	perFrameResource_ = dxCommon_->CreateBufferResource(sizeof(PerFrame));
+	perFrameResource_->Map(0, nullptr, reinterpret_cast<void**>(&perFrameData_));
+	// フレームごとの時間情報を初期化
+	perFrameData_->time = 0.0f; // 初期時間
+	perFrameData_->deltaTime = deltaTime_; // 初期1フレームの経過時間
 }
 
 void TimeManager::Update(){
@@ -41,15 +48,15 @@ void TimeManager::Update(){
 			}
 		}
 	}
-
-	currentTime_ += deltaTime_; // フレームごとに時間を加算
+	perFrameData_->time += deltaTime_;
+	perFrameData_->deltaTime = deltaTime_;
 }
 
 void TimeManager::TimeSpeedReset(){
 	deltaTime_ = kFlamTime_;
 }
 
-void TimeManager::SetTimeSpeedStart(float timeSpeed, float kLimitTime){
+void TimeManager::SetDeltaTimeSpeedStart(float timeSpeed, float kLimitTime){
 	kLimitTime_ = kLimitTime;
 	timeSpeed_ = timeSpeed;
 	timeCount_ = kFlamTime_;
