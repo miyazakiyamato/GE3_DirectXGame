@@ -16,6 +16,9 @@ public:
 		float frequency; // 射出間隔
 		float frequencyTime; // 射出間隔調整用
 		uint32_t emit; // 射出許可
+		bool isBillboard = true; // ビルボードの有無
+		bool isEmitUpdate = false;//連続発生するか
+		float pad[2];
 	};
 	struct PerFrame {
 		float time; // 時間

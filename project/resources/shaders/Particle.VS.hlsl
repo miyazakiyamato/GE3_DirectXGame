@@ -11,7 +11,15 @@ struct VertexShaderInput{
 VertexShaderOutput main(VertexShaderInput input, uint32_t instanceId : SV_InstanceID){
     VertexShaderOutput output;
     Particle particle = gParticle[instanceId];
-    float32_t4x4 worldMatrix = gPerView.billboardMatrix;
+    float32_t4x4 worldMatrix = {
+        1,0,0,0,
+        0,1,0,0,
+        0,0,1,0,
+        0,0,0,1
+    };
+    if (particle.isBillboard){
+        worldMatrix = gPerView.billboardMatrix;
+    }
     worldMatrix[0] *= particle.scale.x;
     worldMatrix[1] *= particle.scale.y;
     worldMatrix[2] *= particle.scale.z;

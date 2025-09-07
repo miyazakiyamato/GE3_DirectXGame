@@ -70,13 +70,13 @@ void GameScene::Initialize(){
 	object3d->SetModel("skybox");
 	object3d->SetTexture("rostock_laage_airport_4k.dds");
 	object3ds_.push_back(std::move(object3d));
-	std::unique_ptr<Object3d> object3d2(new Object3d);
-	object3d2->Initialize();
-	object3d2->SetTranslate({-1.0f,0.0f,0.0f});
-	object3d2->SetModel("BrainStem/BrainStem.gltf");
-	object3d2->SetAnimation("BrainStem/BrainStem.gltf", true);
-	//object3d2->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
-	object3ds_.push_back(std::move(object3d2));
+	//std::unique_ptr<Object3d> object3d2(new Object3d);
+	//object3d2->Initialize();
+	//object3d2->SetTranslate({-1.0f,0.0f,0.0f});
+	//object3d2->SetModel("BrainStem/BrainStem.gltf");
+	//object3d2->SetAnimation("BrainStem/BrainStem.gltf", true);
+	////object3d2->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
+	//object3ds_.push_back(std::move(object3d2));
 	//レベルデータマネージャの生成
 	levelDataManager_ = std::make_unique<LevelDataManager>();
 	//レベルデータの読み込み取得

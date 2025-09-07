@@ -23,6 +23,7 @@ public:
 	struct Particle {
 		//Transform transform;
 		//Transform uvTransform;
+		bool isBillboard; // ビルボードの有無
 		Vector3 translate;
 		Vector3 scale;
 		float lifeTime;

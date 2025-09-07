@@ -7,6 +7,7 @@ struct VertexShaderOutput{
 };
 static const uint32_t kMaxParticles = 1024;
 struct Particle{
+    uint32_t isBillboard; // ビルボードの有無
     float32_t3 translate;
     float32_t3 scale;
     float32_t lifeTime;

@@ -16,27 +16,29 @@ void EmitterSphere::Initialize(const std::string& emitterName) {
 	emitterDataResource_ = dxCommon_->CreateBufferResource(sizeof(EmitterData));
 	emitterDataResource_->Map(0, nullptr, reinterpret_cast<void**>(&emitterData_));
 	// エミッターのデータを初期化
-	emitterData_->translate = { 0.0f, 0.0f, 0.0f }; // 初期位置
-	emitterData_->radius = 1.0f; // 初期半径
-	emitterData_->count = 10; // 初期射出数
+	emitterData_->translate = { 0.0f, 1.0f, 0.0f }; // 初期位置
+	emitterData_->radius = 0.0f; // 初期半径
+	emitterData_->count = 1000; // 初期射出数
 	emitterData_->frequency = 0.5f; // 初期射出間隔（秒）
 	emitterData_->frequencyTime = 0.0f; // 初期射出間隔調整用
 	emitterData_->emit = 0; // 初期射出許可（0:許可しない、1:許可する）
+	emitterData_->isBillboard = false; // ビルボードの有無
+	emitterData_->isEmitUpdate = true;//連続発生するか
 }
 void EmitterSphere::Update(){
-	emitterData_->frequencyTime += TimeManager::deltaTime_;
+	if (emitterData_->isEmitUpdate) {
+		emitterData_->frequencyTime += TimeManager::deltaTime_;
+	}
 	if (emitterData_->frequency <= emitterData_->frequencyTime) {
-		emitterData_->frequencyTime -= emitterData_->frequency;
+		emitterData_->frequencyTime = 0;
 		emitterData_->emit = 1;
 	} else {
 		emitterData_->emit = 0;
 	}
-	Emit();
-}
-void EmitterSphere::Emit(){
+
+	// Emit
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 	ParticleManager::ParticleGroup* group = particleManager_->GetParticleGroup(name_);
-
 	srvUavManager_->PreDraw();
 	// コンピュートパイプライン設定
 	PipelineManager::GetInstance()->DrawSettingCS(computeShaderPipelineName_);
@@ -51,4 +53,7 @@ void EmitterSphere::Emit(){
 	srvUavManager_->SetComputeRootDescriptorTable(4, group->freeListUAVIndex);
 	// Compute Shaderを実行
 	commandList->Dispatch(1, 1, 1);
+}
+void EmitterSphere::Emit(){
+	emitterData_->frequencyTime = emitterData_->frequency;
 }
