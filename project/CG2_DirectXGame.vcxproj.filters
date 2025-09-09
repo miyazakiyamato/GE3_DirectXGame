@@ -113,7 +113,7 @@
       <UniqueIdentifier>{d4774140-581e-46dd-86e9-5c001333ea17}</UniqueIdentifier>
     </Filter>
     <Filter Include="シェーダーファイル\OffScreen">
-      <UniqueIdentifier>{c4c4fa66-3f37-4e6e-a5ec-c83d1e7339ad}</UniqueIdentifier>
+      <UniqueIdentifier>{15496df4-5d9f-4fda-89fd-67798207376d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -252,9 +252,6 @@
     <ClCompile Include="engine\3d\SkinCluster.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\SkinningObject3dPipeline.cpp">
-      <Filter>ソース ファイル\engine\3d</Filter>
-    </ClCompile>
     <ClCompile Include="engine\base\OffScreenPipeline.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
@@ -282,9 +279,6 @@
     <ClCompile Include="engine\base\LevelDataManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\SrvManager.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
     <ClCompile Include="engine\base\TextureManager.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
@@ -293,6 +287,12 @@
     </ClCompile>
     <ClCompile Include="engine\3d\SkyboxPipeline.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\PostEffectManager.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\SrvUavManager.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -455,9 +455,6 @@
     <ClInclude Include="engine\base\LevelDataManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\SrvManager.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
     <ClInclude Include="engine\base\TextureManager.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
@@ -473,6 +470,12 @@
     <ClInclude Include="engine\3d\SkyboxPipeline.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
+    <ClInclude Include="engine\base\PostEffectManager.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\SrvUavManager.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Object3d.hlsli">
@@ -487,10 +490,19 @@
     <None Include="resources\shaders\Line3D.hlsli">
       <Filter>シェーダーファイル</Filter>
     </None>
-    <None Include="resources\shaders\SkinningObject3d.hlsli">
+    <None Include="resources\shaders\Skybox.hlsli">
+      <Filter>シェーダーファイル</Filter>
+    </None>
+    <None Include="resources\shaders\RandomFunctions.hlsli">
       <Filter>シェーダーファイル</Filter>
     </None>
     <None Include="resources\shaders\OffScreen\BoxFilter.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </None>
+    <None Include="resources\shaders\OffScreen\DepthBasedOutline.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </None>
+    <None Include="resources\shaders\OffScreen\Dissolve.hlsli">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </None>
     <None Include="resources\shaders\OffScreen\Fullscreen.hlsli">
@@ -502,11 +514,17 @@
     <None Include="resources\shaders\OffScreen\Grayscale.hlsli">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </None>
+    <None Include="resources\shaders\OffScreen\LuminanceBasedOutline.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </None>
+    <None Include="resources\shaders\OffScreen\Random.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </None>
     <None Include="resources\shaders\OffScreen\Vignette.hlsli">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </None>
-    <None Include="resources\shaders\Skybox.hlsli">
-      <Filter>シェーダーファイル</Filter>
+    <None Include="resources\shaders\OffScreen\RadialBlur.hlsli">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -534,16 +552,28 @@
     <FxCompile Include="resources\shaders\Line3D.VS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
-    <FxCompile Include="resources\shaders\SkinningObject3d.PS.hlsl">
+    <FxCompile Include="resources\shaders\Skybox.PS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
-    <FxCompile Include="resources\shaders\SkinningObject3d.VS.hlsl">
+    <FxCompile Include="resources\shaders\Skybox.VS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\BoxFilter.PS.hlsl">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\BoxFilter.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\DepthBasedOutline.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\DepthBasedOutline.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\Dissolve.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\Dissolve.VS.hlsl">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\Fullscreen.PS.hlsl">
@@ -564,17 +594,32 @@
     <FxCompile Include="resources\shaders\OffScreen\Grayscale.VS.hlsl">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\LuminanceBasedOutline.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\LuminanceBasedOutline.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\Random.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\Random.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\Vignette.PS.hlsl">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
     <FxCompile Include="resources\shaders\OffScreen\Vignette.VS.hlsl">
       <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
-    <FxCompile Include="resources\shaders\Skybox.PS.hlsl">
+    <FxCompile Include="resources\shaders\Object3d.CS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
-    <FxCompile Include="resources\shaders\Skybox.VS.hlsl">
-      <Filter>シェーダーファイル</Filter>
+    <FxCompile Include="resources\shaders\OffScreen\RadialBlur.PS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\OffScreen\RadialBlur.VS.hlsl">
+      <Filter>シェーダーファイル\OffScreen</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

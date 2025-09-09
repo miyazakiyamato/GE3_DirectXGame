@@ -60,6 +60,16 @@ void Model::Draw(size_t meshIndex){
 	commandList->DrawIndexedInstanced(UINT(meshDates_[meshIndex].indices.size()), 1, 0, 0, 0);
 }
 
+void Model::Draw(size_t meshIndex, const D3D12_VERTEX_BUFFER_VIEW* vertexBufferView){
+	// コマンドリストの取得
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+	commandList->IASetVertexBuffers(0, 1, vertexBufferView); //VBVを設定
+	commandList->IASetIndexBuffer(&meshDates_[meshIndex].indexBufferView);//IBVを設定
+	//描画！(DrawCall/ドローコール)3頂点で1つのインスタンス。インスタンスについては
+	commandList->DrawIndexedInstanced(UINT(meshDates_[meshIndex].indices.size()), 1, 0, 0, 0);
+}
+
 void Model::LoadFile(const std::string& directoryPath, const std::string& filename) {
 	Assimp::Importer importer;
 	std::string filePath = directoryPath + "/" + filename;
@@ -75,7 +85,7 @@ void Model::LoadFile(const std::string& directoryPath, const std::string& filena
 			Vector3 normal = { 0.0f, 0.0f, -1.0f }; // 法線のデフォルト
 			if (mesh->HasNormals()) {
 				aiVector3D& n = mesh->mNormals[vertexIndex];
-				normal = { -n.x, n.y, n.z };
+				normal = { n.x, n.y, n.z };
 			}
 			Vector2 texcoord = { 0.0f, 0.0f }; // デフォルト値
 			if (mesh->HasTextureCoords(0)) {

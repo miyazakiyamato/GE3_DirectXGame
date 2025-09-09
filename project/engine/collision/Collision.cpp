@@ -190,3 +190,22 @@ bool Collision::IsCollision(const Line& line, const OBB& obb) {
 
 	return IsCollision(localAABB, localLine);
 }
+
+void OBB::MakeOBBRotate(const Vector3& rotate) {
+	Matrix4x4 obbRotateMatrix = Matrix4x4::MakeRotateXMatrix(rotate.x) * Matrix4x4::MakeRotateYMatrix(rotate.y) * Matrix4x4::MakeRotateZMatrix(rotate.z);
+	this->orientations[0] = {
+		obbRotateMatrix.m[0][0],
+		obbRotateMatrix.m[0][1],
+		obbRotateMatrix.m[0][2]
+	};
+	this->orientations[1] = {
+		obbRotateMatrix.m[1][0],
+		obbRotateMatrix.m[1][1],
+		obbRotateMatrix.m[1][2]
+	};
+	this->orientations[2] = {
+		obbRotateMatrix.m[2][0],
+		obbRotateMatrix.m[2][1],
+		obbRotateMatrix.m[2][2]
+	};
+}

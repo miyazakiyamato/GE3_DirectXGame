@@ -1,7 +1,6 @@
 #include "PipelineFactory.h"
 #include "ModelPipeline.h"
 #include "SkyboxPipeline.h"
-#include "SkinningObject3dPipeline.h"
 #include "SpritePipeline.h"
 #include "ParticlePipeline.h"
 #include "Line3DPipeline.h"
@@ -12,9 +11,7 @@ BasePipeline* PipelineFactory::ChangePipeline(const std::string& pipelineName) {
 		return new ModelPipeline();
 	} else if (pipelineName == "Skybox") {
 		return new SkyboxPipeline();
-	} else if (pipelineName == "SkinningObject3d") {
-		return new SkinningObject3dPipeline();
-	} else if (pipelineName == "Sprite") {
+	}else if (pipelineName == "Sprite") {
 		return new SpritePipeline();
 	} else if (pipelineName == "Particle") {
 		return new ParticlePipeline();
@@ -24,7 +21,12 @@ BasePipeline* PipelineFactory::ChangePipeline(const std::string& pipelineName) {
 		pipelineName == "OffScreen/Grayscale" ||
 		pipelineName == "OffScreen/Vignette" ||
 		pipelineName == "OffScreen/BoxFilter" ||
-		pipelineName == "OffScreen/GaussianFilter") {
+		pipelineName == "OffScreen/GaussianFilter" ||
+		pipelineName == "OffScreen/LuminanceBasedOutline" ||
+		pipelineName == "OffScreen/DepthBasedOutline" ||
+		pipelineName == "OffScreen/RadialBlur"||
+		pipelineName == "OffScreen/Dissolve" ||
+		pipelineName == "OffScreen/Random") {
 		return new OffScreenPipeline();
 	}
 	assert(0);

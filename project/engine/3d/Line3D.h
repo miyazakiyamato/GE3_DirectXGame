@@ -4,7 +4,7 @@
 #include "BlendMode.h"
 #include "Collision.h"
 
-class SrvManager;
+class SrvUavManager;
 class Line3dManager{
 private:
 	//namespace省略
@@ -21,7 +21,7 @@ public://メンバ関数
 	//シングルトンインスタンスの取得
 	static Line3dManager* GetInstance();
 	//初期化
-	void Initialize(SrvManager* srvManager);
+	void Initialize(SrvUavManager* srvUavManager);
 	//終了
 	void Finalize();
 	//更新
@@ -48,7 +48,7 @@ private://シングルインスタンス
 	Line3dManager& operator=(Line3dManager&) = delete;
 private://メンバ変数
 	//ポインタ
-	SrvManager* srvManager_ = nullptr;
+	SrvUavManager* srvUavManager_ = nullptr;
 	//バッファリソース
 	ComPtr<ID3D12Resource> vertexResource;
 	ComPtr<ID3D12Resource> wvpResource;

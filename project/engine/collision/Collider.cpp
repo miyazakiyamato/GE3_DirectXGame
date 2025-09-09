@@ -3,7 +3,7 @@
 void Collider::Initialize() { 
 	colliderModel_ = std::make_unique<Object3d>();
 	colliderModel_->Initialize();
-	colliderModel_->SetModel("cube");
+	colliderModel_->SetModel("sphere/sphere.obj");
 	colliderModel_->SetRotate({ 0,3.14f,0 });
 }
 

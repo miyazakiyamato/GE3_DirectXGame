@@ -6,7 +6,7 @@
 #include "DirectXTex.h"
 
 class DirectXCommon;
-class SrvManager;
+class SrvUavManager;
 class TextureManager{
 private://構造体
 	//テクスチャ一枚分のデータ
@@ -22,7 +22,7 @@ public://メンバ関数
 	//シングルインスタンスの取得
 	static TextureManager* GetInstance();
 	//初期化
-	void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
+	void Initialize(DirectXCommon* dxCommon, SrvUavManager* srvUavManager);
 	//終了
 	void Finalize();
 	//テクスチャファイルの読み込み
@@ -43,7 +43,7 @@ private://シングルインスタンス
 	TextureManager& operator=(TextureManager&) = delete;
 private://メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
-	SrvManager* srvManager_ = nullptr;
+	SrvUavManager* srvUavManager_ = nullptr;
 	//テクスチャのファイルパス
 	std::string directoryPath_ = "resources/texture/";
 	//テクスチャデータ

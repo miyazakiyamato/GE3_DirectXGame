@@ -1,25 +1,48 @@
 #include "Vector3.h"
 #include <cmath>
 #include <algorithm>
+#include "Quaternion.h"
+#include "Collision.h"
 
-float Vector3::Length(){
+float Vector3::Length() const {
     return Length(*this);
 }
 
-Vector3 Vector3::Normalize(){
+Vector3 Vector3::Normalize() const {
     return Normalize(*this);
 }
 
-Vector3 Vector3::Abs(){
+Vector3 Vector3::Abs() const {
     return Abs(*this);
 }
 
-Vector3 Vector3::Clamp01(){
+Vector3 Vector3::Clamp01() const {
     return Clamp(*this, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
 }
 
-Vector3 Vector3::Clamp_11(){
+Vector3 Vector3::Clamp_11() const {
     return Clamp(*this, { -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f });
+}
+
+Quaternion Vector3::ToQuaternion() const{
+    float pitch = x * 0.5f;
+    float yaw = y * 0.5f;
+    float roll = z * 0.5f;
+
+    float sinPitch = sinf(pitch);
+    float cosPitch = cosf(pitch);
+    float sinYaw = sinf(yaw);
+    float cosYaw = cosf(yaw);
+    float sinRoll = sinf(roll);
+    float cosRoll = cosf(roll);
+
+    // クォータニオンの各成分を計算（Z-Y-X順）
+    Quaternion q;
+    q.x = sinPitch * cosYaw * cosRoll - cosPitch * sinYaw * sinRoll;
+    q.y = cosPitch * sinYaw * cosRoll + sinPitch * cosYaw * sinRoll;
+    q.z = cosPitch * cosYaw * sinRoll - sinPitch * sinYaw * cosRoll;
+    q.w = cosPitch * cosYaw * cosRoll + sinPitch * sinYaw * sinRoll;
+    return q;
 }
 
 Vector3 Vector3::Add(const Vector3& v1, const Vector3& v2) {
@@ -99,22 +122,22 @@ Vector3 Vector3::Reflect(const Vector3& input, const Vector3& normal) {
     return Vector3(input) - Vector3(normal) * (2.0f * Vector3::Dot(input, normal));
 }
 
-//Vector3 Vector3::ClosestPoint(const Vector3& point, const Line& line)
-//{
-//    return line.origin + Project(point - line.origin, line.diff);
-//}
-//
-//Vector3 Vector3::ClosestPoint(const Vector3& point, const Ray& ray)
-//{
-//    Vector3 v3 = ray.origin + Project(point - ray.origin, ray.diff);
-//    return Max(v3, ray.origin);
-//}
-//
-//Vector3 Vector3::ClosestPoint(const Vector3& point, const Segment& segment)
-//{
-//    Vector3 v3 = segment.origin + Project(point - segment.origin, segment.diff);
-//    return Clamp(v3, segment.origin, segment.origin + segment.diff);
-//}
+Vector3 Vector3::ClosestPoint(const Vector3& point, const Line& line)
+{
+    return line.origin + Project(point - line.origin, line.diff);
+}
+
+Vector3 Vector3::ClosestPoint(const Vector3& point, const Ray& ray)
+{
+    Vector3 v3 = ray.origin + Project(point - ray.origin, ray.diff);
+    return Max(v3, ray.origin);
+}
+
+Vector3 Vector3::ClosestPoint(const Vector3& point, const Segment& segment)
+{
+    Vector3 v3 = segment.origin + Project(point - segment.origin, segment.diff);
+    return Clamp(v3, segment.origin, segment.origin + segment.diff);
+}
 
 Vector3 Vector3::Lerp(const Vector3& v1, const Vector3& v2, float t){
     return (Vector3)v1 + ((Vector3)v2 - v1) * t;
@@ -140,23 +163,23 @@ Vector3 Vector3::Random(std::mt19937& randomEngine,const Vector3& vMin, const Ve
     return { distX(randomEngine), distY(randomEngine), distZ(randomEngine) };
 }
 
-Vector3 Vector3::operator-(){
+Vector3 Vector3::operator-() const {
     return { -x, -y, -z };
 }
 
-Vector3 Vector3::operator+(const Vector3& v2){
+Vector3 Vector3::operator+(const Vector3& v2) const {
     return { x + v2.x, y + v2.y, z + v2.z };
 }
 
-Vector3 Vector3::operator-(const Vector3& v2){
+Vector3 Vector3::operator-(const Vector3& v2) const {
     return { x - v2.x, y - v2.y, z - v2.z };
 }
 
-Vector3 Vector3::operator*(const float& v2){
+Vector3 Vector3::operator*(const float& v2) const {
     return { x * v2, y * v2, z * v2 };
 }
 
-Vector3 Vector3::operator/(const float& v2){
+Vector3 Vector3::operator/(const float& v2) const {
     return { x / v2, y / v2, z / v2 };
 }
 

@@ -21,7 +21,7 @@
 #include "Logger.h"
 #include "Camera.h"
 #include "CameraManager.h"
-#include "SrvManager.h"
+#include "SrvUavManager.h"
 #include "ImGuiManager.h"
 #include "GlobalVariables.h"
 #include "AudioManager.h"
@@ -31,6 +31,7 @@
 #include "LightManager.h"
 #include "TimeManager.h"
 #include "Line3D.h"
+#include "PostEffectManager.h"
 
 class Framework{
 public://メンバ関数
@@ -55,7 +56,7 @@ protected://メンバ変数
 	//入力
 	Input* input_ = nullptr;
 	//SRV
-	std::unique_ptr<SrvManager> srvManager = nullptr;
+	std::unique_ptr<SrvUavManager> srvUavManager = nullptr;
 	//ImGuiマネージャ
 	std::unique_ptr<ImGuiManager> imGuiManager = nullptr;
 	//
@@ -82,5 +83,7 @@ protected://メンバ変数
 	std::unique_ptr<AbstractSceneFactory> sceneFactory_ = nullptr;
 	//タイムマネージャ
 	TimeManager* timeManager_ = nullptr;
+	//PostEffectManager
+	PostEffectManager* postEffectManager_ = nullptr;
 };
 

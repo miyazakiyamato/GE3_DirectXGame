@@ -52,8 +52,13 @@ class MYADDON_OT_export_scene(bpy.types.Operator,bpy_extras.io_utils.ExportHelpe
             self.parse_scene_recursive(file,child,level + 1)
     def parse_scene_recursive_json(self,data_parent,object,level):
         json_object = dict()              #シーンのオブジェクト1個分のjsonオブジェクト生成
-        json_object["type"] = object.type #オブジェクト種類
-        json_object["name"] = object.name #オブジェクト名
+        #オブジェクト種類
+        if "type" in object:
+            json_object["type"] = object["type"]
+        else:
+            json_object["type"] = object.type
+        #オブジェクト名
+        json_object["name"] = object.name 
         #そのほかの情報をパック
         #平行移動、回転、スケールを抽出
         trans,rot,scale = object.matrix_local.decompose()
