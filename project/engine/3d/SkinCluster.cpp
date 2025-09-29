@@ -3,6 +3,10 @@
 #include "SrvUavManager.h"
 #include "Skeleton.h"
 
+void SkinCluster::Finalize(){
+	srvUavManager_->ResourceClear(paletteSrvIndex_);
+}
+
 void SkinCluster::CreateSkinCluster(Skeleton* skeleton,std::vector<Model::Mesh> modelData) {
     DirectXCommon* dxCommon = ModelManager::GetInstance()->GetDirectXCommon();
 	srvUavManager_ = ModelManager::GetInstance()->GetSrvManager();
