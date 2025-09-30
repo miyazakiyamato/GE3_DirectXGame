@@ -13,6 +13,6 @@ public://メンバ関数
 	//描画
 	void Draw() override;
 private://メンバ変数
-	
+	std::string pipelineStateName_ = "";
 };
 
