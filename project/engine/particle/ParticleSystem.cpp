@@ -20,3 +20,9 @@ void ParticleSystem::CreateParticleEmitter(const std::string& emitterName, std::
 void ParticleSystem::Emit(const std::string& emitterName){
 	emitters_[emitterName]->Emit();
 }
+
+void ParticleSystem::UpdateGlobalVariables(){
+	for (const auto& [name, emitter] : emitters_) {
+		emitter->UpdateGlobalVariables();
+	}
+}

@@ -46,6 +46,7 @@ public://構造体
 		SkinningInformationForGPU* mappedSkinningInformation = nullptr;
 	};
 public://メンバ関数
+	void Finalize();
 	//SkinClusterの生成
 	void CreateSkinCluster(Skeleton* skeleton, std::vector<Model::Mesh> modelData);
 	//更新

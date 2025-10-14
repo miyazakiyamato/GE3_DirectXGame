@@ -139,6 +139,9 @@ private://メンバ変数
 	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler = nullptr;
 	//フェンス値
 	UINT16 fenceVal = 0;
+
+	Vector4 color_{ 0.1f,0.25f,0.5f,1.0f }; //背景色 (初期値は水色)
+
 public:
 	ID3D12Device* GetDevice() { return device.Get(); }
 	ID3D12GraphicsCommandList* GetCommandList() { return commandList.Get(); }

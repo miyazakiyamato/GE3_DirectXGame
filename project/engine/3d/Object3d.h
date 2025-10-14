@@ -42,6 +42,8 @@ private:
 		Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
 	};
 public://メンバ関数
+	Object3d() = default;
+	~Object3d();
 	//初期化
 	void Initialize();
 	//更新
@@ -66,7 +68,7 @@ private://メンバ変数
 	LightManager* lightManager_ = nullptr;
 
 	//Transform変数を作る。
-	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Transform transform { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	Matrix4x4 worldMatrix_;
 	std::unique_ptr<AnimationData> animationData_ = nullptr;
 	std::unique_ptr<AnimationData> nextAnimationData_ = nullptr;
@@ -114,7 +116,7 @@ public://ゲッターセッター
 	void SetUvScale(const Vector3& scale, uint32_t num) { materialDates_[num].uvTransform.scale = scale; }
 	void SetUvRotate(const Vector3& rotate, uint32_t num) { materialDates_[num].uvTransform.rotate = rotate; }
 	void SetUvTranslate(const Vector3& translate, uint32_t num) { materialDates_[num].uvTransform.translate = translate; }
-	void SetColor(const Vector4& color, uint32_t num) { materialDates_[num].material->color = color; }
+	void SetColor(const Vector4& color, uint32_t num = 0) { materialDates_[num].material->color = color; }
 	void SetHighLightColor(const Vector4& color, uint32_t num) { materialDates_[num].material->highLightColor = color; }
 	void SetEnableLighting(bool enable, uint32_t num) { materialDates_[num].material->enableLighting = enable; }
 	void SetShininess(float shininess, uint32_t num) { materialDates_[num].material->shininess = shininess; }

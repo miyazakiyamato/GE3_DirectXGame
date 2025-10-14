@@ -1,5 +1,6 @@
 #pragma once
 #include "DirectXCommon.h"
+#include <queue>
 
 class SrvUavManager{
 public:
@@ -7,6 +8,8 @@ public:
 	void Initialize(DirectXCommon* dxCommon);
 
 	uint32_t Allocate();
+	//解放
+	void ResourceClear(uint32_t index);
 	//SRVの指定番号のデスクリプタハンドルを取得する
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(uint32_t index);
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(uint32_t index);
@@ -38,5 +41,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap;
 	//次に使用するSRVインデックス
 	uint32_t useIndex = 1;
+	//削除したキュー
+	std::queue<uint32_t> deleteQueue;
 };
 

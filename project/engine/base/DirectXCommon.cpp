@@ -106,7 +106,7 @@ void DirectXCommon::SwapChainPreDraw(){
 	//commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	//指定した色で画面全体をクリアする
-	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };//青っぽい色。RGBAの順
+	float clearColor[] = { color_.x, color_.y, color_.z, color_.w };//青っぽい色。RGBAの順
 	commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
 
 	commandList->RSSetViewports(1, &viewport);//Viewportを設定
@@ -133,6 +133,9 @@ void DirectXCommon::OffScreenDepthDraw(){
 void DirectXCommon::OffScreenDraw(){
 	// 深度バッファをSRVとして使う前にリソースバリアを張る
 	//TransitionBarrierの設定
+
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	D3D12_RESOURCE_BARRIER barrier{};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
@@ -431,7 +434,7 @@ void DirectXCommon::CreateRTVDescriptorHeaps(){
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	//RTVのハンドルを取得する
 	//Vector4 clearColor = { 1.0f, 0.0f, 0.0f, 1.0f } ;//赤色
-	Vector4 clearColor = { 0.1f,0.25f,0.5f,1.0f };//水色
+	Vector4 clearColor = color_;//水色
 	renderTextureResource = CreateRenderTextureResource(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, clearColor);
 	//裏表2つ分
 	for (uint32_t i = 0; i < kRTVHandleNum; ++i) {

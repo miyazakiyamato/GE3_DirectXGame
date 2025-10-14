@@ -4,6 +4,12 @@ void MyGame::Initialize(){
 	//基底クラスの初期化処理
 	Framework::Initialize();
 
+	//パイプラインを設定
+	PipelineState pipelineState;
+	pipelineState.shaderName = "Object3d";
+	pipelineState.blendMode = BlendMode::kNormal;
+	pipelineStateName_ = PipelineManager::GetInstance()->CreatePipelineState(pipelineState);
+
 	//最初のシーンセット
 	sceneManager_->AddScene("TITLE");
 }
@@ -22,7 +28,8 @@ void MyGame::Draw(){
 	//描画前処理
 	dxCommon->RenderTexturePreDraw();
 	srvUavManager->PreDraw();
-		
+	PipelineManager::GetInstance()->DrawSetting(pipelineStateName_);
+
 	sceneManager_->Draw();
 
 	//OffScreenの描画

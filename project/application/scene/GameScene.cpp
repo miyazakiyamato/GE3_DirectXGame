@@ -64,19 +64,19 @@ void GameScene::Initialize(){
 	collisionManager_->Initialize();
 
 	//skybox
-	std::unique_ptr<Object3d> object3d(new Object3d);
-	object3d->Initialize();
-	object3d->SetScale({ 1000.0f,1000.0f,1000.0f });
-	object3d->SetModel("skybox");
-	object3d->SetTexture("rostock_laage_airport_4k.dds");
-	object3ds_.push_back(std::move(object3d));
-	std::unique_ptr<Object3d> object3d2(new Object3d);
-	object3d2->Initialize();
-	object3d2->SetTranslate({-1.0f,0.0f,0.0f});
-	object3d2->SetModel("BrainStem/BrainStem.gltf");
-	object3d2->SetAnimation("BrainStem/BrainStem.gltf", true);
-	//object3d2->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
-	object3ds_.push_back(std::move(object3d2));
+	//std::unique_ptr<Object3d> object3d(new Object3d);
+	//object3d->Initialize();
+	//object3d->SetScale({ 1000.0f,1000.0f,1000.0f });
+	//object3d->SetModel("skybox");
+	//object3d->SetTexture("rostock_laage_airport_4k.dds");
+	//object3ds_.push_back(std::move(object3d));
+	//std::unique_ptr<Object3d> object3d2(new Object3d);
+	//object3d2->Initialize();
+	//object3d2->SetTranslate({-1.0f,0.0f,0.0f});
+	//object3d2->SetModel("BrainStem/BrainStem.gltf");
+	//object3d2->SetAnimation("BrainStem/BrainStem.gltf", true);
+	////object3d2->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
+	//object3ds_.push_back(std::move(object3d2));
 	//レベルデータマネージャの生成
 	levelDataManager_ = std::make_unique<LevelDataManager>();
 	//レベルデータの読み込み取得
@@ -204,8 +204,7 @@ void GameScene::Update(){
 
 				object3dCount++;
 			}
-			ParticleManager::GetInstance()->UpdateGlobalVariables();
-			groupName = "Particle";
+			particleSystem_->UpdateGlobalVariables();
 			
 			groupName = "Sprite";
 			uint32_t spriteIDIndex = 0;
@@ -246,7 +245,7 @@ void GameScene::Update(){
 				ParticleManager::Particle& particle = *it;
 
 				if (Collision::IsCollision(accelerationField_->GetAABB(), particle.transform.translate)) {
-					particle.velocity += accelerationField_->GetAcceleration() * TimeManager::GetInstance()->deltaTime_;
+					//particle.velocity += accelerationField_->GetAcceleration() * TimeManager::GetInstance()->deltaTime_;
 
 				}
 
