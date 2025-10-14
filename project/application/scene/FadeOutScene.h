@@ -3,7 +3,7 @@
 #include "Sprite.h"
 #include <vector>
 
-class TitleScene : public BaseScene {
+class FadeOutScene : public BaseScene {
 public://メンバ関数
 	//初期化
 	void Initialize() override;
@@ -15,5 +15,10 @@ public://メンバ関数
 	void Draw() override;
 private://メンバ変数
 	std::vector< std::unique_ptr<Sprite>> sprites_;
+
+	//フェードの持続時間
+	float duration_ = 0.5f;
+	//経過時間カウンター
+	float counter_ = 0.0f;
 };
 

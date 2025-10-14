@@ -5,7 +5,7 @@ void MyGame::Initialize(){
 	Framework::Initialize();
 
 	//最初のシーンセット
-	sceneManager_->ChangeScene("GAME");
+	sceneManager_->AddScene("TITLE");
 }
 
 void MyGame::Finalize(){

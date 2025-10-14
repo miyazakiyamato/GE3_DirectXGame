@@ -113,6 +113,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="application\scene\FadeInScene.cpp" />
+    <ClCompile Include="application\scene\FadeOutScene.cpp" />
     <ClCompile Include="engine\3d\SkyboxPipeline.cpp" />
     <ClCompile Include="engine\base\SrvUavManager.cpp" />
     <ClCompile Include="engine\particle\BaseParticleEmitter.cpp" />
@@ -174,6 +176,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\PostEffectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\scene\FadeInScene.h" />
+    <ClInclude Include="application\scene\FadeOutScene.h" />
     <ClInclude Include="engine\3d\SkyboxPipeline.h" />
     <ClInclude Include="engine\base\SrvUavManager.h" />
     <ClInclude Include="engine\particle\BaseParticleEmitter.h" />
