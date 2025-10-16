@@ -8,6 +8,17 @@
 #include <numbers>
 #include <imgui.h>
 
+Object3d::~Object3d(){
+	wvpResource.Get()->Unmap(0, nullptr);
+	cameraResource.Get()->Unmap(0, nullptr);
+	for (MaterialData& materialData : materialDates_) {
+		if (materialData.materialResource) {
+			materialData.materialResource.Get()->Unmap(0, nullptr);
+		}
+	}
+	skinClusterData_->Finalize();
+}
+
 void Object3d::Initialize(){
 	dxCommon_ = ModelManager::GetInstance()->GetDirectXCommon();
 	lightManager_ = LightManager::GetInstance();

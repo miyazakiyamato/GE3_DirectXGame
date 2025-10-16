@@ -2,7 +2,7 @@
 #include <cassert>
 #include "ParticleManager.h"
 
-const uint32_t SrvUavManager::kMaxSRVCount = 512;
+const uint32_t SrvUavManager::kMaxSRVCount = 1u << 14;
 
 void SrvUavManager::Initialize(DirectXCommon* dxCommon){
 	dxCommon_ = dxCommon;
@@ -15,7 +15,12 @@ void SrvUavManager::Initialize(DirectXCommon* dxCommon){
 
 uint32_t SrvUavManager::Allocate(){
 	assert(useIndex < kMaxSRVCount);
-	
+	//解放された番号があればそれを使う
+	if (!deleteQueue.empty()) {
+		uint32_t index = deleteQueue.front();
+		deleteQueue.pop();
+		return index;
+	}
 	//returnする番号を一旦記録しておく
 	int index = useIndex;
 	//次回のために番号を1進める
@@ -24,8 +29,15 @@ uint32_t SrvUavManager::Allocate(){
 	return index;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE SrvUavManager::GetCPUDescriptorHandle(uint32_t index){
-	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+void SrvUavManager::ResourceClear(uint32_t index){
+	assert(index < kMaxSRVCount);
+	//解放する番号をキューに追加
+	deleteQueue.push(index);
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE SrvUavManager::GetCPUDescriptorHandle(uint32_t index)
+{
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	handleCPU.ptr += (descriptorSize * index);
 	return handleCPU;
 }

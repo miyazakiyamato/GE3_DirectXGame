@@ -34,6 +34,10 @@ public:
 	struct PerView{
 		Matrix4x4 viewProjection;
 		Matrix4x4 billboardMatrix;
+		Transform randomVelocityMax{};
+		Transform randomVelocityMin{};
+		Transform randomUvVelocityMax{};
+		Transform randomUvVelocityMin{};
 	};
 	
 	struct ParticleGroup {
@@ -86,7 +90,7 @@ public://メンバ関数
 		const uint32_t& kDivide, const float& kTopRadius, const float& kBottomRadius,const float& kHeight);
 	*/
 	//パーティクルの発生
-	void Emit(const std::string name, const Vector3& position, uint32_t count);
+	void Emit(const std::string name, const Vector3& position, ParticleInitData particleInitData);
 
 	//調整項目の更新
 	//void UpdateGlobalVariables();

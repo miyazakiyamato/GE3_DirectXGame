@@ -8,6 +8,6 @@ public:
 	/// </summary>
 	/// <param name="sceneName">シーン名</param>
 	/// <returns>生成したシーン</returns>
-	BaseScene* CreateScene(const std::string& sceveName)override;
+	BaseScene* CreateScene(const std::string& sceneName)override;
 };
 

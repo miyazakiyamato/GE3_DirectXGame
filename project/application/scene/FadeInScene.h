@@ -1,8 +1,9 @@
 #pragma once
-#include "Framework.h"
 #include "BaseScene.h"
+#include "Sprite.h"
+#include <vector>
 
-class MyGame : public Framework{
+class FadeInScene : public BaseScene {
 public://メンバ関数
 	//初期化
 	void Initialize() override;
@@ -13,6 +14,11 @@ public://メンバ関数
 	//描画
 	void Draw() override;
 private://メンバ変数
-	std::string pipelineStateName_ = "";
+	std::vector< std::unique_ptr<Sprite>> sprites_;
+
+	//フェードの持続時間
+	float duration_ = 0.5f;
+	//経過時間カウンター
+	float counter_ = 0.0f;
 };
 

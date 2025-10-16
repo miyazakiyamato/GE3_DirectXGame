@@ -49,8 +49,6 @@ void ParticleManager::Finalize() {
 }
 
 void ParticleManager::Update() {
-	//調整項目の更新
-	ApplyGlobalVariables();
 
 	Matrix4x4 viewProjectionMatrix = Matrix4x4::MakeIdentity4x4();
 	Matrix4x4 billboardMatrix = Matrix4x4::MakeIdentity4x4();

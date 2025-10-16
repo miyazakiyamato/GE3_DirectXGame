@@ -12,6 +12,7 @@ class SpawnNames():
     # names["キー"] = (PROTOTYPE,INSTANCE,FILENAME)
     names["Enemy"] = ("PrototypeEnemySpawn","EnemySpawn","enemy/enemy.obj")
     names["Player"] = ("PrototypePlayerSpawn","PlayerSpawn","player/player.obj")
+    names["ControlPoint"] = ("PrototypeControlPointSpawn","ControlPointSpawn","arrow/arrow.obj")
 
 #オペレータ 出現ポイントのシンボルを読み込む
 class MYADDON_OT_spawn_import_symbol(bpy.types.Operator):
@@ -54,7 +55,8 @@ class MYADDON_OT_spawn_import_symbol(bpy.types.Operator):
        self.load_obj("Enemy")
        #Playerオブジェクト読み込み
        self.load_obj("Player")
-
+       #ControlPointオブジェクト読み込み
+       self.load_obj("ControlPoint")
        return {'FINISHED'}
 #オペレータ 出現ポイントのシンボルを作成・配置する
 class MYADDON_OT_spawn_create_symbol(bpy.types.Operator):
@@ -104,5 +106,14 @@ class MYADDON_OT_spawn_create_enemy_symbol(bpy.types.Operator):
 
     def execute(self,context):
         bpy.ops.myaddon.myaddon_ot_spawn_create_symbol('EXEC_DEFAULT',type="Enemy")
+        
+        return {'FINISHED'}
+class MYADDON_OT_spawn_create_controlpoint_symbol(bpy.types.Operator):
+    bl_idname = "myaddon.myaddon_ot_spawn_create_controlpoint_symbol"
+    bl_label = "レールカメラのコントロールポイント出現ポイントシンボルの作成"
+    bl_description = "レールカメラのコントロールポイント出現ポイントのシンボルを作成します"
+
+    def execute(self,context):
+        bpy.ops.myaddon.myaddon_ot_spawn_create_symbol('EXEC_DEFAULT',type="ControlPoint")
         
         return {'FINISHED'}
