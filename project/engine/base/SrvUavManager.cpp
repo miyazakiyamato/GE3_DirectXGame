@@ -37,7 +37,7 @@ void SrvUavManager::ResourceClear(uint32_t index){
 
 D3D12_CPU_DESCRIPTOR_HANDLE SrvUavManager::GetCPUDescriptorHandle(uint32_t index)
 {
-	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 	handleCPU.ptr += (descriptorSize * index);
 	return handleCPU;
 }

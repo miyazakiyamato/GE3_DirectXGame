@@ -95,41 +95,41 @@ void GameScene::Initialize(){
 			}
 			object3ds_.push_back(std::move(object3d));
 		}
-		if (objectData->typeName == "ARMATURE") {
-			for (const std::unique_ptr<ObjectData>&childData : objectData->children) {
-				if (childData->typeName == "MESH") {
-					std::unique_ptr<Object3d> object3d(new Object3d);
-					object3d->Initialize();
-					object3d->SetTranslate(objectData->translation);
-					if (!childData->fileName.empty()) {
-						object3d->SetModel(childData->fileName);
-						object3d->SetAnimation(childData->fileName, true);
-						//object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
-					}
-					object3ds_.push_back(std::move(object3d));
-				}
-			}
-		}
-		if (objectData->typeName == "PlayerSpawn") {
-			std::unique_ptr<Object3d> object3d(new Object3d);
-			object3d->Initialize();
-			object3d->SetScale(objectData->scaling);
-			object3d->SetRotate(objectData->rotation);
-			object3d->SetTranslate(objectData->translation);
-			object3d->SetModel("sphere/sphere.obj");
-			//object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
-			object3ds_.push_back(std::move(object3d));
-		}
-		if (objectData->typeName == "EnemySpawn") {
-			std::unique_ptr<Object3d> object3d(new Object3d);
-			object3d->Initialize();
-			object3d->SetScale(objectData->scaling);
-			object3d->SetRotate(objectData->rotation);
-			object3d->SetTranslate(objectData->translation);
-			object3d->SetModel("sphere/sphere.obj");
-			object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
-			object3ds_.push_back(std::move(object3d));
-		}
+		//if (objectData->typeName == "ARMATURE") {
+		//	for (const std::unique_ptr<ObjectData>&childData : objectData->children) {
+		//		if (childData->typeName == "MESH") {
+		//			std::unique_ptr<Object3d> object3d(new Object3d);
+		//			object3d->Initialize();
+		//			object3d->SetTranslate(objectData->translation);
+		//			if (!childData->fileName.empty()) {
+		//				object3d->SetModel(childData->fileName);
+		//				object3d->SetAnimation(childData->fileName, true);
+		//				//object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
+		//			}
+		//			object3ds_.push_back(std::move(object3d));
+		//		}
+		//	}
+		//}
+		//if (objectData->typeName == "PlayerSpawn") {
+		//	std::unique_ptr<Object3d> object3d(new Object3d);
+		//	object3d->Initialize();
+		//	object3d->SetScale(objectData->scaling);
+		//	object3d->SetRotate(objectData->rotation);
+		//	object3d->SetTranslate(objectData->translation);
+		//	object3d->SetModel("sphere/sphere.obj");
+		//	//object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
+		//	object3ds_.push_back(std::move(object3d));
+		//}
+		//if (objectData->typeName == "EnemySpawn") {
+		//	std::unique_ptr<Object3d> object3d(new Object3d);
+		//	object3d->Initialize();
+		//	object3d->SetScale(objectData->scaling);
+		//	object3d->SetRotate(objectData->rotation);
+		//	object3d->SetTranslate(objectData->translation);
+		//	object3d->SetModel("sphere/sphere.obj");
+		//	object3d->SetEnvironmentTexture("rostock_laage_airport_4k.dds");
+		//	object3ds_.push_back(std::move(object3d));
+		//}
 	}
 	/*std::unique_ptr<Object3d> object3d3(new Object3d);
 	object3d3->Initialize();

@@ -30,7 +30,7 @@ void ParticleSystem::Emit(const std::string& emitterName){
 }
 
 void ParticleSystem::UpdateGlobalVariables(){
-	for (const auto& [name, emitter] : emitters_) {
+	/*for (const auto& [name, emitter] : emitters_) {
 		emitter->UpdateGlobalVariables();
-	}
+	}*/
 }

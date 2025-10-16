@@ -7,12 +7,11 @@ class BaseParticleEmitter{
 public:
 	BaseParticleEmitter() = default;
 	virtual ~BaseParticleEmitter() = default;
-	virtual void Initialize(const std::string& emitterName );
+	virtual void Initialize(const std::string& emitterName) = 0;
 
-	virtual void Update();
+	virtual void Update() = 0;
 	//パーティクルの発生
-	virtual void Emit();
-
+	virtual void Emit() = 0;
 	//調整項目の更新
 	void UpdateGlobalVariables();
 private://ローカル関数
@@ -25,10 +24,6 @@ protected:
 
 	Transform transform_; // エミッターの変換情報
 
-	std::string groupNameText = ""; // グループ名
-	char buffer[128] = ""; // 入力用のバッファ
-	std::string typeNameText = ""; // タイプ名
-	char buffer2[128] = ""; // 入力用のバッファ
 public:
 	const Vector3& GetPosition() { return transform_.translate; }
 	const Vector3& GetRotation() { return transform_.rotate; }
