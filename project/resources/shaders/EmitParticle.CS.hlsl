@@ -28,7 +28,8 @@ void main(uint32_t3 DTid : SV_DispatchThreadID){
             InterlockedAdd(gFreeListIndex[0], -1, freeListIndex);
             if (0 <= freeListIndex && freeListIndex < kMaxParticles){
                 int32_t particleIndex = gFreeList[freeListIndex];
-                gParticles[particleIndex].scale = generator.Generate3d();
+                //gParticles[particleIndex].scale = generator.Generate3d();
+                gParticles[particleIndex].scale = float32_t3(1.0f,1.0f,1.0f);
                 gParticles[particleIndex].translate = gEmitter.translate + mul(normalize(generator.Generate3d() - float32_t3(0.5f, 0.5f, 0.5f)), gEmitter.radius);
                 gParticles[particleIndex].velocity = (generator.Generate3d() - 0.5f);
                 gParticles[particleIndex].color.rgb = generator.Generate3d();

@@ -14,6 +14,8 @@ public:
 	void Draw();
 	// パーティクルの生成
 	void CreateParticleEmitter(const std::string& emitterName, std::unique_ptr<BaseParticleEmitter> emitter);
+	//パーティクルの管理取得
+	BaseParticleEmitter* GetParticleEmitter(const std::string& emitterName);
 	// パーティクルの発生
 	void Emit(const std::string& emitterName);
 	// 調整項目の更新

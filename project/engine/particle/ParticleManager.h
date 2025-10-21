@@ -23,7 +23,7 @@ public:
 	struct Particle {
 		//Transform transform;
 		//Transform uvTransform;
-		bool isBillboard; // ビルボードの有無
+		uint32_t isBillboard; // ビルボードの有無
 		Vector3 translate;
 		Vector3 scale;
 		float lifeTime;
@@ -42,9 +42,6 @@ public:
 		//デスクリプタハンドル
 		uint32_t particleSrvIndex; // SRV (描画用)
 		uint32_t particleUavIndex; // UAV (計算用)
-		//WorldViewProjection用のリソース
-		ComPtr<ID3D12Resource> perViewResource; // PerView定数バッファ
-		PerView* perViewData = nullptr; // マッピング用ポインタ
 		//freeListIndex
 		ComPtr<ID3D12Resource> freeListIndexResource;
 		uint32_t freeListIndexUAVIndex;
@@ -80,11 +77,6 @@ public://メンバ関数
 	void Draw();
 	//パーティクルグループの生成
 	void CreateParticleGroup(const std::string name);
-	/*void CreateRingParticleGroup(const std::string name,
-		const uint32_t& kDivide,const float& kOuterRadius,const float& kInnerRadius);
-	void CreateCylinderParticleGroup(const std::string name,
-		const uint32_t& kDivide, const float& kTopRadius, const float& kBottomRadius,const float& kHeight);
-	*/
 	//パーティクルの発生
 	void Emit(const std::string name, const Vector3& position, uint32_t count);
 
@@ -93,6 +85,8 @@ public://メンバ関数
 private://ローカル関数
 	void CreateParticle(ParticleGroup* group);
 	void CreatePlane(ParticleGroup* group);
+	void CreateRing(ParticleGroup* group,const uint32_t& kDivide, const float& kOuterRadius, const float& kInnerRadius);
+	void CreateCylinder(ParticleGroup* group,const uint32_t& kDivide, const float& kTopRadius, const float& kBottomRadius, const float& kHeight);
 	//調整項目の初期化
 	void InitializeGlobalVariables();
 	// 調整項目の適用
@@ -110,7 +104,10 @@ private://メンバ変数
 	SrvUavManager* srvUavManager_ = nullptr;
 	//インスタンスの最大数
 	uint32_t kMaxParticles = 1024;
-
+	//WorldViewProjection用のリソース
+	ComPtr<ID3D12Resource> perViewResource_; // PerView定数バッファ
+	PerView* perViewData_ = nullptr; // PerViewマッピング用ポインタ
+	//パイプラインネーム
 	std::string initCSPipelineName_ = "";
 	std::string updateCSPipelineName_ = "";
 	//ランダムエンジン
@@ -133,4 +130,7 @@ public://ゲッターセッター
 	const BlendMode& GetBlendMode(std::string name) { return particleGroups[name]->blendMode_; }
 
 	void SetBlendMode(std::string name, BlendMode blendMode);
+	void SetTexture(std::string name, std::string textureName);
+	void SetRing(std::string name, const uint32_t& kDivide, const float& kOuterRadius, const float& kInnerRadius);
+	void SetCylinder(std::string name, const uint32_t& kDivide, const float& kTopRadius, const float& kBottomRadius, const float& kHeight);
 };

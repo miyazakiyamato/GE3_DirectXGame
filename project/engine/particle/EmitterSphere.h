@@ -16,8 +16,8 @@ public:
 		float frequency; // 射出間隔
 		float frequencyTime; // 射出間隔調整用
 		uint32_t emit; // 射出許可
-		bool isBillboard = true; // ビルボードの有無
-		bool isEmitUpdate = false;//連続発生するか
+		uint32_t isBillboard = 1; // ビルボードの有無
+		uint32_t isEmitUpdate = 0;//連続発生するか
 		float pad[2];
 	};
 	struct PerFrame {
@@ -37,5 +37,12 @@ private:
 	EmitterData* emitterData_ = nullptr; // エミッターの球体情報
 
 	std::string computeShaderPipelineName_ = "";
+public:
+	// ゲッター
+	bool GetIsBillboard() const { return (bool)emitterData_->isBillboard; }
+	bool GetIsEmitUpdate() const { return (bool)emitterData_->isEmitUpdate; }
+	// セッター
+	void SetIsBillboard(bool isBillboard) { emitterData_->isBillboard = isBillboard; }
+	void SetIsEmitUpdate(bool isEmitUpdate) { emitterData_->isEmitUpdate = isEmitUpdate; }
 };
 

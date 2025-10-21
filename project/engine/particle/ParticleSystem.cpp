@@ -25,6 +25,13 @@ void ParticleSystem::CreateParticleEmitter(const std::string& emitterName, std::
 	emitters_[emitterName]->Initialize(emitterName);
 }
 
+BaseParticleEmitter* ParticleSystem::GetParticleEmitter(const std::string& emitterName){
+	if (emitters_.find(emitterName) != emitters_.end()) {
+		return emitters_[emitterName].get();
+	}
+	return nullptr;
+}
+
 void ParticleSystem::Emit(const std::string& emitterName){
 	emitters_[emitterName]->Emit();
 }

@@ -17,9 +17,11 @@ VertexShaderOutput main(VertexShaderInput input, uint32_t instanceId : SV_Instan
         0,0,1,0,
         0,0,0,1
     };
-    if (particle.isBillboard){
+    
+    if (particle.isBillboard == 1){
         worldMatrix = gPerView.billboardMatrix;
     }
+    
     worldMatrix[0] *= particle.scale.x;
     worldMatrix[1] *= particle.scale.y;
     worldMatrix[2] *= particle.scale.z;

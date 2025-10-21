@@ -228,7 +228,7 @@ void GameScene::Update(){
 #endif //_DEBUG
 
 	if (input_->TriggerKey(DIK_SPACE)) {
-		AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
+		//AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
 		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
 		//ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
 		particleSystem_->Emit("emitterSphere");

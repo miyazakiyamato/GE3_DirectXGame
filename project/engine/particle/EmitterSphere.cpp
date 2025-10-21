@@ -12,21 +12,23 @@ void EmitterSphere::Initialize(const std::string& emitterName) {
 	particleManager_->CreateParticleGroup(name_);
 	computeShaderPipelineName_ = PipelineManager::GetInstance()->CreateComputePipelineState("EmitParticle");
 	
+	particleManager_->SetTexture(name_, "gradationLine.png");
+	particleManager_->SetRing(name_, 16, 0.5f, 0.0f);
 	//worldViewProjection用のリソースを作成
 	emitterDataResource_ = dxCommon_->CreateBufferResource(sizeof(EmitterData));
 	emitterDataResource_->Map(0, nullptr, reinterpret_cast<void**>(&emitterData_));
 	// エミッターのデータを初期化
 	emitterData_->translate = { 0.0f, 1.0f, 0.0f }; // 初期位置
 	emitterData_->radius = 0.0f; // 初期半径
-	emitterData_->count = 1000; // 初期射出数
+	emitterData_->count = 10; // 初期射出数
 	emitterData_->frequency = 0.5f; // 初期射出間隔（秒）
 	emitterData_->frequencyTime = 0.0f; // 初期射出間隔調整用
 	emitterData_->emit = 0; // 初期射出許可（0:許可しない、1:許可する）
-	emitterData_->isBillboard = false; // ビルボードの有無
-	emitterData_->isEmitUpdate = true;//連続発生するか
+	emitterData_->isBillboard = 0; // ビルボードの有無（0:無、1:有）
+	emitterData_->isEmitUpdate = 1;// 連続発生するか（0:しない、1:する）
 }
 void EmitterSphere::Update(){
-	if (emitterData_->isEmitUpdate) {
+	if (emitterData_->isEmitUpdate == 1) {
 		emitterData_->frequencyTime += TimeManager::deltaTime_;
 	}
 	if (emitterData_->frequency <= emitterData_->frequencyTime) {
