@@ -1,9 +1,6 @@
 #pragma once
 #include "BaseParticleEmitter.h"
-#include "DirectXCommon.h"
 
-class ParticleManager;
-class SrvUavManager;
 class EmitterSphere : public BaseParticleEmitter{
 public:
 	//namespace省略
@@ -29,9 +26,6 @@ public:
 	void Update() override;
 	void Emit() override;
 private:
-	DirectXCommon* dxCommon_ = nullptr; // DirectXの共通インスタンス
-	ParticleManager* particleManager_ = nullptr; // パーティクルマネージャーのインスタンス
-	SrvUavManager* srvUavManager_ = nullptr; // SRV/UAVマネージャーのインスタンス
 	// エミッターのデータを格納するリソース
 	ComPtr<ID3D12Resource> emitterDataResource_;
 	EmitterData* emitterData_ = nullptr; // エミッターの球体情報
@@ -39,9 +33,17 @@ private:
 	std::string computeShaderPipelineName_ = "";
 public:
 	// ゲッター
+	const Vector3& GetTranslate() const { return emitterData_->translate; }
+	const float& GetRadius() const { return emitterData_->radius; }
+	const uint32_t& GetCount() const { return emitterData_->count; }
+	const float& GetFrequency() const { return emitterData_->frequency; }
 	bool GetIsBillboard() const { return (bool)emitterData_->isBillboard; }
 	bool GetIsEmitUpdate() const { return (bool)emitterData_->isEmitUpdate; }
 	// セッター
+	void SetTranslate(const Vector3& translate) { emitterData_->translate = translate; }
+	void SetRadius(float radius) { emitterData_->radius = radius; }
+	void SetCount(uint32_t count) { emitterData_->count = count; }
+	void SetFrequency(float frequency) { emitterData_->frequency = frequency; }
 	void SetIsBillboard(bool isBillboard) { emitterData_->isBillboard = isBillboard; }
 	void SetIsEmitUpdate(bool isEmitUpdate) { emitterData_->isEmitUpdate = isEmitUpdate; }
 };

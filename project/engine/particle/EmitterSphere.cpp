@@ -5,18 +5,13 @@
 #include "SrvUavManager.h"
 
 void EmitterSphere::Initialize(const std::string& emitterName) {
-	name_ = emitterName;
-	particleManager_ = ParticleManager::GetInstance();
-	dxCommon_ = ParticleManager::GetInstance()->GetDirectXCommon();
-	srvUavManager_ = particleManager_->GetSrvUavManager();
-	particleManager_->CreateParticleGroup(name_);
+	BaseParticleEmitter::Initialize(emitterName);
 	computeShaderPipelineName_ = PipelineManager::GetInstance()->CreateComputePipelineState("EmitParticle");
 	
-	particleManager_->SetTexture(name_, "gradationLine.png");
-	particleManager_->SetRing(name_, 16, 0.5f, 0.0f);
-	//worldViewProjection用のリソースを作成
+	// worldViewProjection用のリソースを作成
 	emitterDataResource_ = dxCommon_->CreateBufferResource(sizeof(EmitterData));
 	emitterDataResource_->Map(0, nullptr, reinterpret_cast<void**>(&emitterData_));
+
 	// エミッターのデータを初期化
 	emitterData_->translate = { 0.0f, 1.0f, 0.0f }; // 初期位置
 	emitterData_->radius = 0.0f; // 初期半径

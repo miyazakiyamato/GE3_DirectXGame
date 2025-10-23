@@ -20,9 +20,8 @@ void ParticleSystem::Draw(){
 	ParticleManager::GetInstance()->Draw();
 }
 
-void ParticleSystem::CreateParticleEmitter(const std::string& emitterName, std::unique_ptr<BaseParticleEmitter> emitter){
-	emitters_[emitterName] = std::move(emitter);
-	emitters_[emitterName]->Initialize(emitterName);
+void ParticleSystem::SetParticleEmitter(std::unique_ptr<BaseParticleEmitter> emitter){
+	emitters_[emitter->GetName()] = std::move(emitter);
 }
 
 BaseParticleEmitter* ParticleSystem::GetParticleEmitter(const std::string& emitterName){
@@ -40,4 +39,12 @@ void ParticleSystem::UpdateGlobalVariables(){
 	/*for (const auto& [name, emitter] : emitters_) {
 		emitter->UpdateGlobalVariables();
 	}*/
+}
+
+void ParticleSystem::InitializeGlobalVariables(){
+
+}
+
+void ParticleSystem::ApplyGlobalVariables(){
+
 }

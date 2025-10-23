@@ -12,8 +12,8 @@ public:
 	void Update();
 	// パーティクルの描画
 	void Draw();
-	// パーティクルの生成
-	void CreateParticleEmitter(const std::string& emitterName, std::unique_ptr<BaseParticleEmitter> emitter);
+	// パーティクルエミッターのセット
+	void SetParticleEmitter(std::unique_ptr<BaseParticleEmitter> emitter);
 	//パーティクルの管理取得
 	BaseParticleEmitter* GetParticleEmitter(const std::string& emitterName);
 	// パーティクルの発生
@@ -22,6 +22,12 @@ public:
 	void UpdateGlobalVariables();
 	BaseParticleEmitter* FindEmitter(const std::string& emitterName) {return emitters_[emitterName].get();}
 private:
+		// ローカル関数
+	// 調整項目の初期化
+	void InitializeGlobalVariables();
+	// 調整項目の適用
+	void ApplyGlobalVariables();
+		// メンバ変数
 	// パーティクルエミッターの管理
 	std::unordered_map<std::string, std::unique_ptr<BaseParticleEmitter>> emitters_;
 };

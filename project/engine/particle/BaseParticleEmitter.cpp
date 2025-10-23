@@ -5,14 +5,22 @@
 #include "TimeManager.h"
 #include "ParticleManager.h"
 
-void BaseParticleEmitter::UpdateGlobalVariables(){
-	
+void BaseParticleEmitter::Initialize(const std::string& emitterName){
+	name_ = emitterName;
+	particleManager_ = ParticleManager::GetInstance();
+	dxCommon_ = ParticleManager::GetInstance()->GetDirectXCommon();
+	srvUavManager_ = particleManager_->GetSrvUavManager();
+	particleManager_->CreateParticleGroup(name_);
 }
 
-void BaseParticleEmitter::InitializeGlobalVariables(){
-	
+void BaseParticleEmitter::SetTexture(const std::string& textureName) {
+	particleManager_->SetTexture(name_, textureName);
 }
 
-void BaseParticleEmitter::ApplyGlobalVariables() {
-	
+void BaseParticleEmitter::SetRing(const uint32_t& kDivide, const float& kOuterRadius, const float& kInnerRadius) {
+	particleManager_->SetRing(name_, kDivide, kOuterRadius, kInnerRadius);
+}
+
+void BaseParticleEmitter::SetCylinder(const uint32_t& kDivide, const float& kTopRadius, const float& kBottomRadius, const float& kHeight) {
+	particleManager_->SetCylinder(name_, kDivide, kTopRadius, kBottomRadius, kHeight);
 }

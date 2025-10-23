@@ -148,9 +148,21 @@ void GameScene::Initialize(){
 	accelerationField_.reset(new AccelerationField);
 
 	particleSystem_.reset(new ParticleSystem);
-	std::unique_ptr<BaseParticleEmitter> emitterSphere = std::make_unique<EmitterSphere>();
-	particleSystem_->CreateParticleEmitter("emitterSphere", std::move(emitterSphere));
-	
+	std::unique_ptr<EmitterSphere> emitterSphere = std::make_unique<EmitterSphere>();
+	emitterSphere->Initialize("emitterSphere");
+	emitterSphere->SetTexture("gradationLine.png");
+	emitterSphere->SetRing(16, 0.5f, 0.0f);
+	particleSystem_->SetParticleEmitter(std::move(emitterSphere));
+
+	std::unique_ptr<EmitterSphere> emitterHit = std::make_unique<EmitterSphere>();
+	emitterHit->Initialize("emitterHit");
+	emitterHit->SetTranslate({ 1.0f,1.0f,0.0f });
+	emitterHit->SetRadius(2.0f);
+	emitterHit->SetCount(1000);
+	emitterHit->SetIsEmitUpdate(false);
+	emitterHit->SetTexture("circle2.png");
+	particleSystem_->SetParticleEmitter(std::move(emitterHit));
+
 	//スプライトの初期化
 	for (uint32_t i = 0; i < 5; ++i) {
 		std::unique_ptr<Sprite> sprite(new Sprite);
@@ -231,7 +243,7 @@ void GameScene::Update(){
 		//AudioManager::GetInstance()->PlayWave("maou_se_system48.wav");
 		//AudioManager::GetInstance()->PlayMP3("audiostock_1420737.mp3");
 		//ParticleManager::GetInstance()->Emit("uvChecker", { 0,0,0 }, 10);
-		particleSystem_->Emit("emitterSphere");
+		particleSystem_->Emit("emitterHit");
 	}
 	
 	for (std::unique_ptr<Object3d>& object3d : object3ds_) {
