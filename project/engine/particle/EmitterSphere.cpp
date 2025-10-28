@@ -21,6 +21,13 @@ void EmitterSphere::Initialize(const std::string& emitterName, uint32_t kMaxPart
 	emitterData_->emit = 0; // 初期射出許可（0:許可しない、1:許可する）
 	emitterData_->isBillboard = 0; // ビルボードの有無（0:無、1:有）
 	emitterData_->isEmitUpdate = 0;// 連続発生するか（0:しない、1:する）
+	emitterData_->color = { 1.0f, 1.0f, 1.0f, 1.0f }; // 色
+	emitterData_->rlifeTimeMin = 0.1f; // random寿命最低値
+	emitterData_->rlifeTimeMax = 3.0f; // random寿命最高値
+	emitterData_->rScaleMin = { 0.5f, 0.5f, 0.5f }; // randomスケール最低値
+	emitterData_->rScaleMax = { 0.5f, 0.5f, 0.5f }; // randomスケール最高値
+	emitterData_->rVelocityMin = { -0.5f, -0.5f, -0.5f }; // random速度最低値
+	emitterData_->rVelocityMax = { 0.5f, 0.5f, 0.5f }; // random速度最高値
 }
 void EmitterSphere::Update(){
 	if (emitterData_->isEmitUpdate == 1) {

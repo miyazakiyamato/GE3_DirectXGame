@@ -8,8 +8,15 @@ struct EmitterSphere{
     float32_t frequency; // 射出間隔
     float32_t frequencyTime; // 射出間隔調整用
     uint32_t emit; // 射出許可
+    float32_t4 color; // 色
     uint32_t isBillboard; // ビルボードの有無
     uint32_t isEmitUpdate; //連続発生するか
+    float32_t rlifeTimeMin; // random寿命最低値
+    float32_t rlifeTimeMax; // random寿命最高値
+    float32_t3 rScaleMin; // randomスケール最低値
+    float32_t3 rScaleMax; // randomスケール最高値
+    float32_t3 rVelocityMin; // random速度最低値
+    float32_t3 rVelocityMax; // random速度最高値
 };
 
 RWStructuredBuffer<Particle> gParticles : register(u0);
@@ -29,14 +36,12 @@ void main(uint32_t3 DTid : SV_DispatchThreadID){
             InterlockedAdd(gFreeListIndex[0], -1, freeListIndex);
             if (0 <= freeListIndex && freeListIndex < gLimit.kMaxParticles){
                 int32_t particleIndex = gFreeList[freeListIndex];
-                //gParticles[particleIndex].scale = generator.Generate3d();
-                gParticles[particleIndex].scale = float32_t3(1.0f,1.0f,1.0f);
-                gParticles[particleIndex].translate = gEmitter.translate + mul(normalize(generator.Generate3d() - float32_t3(0.5f, 0.5f, 0.5f)), gEmitter.radius);
-                gParticles[particleIndex].velocity = (generator.Generate3d() - 0.5f);
-                gParticles[particleIndex].color.rgb = generator.Generate3d();
-                gParticles[particleIndex].color.a = 1.0f;
-                //gParticles[particleIndex].lifeTime = generator.Generate1d();
-                gParticles[particleIndex].lifeTime = 1.0f;
+                gParticles[particleIndex].scale = gEmitter.rScaleMin + (generator.Generate3d() * (gEmitter.rScaleMax - gEmitter.rScaleMin));
+                gParticles[particleIndex].translate = gEmitter.translate + ((generator.Generate3d() * 2.0f - 1.0f) * gEmitter.radius);
+                gParticles[particleIndex].velocity = gEmitter.rVelocityMin + (generator.Generate3d() * (gEmitter.rVelocityMax - gEmitter.rVelocityMin));
+                //gParticles[particleIndex].color.rgb = generator.Generate3d();
+                gParticles[particleIndex].color = gEmitter.color;
+                gParticles[particleIndex].lifeTime = gEmitter.rlifeTimeMin + (generator.Generate1d() * (gEmitter.rlifeTimeMax - gEmitter.rlifeTimeMin));
                 gParticles[particleIndex].currentTime = 0;
                 gParticles[particleIndex].isBillboard = gEmitter.isBillboard;
             }else{

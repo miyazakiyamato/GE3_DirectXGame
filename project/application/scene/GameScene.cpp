@@ -152,6 +152,9 @@ void GameScene::Initialize(){
 	emitterSphere->Initialize("emitterSphere",10000);
 	emitterSphere->SetTexture("gradationLine.png");
 	emitterSphere->SetRing(16, 0.5f, 0.0f);
+	emitterSphere->SetRadius(0.0f);
+	emitterSphere->SetCount(50);
+	emitterSphere->SetColor({ 1.0f,0.5f,0.0f,1.0f });
 	emitterSphere->SetIsEmitUpdate(true);
 	particleSystem_->SetParticleEmitter(std::move(emitterSphere));
 
@@ -160,7 +163,11 @@ void GameScene::Initialize(){
 	emitterHit->SetTranslate({ 1.0f,1.0f,0.0f });
 	emitterHit->SetRadius(2.0f);
 	emitterHit->SetCount(10);
-	emitterHit->SetFrequency(10.0f);
+	emitterHit->SetRLifeTimeMin(0.1f);
+	emitterHit->SetRLifeTimeMax(5.0f);
+	emitterHit->SetRScaleMax({ 1.0f, 1.0f, 1.0f });
+	emitterHit->SetRVelocityMin({ -1.0f,-1.0f,-1.0f });
+	emitterHit->SetRVelocityMax({ 1.0f,1.0f,1.0f });
 	emitterHit->SetIsEmitUpdate(false);
 	emitterHit->SetTexture("circle2.png");
 	particleSystem_->SetParticleEmitter(std::move(emitterHit));
