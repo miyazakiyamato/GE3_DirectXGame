@@ -17,6 +17,7 @@ ConstantBuffer<EmitterSphere> gEmitter : register(b0);
 ConstantBuffer<PerFrame> gPerFrame : register(b1);
 RWStructuredBuffer<int32_t> gFreeListIndex : register(u1);
 RWStructuredBuffer<uint32_t> gFreeList : register(u2);
+ConstantBuffer<Limit> gLimit : register(b2);
 
 [numthreads(1,1,1)]
 void main(uint32_t3 DTid : SV_DispatchThreadID){
@@ -26,7 +27,7 @@ void main(uint32_t3 DTid : SV_DispatchThreadID){
         for (uint32_t countIndex = 0; countIndex < gEmitter.count; ++countIndex){
             int32_t freeListIndex;
             InterlockedAdd(gFreeListIndex[0], -1, freeListIndex);
-            if (0 <= freeListIndex && freeListIndex < kMaxParticles){
+            if (0 <= freeListIndex && freeListIndex < gLimit.kMaxParticles){
                 int32_t particleIndex = gFreeList[freeListIndex];
                 //gParticles[particleIndex].scale = generator.Generate3d();
                 gParticles[particleIndex].scale = float32_t3(1.0f,1.0f,1.0f);
@@ -34,7 +35,8 @@ void main(uint32_t3 DTid : SV_DispatchThreadID){
                 gParticles[particleIndex].velocity = (generator.Generate3d() - 0.5f);
                 gParticles[particleIndex].color.rgb = generator.Generate3d();
                 gParticles[particleIndex].color.a = 1.0f;
-                gParticles[particleIndex].lifeTime = generator.Generate1d();
+                //gParticles[particleIndex].lifeTime = generator.Generate1d();
+                gParticles[particleIndex].lifeTime = 1.0f;
                 gParticles[particleIndex].currentTime = 0;
                 gParticles[particleIndex].isBillboard = gEmitter.isBillboard;
             }else{

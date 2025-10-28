@@ -76,8 +76,9 @@ void ParticleManager::Update() {
 		// freeListのリソースをUAVに設定
 		srvUavManager_->SetComputeRootDescriptorTable(2, group->freeListIndexUAVIndex);
 		srvUavManager_->SetComputeRootDescriptorTable(3, group->freeListUAVIndex);
+		commandList->SetComputeRootConstantBufferView(4, group->maxParticlesResource->GetGPUVirtualAddress());
 		// Compute Shaderを実行
-		commandList->Dispatch(1, 1, 1);
+		commandList->Dispatch(UINT((group->limit->kMaxParticles + 1023) / 1024), 1, 1);
 	}
 }
 
@@ -99,11 +100,11 @@ void ParticleManager::Draw() {
 		// 定数バッファのDescriptorTableを設定
 		commandList->SetGraphicsRootConstantBufferView(2, perViewResource_->GetGPUVirtualAddress());
 		// DrawCall (インスタンシング描画)
-		commandList->DrawIndexedInstanced(group->kParticleIndexNum, kMaxParticles, 0, 0, 0);
+		commandList->DrawIndexedInstanced(group->kParticleIndexNum, group->limit->kMaxParticles, 0, 0, 0);
 	}
 }
 
-void ParticleManager::CreateParticleGroup(const std::string name) {
+void ParticleManager::CreateParticleGroup(const std::string name,uint32_t kMaxParticles) {
 	if (particleGroups.count(name) != 0) {
 		return;
 	}
@@ -120,24 +121,27 @@ void ParticleManager::CreateParticleGroup(const std::string name) {
 	
 	// 頂点
 	CreatePlane(group.get());
-	//CreateRing(group.get(),16, 1.0f, 0.5f);
-	//CreateCylinder(group.get(), 16, 0.5f, 0.5f, 1.0f);
 	// TextureManagerからGPUハンドルを取得
 	group->materialData.srvIndex = TextureManager::GetInstance()->GetSrvIndex(group->materialData.textureFilePath);
 
-	group->particleResource = dxCommon_->CreateRWBufferResource(sizeof(Particle) * kMaxParticles);
+	//limit->kMaxParticlesのリソースを作成
+	group->maxParticlesResource = dxCommon_->CreateBufferResource(sizeof(Limit));
+	group->maxParticlesResource->Map(0, nullptr, reinterpret_cast<void**>(&group->limit));
+	group->limit->kMaxParticles = kMaxParticles;
+	// パーティクル用リソースの作成
+	group->particleResource = dxCommon_->CreateRWBufferResource(sizeof(Particle) * group->limit->kMaxParticles);
 	// UAVとSRVを作成
 	group->particleUavIndex = srvUavManager_->Allocate();
 	group->particleSrvIndex = srvUavManager_->Allocate();
-	srvUavManager_->CreateUAVforStructuredBuffer(group->particleUavIndex, group->particleResource.Get(), kMaxParticles, sizeof(Particle));
-	srvUavManager_->CreateSRVforStructuredBuffer(group->particleSrvIndex, group->particleResource.Get(), kMaxParticles, sizeof(Particle));
+	srvUavManager_->CreateUAVforStructuredBuffer(group->particleUavIndex, group->particleResource.Get(), group->limit->kMaxParticles, sizeof(Particle));
+	srvUavManager_->CreateSRVforStructuredBuffer(group->particleSrvIndex, group->particleResource.Get(), group->limit->kMaxParticles, sizeof(Particle));
 	// freeListのリソースを作成
 	group->freeListIndexResource = dxCommon_->CreateRWBufferResource(sizeof(int32_t));
 	group->freeListIndexUAVIndex = srvUavManager_->Allocate();
 	srvUavManager_->CreateUAVforStructuredBuffer(group->freeListIndexUAVIndex, group->freeListIndexResource.Get(), 1, sizeof(int32_t));
-	group->freeListResource = dxCommon_->CreateRWBufferResource(sizeof(uint32_t) * kMaxParticles);
+	group->freeListResource = dxCommon_->CreateRWBufferResource(sizeof(uint32_t) * group->limit->kMaxParticles);
 	group->freeListUAVIndex = srvUavManager_->Allocate();
-	srvUavManager_->CreateUAVforStructuredBuffer(group->freeListUAVIndex, group->freeListResource.Get(), kMaxParticles, sizeof(uint32_t));
+	srvUavManager_->CreateUAVforStructuredBuffer(group->freeListUAVIndex, group->freeListResource.Get(), group->limit->kMaxParticles, sizeof(uint32_t));
 
 	CreateParticle(group.get());
 
@@ -160,8 +164,10 @@ void ParticleManager::CreateParticle(ParticleGroup* group){
 	// freeListのリソースをUAVに設定
 	srvUavManager_->SetComputeRootDescriptorTable(1, group->freeListIndexUAVIndex);
 	srvUavManager_->SetComputeRootDescriptorTable(2, group->freeListUAVIndex);
+	// パーティクルの最大値をCBufferに設定
+	commandList->SetComputeRootConstantBufferView(3, group->maxParticlesResource->GetGPUVirtualAddress());
 	// Compute Shaderを実行
-	commandList->Dispatch(1, 1, 1);
+	commandList->Dispatch(UINT((group->limit->kMaxParticles + 1023) / 1024), 1, 1);
 	// リソースバリアをSRV（描画で使う状態）に戻す
 	barrier.Transition.pResource = group->particleResource.Get();
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
@@ -307,13 +313,6 @@ void ParticleManager::CreateCylinder(ParticleGroup* group, const uint32_t& kDivi
 	}
 	group->vertexResource->Unmap(0, nullptr);
 	group->indexResource->Unmap(0, nullptr);
-}
-
-void ParticleManager::Emit(const std::string name, const Vector3& position, uint32_t count) {
-	if (particleGroups.count(name) == 0) {
-		return;
-	}
-	ParticleGroup& group = *particleGroups[name];
 }
 
 //調整項目の初期化

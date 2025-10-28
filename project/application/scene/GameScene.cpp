@@ -149,16 +149,18 @@ void GameScene::Initialize(){
 
 	particleSystem_.reset(new ParticleSystem);
 	std::unique_ptr<EmitterSphere> emitterSphere = std::make_unique<EmitterSphere>();
-	emitterSphere->Initialize("emitterSphere");
+	emitterSphere->Initialize("emitterSphere",10000);
 	emitterSphere->SetTexture("gradationLine.png");
 	emitterSphere->SetRing(16, 0.5f, 0.0f);
+	emitterSphere->SetIsEmitUpdate(true);
 	particleSystem_->SetParticleEmitter(std::move(emitterSphere));
 
 	std::unique_ptr<EmitterSphere> emitterHit = std::make_unique<EmitterSphere>();
-	emitterHit->Initialize("emitterHit");
+	emitterHit->Initialize("emitterHit",100);
 	emitterHit->SetTranslate({ 1.0f,1.0f,0.0f });
 	emitterHit->SetRadius(2.0f);
-	emitterHit->SetCount(1000);
+	emitterHit->SetCount(10);
+	emitterHit->SetFrequency(10.0f);
 	emitterHit->SetIsEmitUpdate(false);
 	emitterHit->SetTexture("circle2.png");
 	particleSystem_->SetParticleEmitter(std::move(emitterHit));

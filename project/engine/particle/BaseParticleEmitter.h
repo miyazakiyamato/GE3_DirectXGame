@@ -12,7 +12,7 @@ public:
 	BaseParticleEmitter() = default;
 	virtual ~BaseParticleEmitter() = default;
 	// 初期化
-	virtual void Initialize(const std::string& emitterName);
+	virtual void Initialize(const std::string& emitterName, uint32_t kMaxParticles);
 	// 更新
 	virtual void Update() = 0;
 	//パーティクルの発生

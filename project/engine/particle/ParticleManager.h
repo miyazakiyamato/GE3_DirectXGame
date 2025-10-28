@@ -35,7 +35,10 @@ public:
 		Matrix4x4 viewProjection;
 		Matrix4x4 billboardMatrix;
 	};
-	
+	struct Limit {
+		uint32_t kMaxParticles = 1000;
+		float pad[3];
+	};
 	struct ParticleGroup {
 		MaterialData materialData;
 		ComPtr<ID3D12Resource> particleResource; // パーティクルデータ用リソース
@@ -48,6 +51,9 @@ public:
 		//freeList
 		ComPtr<ID3D12Resource> freeListResource;
 		uint32_t freeListUAVIndex;
+		//インスタンスの最大数
+		ComPtr<ID3D12Resource> maxParticlesResource;
+		Limit* limit = nullptr;
 		//頂点
 		uint32_t kParticleVertexNum;
 		uint32_t kParticleIndexNum;
@@ -76,13 +82,11 @@ public://メンバ関数
 	//描画
 	void Draw();
 	//パーティクルグループの生成
-	void CreateParticleGroup(const std::string name);
-	//パーティクルの発生
-	void Emit(const std::string name, const Vector3& position, uint32_t count);
-
+	void CreateParticleGroup(const std::string name, uint32_t kMaxParticles);
 	//調整項目の更新
 	//void UpdateGlobalVariables();
-private://ローカル関数
+private:
+	//ローカル関数
 	void CreateParticle(ParticleGroup* group);
 	void CreatePlane(ParticleGroup* group);
 	void CreateRing(ParticleGroup* group,const uint32_t& kDivide, const float& kOuterRadius, const float& kInnerRadius);
@@ -102,8 +106,7 @@ private://メンバ変数
 	//ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
 	SrvUavManager* srvUavManager_ = nullptr;
-	//インスタンスの最大数
-	uint32_t kMaxParticles = 1024;
+
 	//WorldViewProjection用のリソース
 	ComPtr<ID3D12Resource> perViewResource_; // PerView定数バッファ
 	PerView* perViewData_ = nullptr; // PerViewマッピング用ポインタ

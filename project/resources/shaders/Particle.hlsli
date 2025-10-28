@@ -5,7 +5,6 @@ struct VertexShaderOutput{
     float32_t4 color : COLOR0;
     //float32_t4x4 uvTransform : UVTRANSFORM0;
 };
-static const uint32_t kMaxParticles = 1024;
 struct Particle{
     uint32_t isBillboard; // ビルボードの有無
     float32_t3 translate;
@@ -22,4 +21,7 @@ struct PerView{
 struct PerFrame{
     float32_t time;
     float32_t deltaTime;
+};
+struct Limit{
+    uint32_t kMaxParticles;
 };

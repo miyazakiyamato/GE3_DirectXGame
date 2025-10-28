@@ -5,12 +5,12 @@
 #include "TimeManager.h"
 #include "ParticleManager.h"
 
-void BaseParticleEmitter::Initialize(const std::string& emitterName){
+void BaseParticleEmitter::Initialize(const std::string& emitterName, uint32_t kMaxParticles){
 	name_ = emitterName;
 	particleManager_ = ParticleManager::GetInstance();
 	dxCommon_ = ParticleManager::GetInstance()->GetDirectXCommon();
 	srvUavManager_ = particleManager_->GetSrvUavManager();
-	particleManager_->CreateParticleGroup(name_);
+	particleManager_->CreateParticleGroup(name_,kMaxParticles);
 }
 
 void BaseParticleEmitter::SetTexture(const std::string& textureName) {

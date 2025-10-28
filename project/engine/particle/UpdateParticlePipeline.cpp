@@ -11,10 +11,11 @@ std::vector<D3D12_DESCRIPTOR_RANGE> UpdateParticlePipeline::ComputeDescriptorRan
 
 std::vector<D3D12_ROOT_PARAMETER> UpdateParticlePipeline::ComputeRootParameters(const std::vector<D3D12_DESCRIPTOR_RANGE>& descriptorRanges){
 	std::vector<D3D12_ROOT_PARAMETER> rootParameters = {};
-	rootParameters.resize(4);
+	rootParameters.resize(5);
 	rootParameters[0] = CreateRootParameterTable(D3D12_SHADER_VISIBILITY_ALL, descriptorRanges[0], 1);
 	rootParameters[1] = CreateRootParameterCBV(D3D12_SHADER_VISIBILITY_ALL, 0);
 	rootParameters[2] = CreateRootParameterTable(D3D12_SHADER_VISIBILITY_ALL, descriptorRanges[1], 1);
 	rootParameters[3] = CreateRootParameterTable(D3D12_SHADER_VISIBILITY_ALL, descriptorRanges[2], 1);
+	rootParameters[4] = CreateRootParameterCBV(D3D12_SHADER_VISIBILITY_ALL, 1);
 	return rootParameters;
 }
