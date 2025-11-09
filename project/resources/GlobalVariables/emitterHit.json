@@ -1,0 +1,51 @@
+{
+    "emitterHit": {
+        "Color": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+        ],
+        "Count": 10,
+        "Frequency": 1.0,
+        "IsBillboard": true,
+        "IsEmitUpdate": true,
+        "RLifeTimeMax": 5.0,
+        "RLifeTimeMin": 0.10000000149011612,
+        "RScaleMax": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "RScaleMin": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "RVelocityMax": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "RVelocityMin": [
+            -1.0,
+            -1.0,
+            -1.0
+        ],
+        "Radius": 2.0
+    },
+    "emitterHit_DisplayOrder": [
+        "Radius",
+        "Count",
+        "Frequency",
+        "IsBillboard",
+        "IsEmitUpdate",
+        "Color",
+        "RLifeTimeMin",
+        "RLifeTimeMax",
+        "RScaleMin",
+        "RScaleMax",
+        "RVelocityMin",
+        "RVelocityMax"
+    ]
+}

@@ -6,6 +6,7 @@
 
 class ParticleManager;
 class SrvUavManager;
+class GlobalVariables;
 class BaseParticleEmitter{
 public:
 	// コンストラクタ/デストラクタ
@@ -17,10 +18,16 @@ public:
 	virtual void Update() = 0;
 	//パーティクルの発生
 	virtual void Emit() = 0;
+
+	// 調整項目の初期化
+	virtual void InitializeGlobalVariables();
+	// 調整項目の適用
+	virtual void ApplyGlobalVariables();
 protected:
 	DirectXCommon* dxCommon_ = nullptr; // DirectXの共通インスタンス
 	ParticleManager* particleManager_ = nullptr; // パーティクルマネージャーのインスタンス
 	SrvUavManager* srvUavManager_ = nullptr; // SRV/UAVマネージャーのインスタンス
+	GlobalVariables* globalVariables_ = nullptr; // グローバル変数のインスタンス
 
 	std::string name_ = ""; // エミッターの名前
 

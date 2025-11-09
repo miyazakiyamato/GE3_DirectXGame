@@ -11,6 +11,15 @@ void BaseParticleEmitter::Initialize(const std::string& emitterName, uint32_t kM
 	dxCommon_ = ParticleManager::GetInstance()->GetDirectXCommon();
 	srvUavManager_ = particleManager_->GetSrvUavManager();
 	particleManager_->CreateParticleGroup(name_,kMaxParticles);
+	globalVariables_ = GlobalVariables::GetInstance();
+}
+
+void BaseParticleEmitter::InitializeGlobalVariables(){
+
+}
+
+void BaseParticleEmitter::ApplyGlobalVariables(){
+
 }
 
 void BaseParticleEmitter::SetTexture(const std::string& textureName) {

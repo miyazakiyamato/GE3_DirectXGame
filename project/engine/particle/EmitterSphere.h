@@ -36,6 +36,8 @@ public:
 	void Initialize(const std::string& emitterName, uint32_t kMaxParticles) override;
 	void Update() override;
 	void Emit() override;
+	void InitializeGlobalVariables() override;
+	void ApplyGlobalVariables() override;
 private:
 	// エミッターのデータを格納するリソース
 	ComPtr<ID3D12Resource> emitterDataResource_;

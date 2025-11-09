@@ -3,6 +3,7 @@
 #include "TimeManager.h"
 #include "PipelineManager.h"
 #include "SrvUavManager.h"
+#include "GlobalVariables.h"
 
 void EmitterSphere::Initialize(const std::string& emitterName, uint32_t kMaxParticles) {
 	BaseParticleEmitter::Initialize(emitterName,kMaxParticles);
@@ -62,4 +63,40 @@ void EmitterSphere::Update(){
 }
 void EmitterSphere::Emit(){
 	emitterData_->frequencyTime = emitterData_->frequency;
+}
+
+void EmitterSphere::InitializeGlobalVariables(){
+	BaseParticleEmitter::InitializeGlobalVariables();
+	// グループを追加
+	std::string groupName = name_;
+	GlobalVariables::GetInstance()->CreateGroup(groupName);
+	globalVariables_->AddItem(groupName, "Radius", emitterData_->radius);
+	globalVariables_->AddItem(groupName, "Count", (int)emitterData_->count);
+	globalVariables_->AddItem(groupName, "Frequency", emitterData_->frequency);
+	globalVariables_->AddItem(groupName, "IsBillboard", (bool)emitterData_->isBillboard);
+	globalVariables_->AddItem(groupName, "IsEmitUpdate", (bool)emitterData_->isEmitUpdate);
+	globalVariables_->AddItem(groupName, "Color", emitterData_->color);
+	globalVariables_->AddItem(groupName, "RLifeTimeMin", emitterData_->rlifeTimeMin);
+	globalVariables_->AddItem(groupName, "RLifeTimeMax", emitterData_->rlifeTimeMax);
+	globalVariables_->AddItem(groupName, "RScaleMin", emitterData_->rScaleMin);
+	globalVariables_->AddItem(groupName, "RScaleMax", emitterData_->rScaleMax);
+	globalVariables_->AddItem(groupName, "RVelocityMin", emitterData_->rVelocityMin);
+	globalVariables_->AddItem(groupName, "RVelocityMax", emitterData_->rVelocityMax);
+}
+
+void EmitterSphere::ApplyGlobalVariables(){
+	BaseParticleEmitter::ApplyGlobalVariables();
+	std::string groupName = name_;
+	emitterData_->radius = globalVariables_->GetValue<float>(groupName, "Radius");
+	emitterData_->count = (uint32_t)globalVariables_->GetValue<int>(groupName, "Count");
+	emitterData_->frequency = globalVariables_->GetValue<float>(groupName, "Frequency");
+	emitterData_->isBillboard = globalVariables_->GetValue<bool>(groupName, "IsBillboard");
+	emitterData_->isEmitUpdate = globalVariables_->GetValue<bool>(groupName, "IsEmitUpdate");
+	emitterData_->color = globalVariables_->GetValue<Vector4>(groupName, "Color");
+	emitterData_->rlifeTimeMin = globalVariables_->GetValue<float>(groupName, "RLifeTimeMin");
+	emitterData_->rlifeTimeMax = globalVariables_->GetValue<float>(groupName, "RLifeTimeMax");
+	emitterData_->rScaleMin = globalVariables_->GetValue<Vector3>(groupName, "RScaleMin");
+	emitterData_->rScaleMax = globalVariables_->GetValue<Vector3>(groupName, "RScaleMax");
+	emitterData_->rVelocityMin = globalVariables_->GetValue<Vector3>(groupName, "RVelocityMin");
+	emitterData_->rVelocityMax = globalVariables_->GetValue<Vector3>(groupName, "RVelocityMax");
 }

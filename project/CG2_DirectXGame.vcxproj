@@ -113,6 +113,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="application\scene\DParticleScene.cpp" />
     <ClCompile Include="engine\3d\ModelComputePipeline.cpp" />
     <ClCompile Include="application\scene\FadeInScene.cpp" />
     <ClCompile Include="application\scene\FadeOutScene.cpp" />
@@ -180,6 +181,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\PostEffectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\scene\DParticleScene.h" />
     <ClInclude Include="engine\3d\ModelComputePipeline.h" />
     <ClInclude Include="application\scene\FadeInScene.h" />
     <ClInclude Include="application\scene\FadeOutScene.h" />
