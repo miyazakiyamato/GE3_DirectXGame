@@ -44,6 +44,8 @@ void main(uint32_t3 DTid : SV_DispatchThreadID){
                 gParticles[particleIndex].lifeTime = gEmitter.rlifeTimeMin + (generator.Generate1d() * (gEmitter.rlifeTimeMax - gEmitter.rlifeTimeMin));
                 gParticles[particleIndex].currentTime = 0;
                 gParticles[particleIndex].isBillboard = gEmitter.isBillboard;
+                gParticles[particleIndex].uvTranslate = float32_t2(0.0f,0.0f);
+                gParticles[particleIndex].uvScale = float32_t2(1,1);
             }else{
                 InterlockedAdd(gFreeListIndex[0], 1);
                 break;

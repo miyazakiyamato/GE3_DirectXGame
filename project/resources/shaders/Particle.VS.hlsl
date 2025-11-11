@@ -29,6 +29,11 @@ VertexShaderOutput main(VertexShaderInput input, uint32_t instanceId : SV_Instan
     output.position = mul(input.position, mul(worldMatrix,gPerView.viewProjection));
     output.texcoord = input.texcoord;
     output.color = particle.color;
+    output.uvTransform = float32_t3x3(
+        particle.uvScale.x, 0, 0,
+        0, particle.uvScale.y, 0,
+        particle.uvTranslate.x, particle.uvTranslate.y, 1
+    );
     
     return output;
 }

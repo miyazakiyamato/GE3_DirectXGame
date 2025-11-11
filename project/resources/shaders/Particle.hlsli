@@ -3,7 +3,7 @@ struct VertexShaderOutput{
     float32_t4 position : SV_POSITION;
     float32_t2 texcoord : TEXCOORD0;
     float32_t4 color : COLOR0;
-    //float32_t4x4 uvTransform : UVTRANSFORM0;
+    float32_t3x3 uvTransform : UVTRANSFORM0;
 };
 struct Particle{
     uint32_t isBillboard; // ビルボードの有無
@@ -13,6 +13,8 @@ struct Particle{
     float32_t3 velocity;
     float32_t currentTime;
     float32_t4 color;
+    float32_t2 uvTranslate;
+    float32_t2 uvScale;
 };
 struct PerView{
     float32_t4x4 viewProjection;

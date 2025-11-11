@@ -21,8 +21,6 @@ public:
 		uint32_t srvIndex;
 	};
 	struct Particle {
-		//Transform transform;
-		//Transform uvTransform;
 		uint32_t isBillboard; // ビルボードの有無
 		Vector3 translate;
 		Vector3 scale;
@@ -30,6 +28,8 @@ public:
 		Vector3 velocity;
 		float currentTime;
 		Vector4 color;
+		Vector2 uvTranslate;
+		Vector2 uvScale;
 	};
 	struct PerView{
 		Matrix4x4 viewProjection;

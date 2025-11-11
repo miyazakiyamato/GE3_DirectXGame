@@ -116,3 +116,11 @@ std::unique_ptr<BaseParticleEmitter> ParticleSystem::CreateEmitterByType(const s
 	}
 	return nullptr;
 }
+
+void ParticleSystem::InitializeGlobalVariables(){
+
+}
+
+void ParticleSystem::ApplyGlobalVariables(){
+
+}
