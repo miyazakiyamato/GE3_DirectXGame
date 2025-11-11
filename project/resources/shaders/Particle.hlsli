@@ -15,6 +15,12 @@ struct Particle{
     float32_t4 color;
     float32_t2 uvTranslate;
     float32_t2 uvScale;
+    float32_t3 startScale;
+    float32_t3 endScale;
+    float32_t4 startColor;
+    float32_t4 endColor;
+    float32_t2 startUvTranslate;
+    float32_t2 endUvTranslate;
 };
 struct PerView{
     float32_t4x4 viewProjection;

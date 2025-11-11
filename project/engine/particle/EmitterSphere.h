@@ -13,19 +13,22 @@ public:
 		float frequency; // 射出間隔
 		float frequencyTime; // 射出間隔調整用
 		uint32_t emit; // 射出許可
-		Vector4 color; // 色
+		Vector4 startColor; // 開始色
+		Vector4 endColor; // 終了色
 		uint32_t isBillboard = 1; // ビルボードの有無
 		uint32_t isEmitUpdate = 0;//連続発生するか
 		float rlifeTimeMin; // random寿命最低値
 		float rlifeTimeMax; // random寿命最高値
-		Vector3 rScaleMin; // randomスケール最低値
+		Vector3 startScale; // スケール開始時の値
 		float pad0;
-		Vector3 rScaleMax; // randomスケール最高値
+		Vector3 endScale; // スケール終了時の値
 		float pad1;
 		Vector3 rVelocityMin; // random速度最低値
 		float pad2;
 		Vector3 rVelocityMax; // random速度最高値
 		float pad3;
+		Vector2 startUvTranslate; // uvTranslate開始時の値
+		Vector2 endUvTranslate; // uvTranslate終了時の値
 	};
 	struct PerFrame {
 		float time; // 時間
@@ -52,7 +55,6 @@ public:
 	const float& GetFrequency() const { return emitterData_->frequency; }
 	bool GetIsBillboard() const { return (bool)emitterData_->isBillboard; }
 	bool GetIsEmitUpdate() const { return (bool)emitterData_->isEmitUpdate; }
-	const Vector4& GetColor() const { return emitterData_->color; }
 	// セッター
 	void SetTranslate(const Vector3& translate) { emitterData_->translate = translate; }
 	void SetRadius(float radius) { emitterData_->radius = radius; }
@@ -60,11 +62,8 @@ public:
 	void SetFrequency(float frequency) { emitterData_->frequency = frequency; }
 	void SetIsBillboard(bool isBillboard) { emitterData_->isBillboard = isBillboard; }
 	void SetIsEmitUpdate(bool isEmitUpdate) { emitterData_->isEmitUpdate = isEmitUpdate; }
-	void SetColor(const Vector4& color) { emitterData_->color = color; }
 	void SetRLifeTimeMin(float rlifeTimeMin) { emitterData_->rlifeTimeMin = rlifeTimeMin; }
 	void SetRLifeTimeMax(float rlifeTimeMax) { emitterData_->rlifeTimeMax = rlifeTimeMax; }
-	void SetRScaleMin(const Vector3& rScaleMin) { emitterData_->rScaleMin = rScaleMin; }
-	void SetRScaleMax(const Vector3& rScaleMax) { emitterData_->rScaleMax = rScaleMax; }
 	void SetRVelocityMin(const Vector3& rVelocityMin) { emitterData_->rVelocityMin = rVelocityMin; }
 	void SetRVelocityMax(const Vector3& rVelocityMax) { emitterData_->rVelocityMax = rVelocityMax; }
 };

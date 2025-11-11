@@ -30,6 +30,12 @@ public:
 		Vector4 color;
 		Vector2 uvTranslate;
 		Vector2 uvScale;
+		Vector3 startScale; // スケール開始時の値
+		Vector3 endScale; // スケール終了時の値
+		Vector4 startColor; // 開始色
+		Vector4 endColor; // 終了色
+		Vector2 startUvTranslate; // uvTranslate開始時の値
+		Vector2 endUvTranslate; // uvTranslate終了時の値
 	};
 	struct PerView{
 		Matrix4x4 viewProjection;

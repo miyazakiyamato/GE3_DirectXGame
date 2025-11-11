@@ -22,13 +22,16 @@ void EmitterSphere::Initialize(const std::string& emitterName, uint32_t kMaxPart
 	emitterData_->emit = 0; // 初期射出許可（0:許可しない、1:許可する）
 	emitterData_->isBillboard = 0; // ビルボードの有無（0:無、1:有）
 	emitterData_->isEmitUpdate = 0;// 連続発生するか（0:しない、1:する）
-	emitterData_->color = { 1.0f, 1.0f, 1.0f, 1.0f }; // 色
+	emitterData_->startColor = { 1.0f, 1.0f, 1.0f, 1.0f }; // 色
+	emitterData_->endColor = { 1.0f, 1.0f, 1.0f, 0.0f }; // 色
 	emitterData_->rlifeTimeMin = 0.1f; // random寿命最低値
 	emitterData_->rlifeTimeMax = 3.0f; // random寿命最高値
-	emitterData_->rScaleMin = { 0.5f, 0.5f, 0.5f }; // randomスケール最低値
-	emitterData_->rScaleMax = { 0.5f, 0.5f, 0.5f }; // randomスケール最高値
+	emitterData_->startScale = { 0.5f, 0.5f, 0.5f }; // スケール開始時の値
+	emitterData_->endScale = { 1.0f, 1.0f, 1.0f }; // スケール終了時の値
 	emitterData_->rVelocityMin = { -0.5f, -0.5f, -0.5f }; // random速度最低値
 	emitterData_->rVelocityMax = { 0.5f, 0.5f, 0.5f }; // random速度最高値
+	emitterData_->startUvTranslate = { 0.0f, 0.0f }; // uvTranslate開始時の値
+	emitterData_->endUvTranslate = { 1.0f, 1.0f }; // uvTranslate終了時の値
 }
 void EmitterSphere::Update(){
 	if (emitterData_->isEmitUpdate == 1) {
@@ -75,13 +78,16 @@ void EmitterSphere::InitializeGlobalVariables(){
 	globalVariables_->AddItem(groupName, "Frequency", emitterData_->frequency);
 	globalVariables_->AddItem(groupName, "IsBillboard", (bool)emitterData_->isBillboard);
 	globalVariables_->AddItem(groupName, "IsEmitUpdate", (bool)emitterData_->isEmitUpdate);
-	globalVariables_->AddItem(groupName, "Color", emitterData_->color);
+	globalVariables_->AddItem(groupName, "StartColor", emitterData_->startColor);
+	globalVariables_->AddItem(groupName, "EndColor", emitterData_->endColor);
 	globalVariables_->AddItem(groupName, "RLifeTimeMin", emitterData_->rlifeTimeMin);
 	globalVariables_->AddItem(groupName, "RLifeTimeMax", emitterData_->rlifeTimeMax);
-	globalVariables_->AddItem(groupName, "RScaleMin", emitterData_->rScaleMin);
-	globalVariables_->AddItem(groupName, "RScaleMax", emitterData_->rScaleMax);
+	globalVariables_->AddItem(groupName, "StartScale", emitterData_->startScale);
+	globalVariables_->AddItem(groupName, "EndScale", emitterData_->endScale);
 	globalVariables_->AddItem(groupName, "RVelocityMin", emitterData_->rVelocityMin);
 	globalVariables_->AddItem(groupName, "RVelocityMax", emitterData_->rVelocityMax);
+	globalVariables_->AddItem(groupName, "StartUvTranslate", emitterData_->startUvTranslate);
+	globalVariables_->AddItem(groupName, "EndUvTranslate", emitterData_->endUvTranslate);
 }
 
 void EmitterSphere::ApplyGlobalVariables(){
@@ -92,11 +98,14 @@ void EmitterSphere::ApplyGlobalVariables(){
 	emitterData_->frequency = globalVariables_->GetValue<float>(groupName, "Frequency");
 	emitterData_->isBillboard = globalVariables_->GetValue<bool>(groupName, "IsBillboard");
 	emitterData_->isEmitUpdate = globalVariables_->GetValue<bool>(groupName, "IsEmitUpdate");
-	emitterData_->color = globalVariables_->GetValue<Vector4>(groupName, "Color");
+	emitterData_->startColor = globalVariables_->GetValue<Vector4>(groupName, "StartColor");
+	emitterData_->endColor = globalVariables_->GetValue<Vector4>(groupName, "EndColor");
 	emitterData_->rlifeTimeMin = globalVariables_->GetValue<float>(groupName, "RLifeTimeMin");
 	emitterData_->rlifeTimeMax = globalVariables_->GetValue<float>(groupName, "RLifeTimeMax");
-	emitterData_->rScaleMin = globalVariables_->GetValue<Vector3>(groupName, "RScaleMin");
-	emitterData_->rScaleMax = globalVariables_->GetValue<Vector3>(groupName, "RScaleMax");
+	emitterData_->startScale = globalVariables_->GetValue<Vector3>(groupName, "StartScale");
+	emitterData_->endScale = globalVariables_->GetValue<Vector3>(groupName, "EndScale");
 	emitterData_->rVelocityMin = globalVariables_->GetValue<Vector3>(groupName, "RVelocityMin");
 	emitterData_->rVelocityMax = globalVariables_->GetValue<Vector3>(groupName, "RVelocityMax");
+	emitterData_->startUvTranslate = globalVariables_->GetValue<Vector2>(groupName, "StartUvTranslate");
+	emitterData_->endUvTranslate = globalVariables_->GetValue<Vector2>(groupName, "EndUvTranslate");
 }
